@@ -1,0 +1,13 @@
+{
+  "version": 2,
+  "public": true,
+  "name": "code-build",
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/api" }
+  ],
+  "functions": {
+    "api/index.js": {
+      "includeFiles": "dist/code-build/browser/**"
+    }
+  }
+}
