@@ -1,0 +1,57 @@
+<mat-toolbar color="{{ isActiveSearch ? 'basic' : 'primary' }}" class="ng-sticky-header">
+  <mat-toolbar-row *ngIf="isActiveSearch">
+    <div class="ng-search-bar flex-container">
+      <button mat-button class="ng-button-icon" (click)="this.isActiveSearch = !this.isActiveSearch">
+        <mat-icon>search</mat-icon>
+      </button>
+      <mat-form-field color="primary" floatLabel="never">
+        <input #term matInput placeholder="Search" [matAutocomplete]="auto" (keyup)="search($event)" autofocus>
+      </mat-form-field>
+      <button mat-button class="ng-button-icon" (click)="this.isActiveSearch = !this.isActiveSearch">
+        <mat-icon>close</mat-icon>
+      </button>
+      <mat-autocomplete #auto="matAutocomplete" autoActiveFirstOption>
+        <mat-option style="white-space: pre"> </mat-option>
+      </mat-autocomplete>
+    </div>
+  </mat-toolbar-row>
+  <mat-toolbar-row *ngIf="!isActiveSearch" class="flex-container {{ this.dm.isDarkMode ? 'ng-black-back' : '' }}">
+    <button mat-button (click)='ns.home();' class="ng-toolbar">
+      <mat-icon class="ng-button-icon ng-home-icon ng-fire {{ this.dm.isDarkMode ? 'ng-blue' : 'ng-black' }}">code</mat-icon>
+      {{ env.title }}
+    </button>
+    <span class="ng-spacer"></span>
+    <button mat-button class="ng-button-icon" (click)="toggle()">
+      <mat-icon>{{ this.dm.isDarkMode ? 'brightness_7' : 'brightness_4' }}</mat-icon>
+    </button>
+    <button mat-button class="ng-button-icon" (click)="this.isActiveSearch = !this.isActiveSearch">
+      <mat-icon>search</mat-icon>
+    </button>
+    <div *ngIf="false">
+      <mat-menu #appMenu="matMenu">
+        <button mat-menu-item routerLink="/settings">
+          <mat-icon class="ng-menu-icon">settings</mat-icon>
+          <span>Account Settings</span>
+        </button>
+        <mat-divider></mat-divider>
+        <button mat-menu-item routerLink="/bookmarks">
+          <mat-icon class="ng-menu-icon">bookmarks</mat-icon>
+          <span>Bookmarks</span>
+        </button>
+        <mat-divider></mat-divider>
+        <button mat-menu-item routerLink="/dashboard">
+          <mat-icon class="ng-menu-icon">dashboard</mat-icon>
+          <span>Dashboard</span>
+        </button>
+        <mat-divider></mat-divider>
+        <button mat-menu-item (click)="logout()">
+          <mat-icon class="ng-menu-icon">power_settings_new</mat-icon>
+          <span>Logout</span>
+        </button>
+      </mat-menu>
+    </div>
+    <ng-template #guest>
+      <button mat-button routerLink="/login">Login</button>
+    </ng-template>
+  </mat-toolbar-row>
+</mat-toolbar>

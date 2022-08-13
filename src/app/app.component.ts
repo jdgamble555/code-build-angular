@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { environment } from 'src/environments/environment';
+import { NavService } from './nav/nav.service';
 
 @Component({
   selector: 'app-root',
@@ -7,6 +7,5 @@ import { environment } from 'src/environments/environment';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  title = 'code-build';
-  sb = environment.supabase_url;
+  constructor(public ns: NavService) {}
 }

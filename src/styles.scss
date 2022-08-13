@@ -1,39 +1,1009 @@
+@use "@angular/material" as mat;
+@import "@angular/material/theming";
+@import "https://fonts.googleapis.com/icon?family=Material+Icons";
 
-// Custom Theming for Angular Material
-// For more information: https://material.angular.io/guide/theming
-@use '@angular/material' as mat;
-// Plus imports for other components in your app.
+// color reference - https://material.io/design/color/the-color-system.html#tools-for-picking-colors
 
-// Include the common styles for Angular Material. We include this here so that you only
-// have to load a single css file for Angular Material in your app.
-// Be sure that you only ever include this mixin once!
-@include mat.core();
+$custom-typography: mat.define-typography-config(
+  $font-family: '"Marr Sans",Helvetica,Arial,Roboto,sans-serif',
+  $headline: mat.define-typography-level(32px, 48px, 700),
+  $body-1: mat.define-typography-level(16px, 24px, 500),
+);
+
+@include mat.core($custom-typography);
+@include mat.typography-hierarchy($custom-typography);
+@include mat.all-component-typographies($custom-typography);
 
 // Define the palettes for your theme using the Material Design palettes available in palette.scss
 // (imported above). For each palette, you can optionally specify a default, lighter, and darker
 // hue. Available color palettes: https://material.io/design/color/
-$code-build-primary: mat.define-palette(mat.$indigo-palette);
-$code-build-accent: mat.define-palette(mat.$pink-palette, A200, A100, A400);
-
-// The warn palette is optional (defaults to red).
-$code-build-warn: mat.define-palette(mat.$red-palette);
+$app-primary: mat.define-palette(mat.$light-blue-palette, 800);
+$app-accent: mat.define-palette(mat.$light-blue-palette, 700);
+$app-background: #fff;
 
 // Create the theme object. A theme consists of configurations for individual
 // theming systems such as "color" or "typography".
-$code-build-theme: mat.define-light-theme((
-  color: (
-    primary: $code-build-primary,
-    accent: $code-build-accent,
-    warn: $code-build-warn,
+$app-theme: mat.define-light-theme(
+  (
+    color: (
+      primary: $app-primary,
+      accent: $app-accent,
+      background: $app-background,
+    ),
   )
-));
+);
+
+//@include mat.all-component-themes($fireblog-theme);
+@include angular-material-theme($app-theme);
+
+// fix background problem
+.mat-app-background {
+  background-color: white;
+}
+
+$dark-primary: mat.define-palette(mat.$light-blue-palette, 700);
+$dark-accent: mat.define-palette(mat.$blue-gray-palette, 100);
+$dark-theme-background: mat.define-palette(mat.$gray-palette, 600);
+$dark-theme: mat.define-dark-theme(
+  (
+    color: (
+      primary: $dark-primary,
+      accent: $dark-accent,
+      is-dark: true,
+      background: $dark-theme-background,
+    ),
+  )
+);
+
+//$theme-app-theme: mat.define-light-theme($theme-app-primary, $theme-app-accent, $theme-app-warn);
 
 // Include theme styles for core and each component used in your app.
 // Alternatively, you can import and @include the theme mixins for each component
 // that you are using.
-@include mat.all-component-themes($code-build-theme);
+//@include mat.core-theme($fireblog-theme);
+
+.dark-theme {
+  //@include angular-material-theme($dark-theme);
+  @include angular-material-color($dark-theme);
+}
 
 /* You can add global styles to this file, and also import other style files */
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+html,
+body {
+  height: 100%;
+  min-height: 100%;
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+a,
+a:visited {
+  color: inherit;
+  text-decoration: none;
+}
+
+mat-card a,
+mat-card a:visited {
+  color: #1e88e5;
+  text-decoration: none;
+}
+
+.ng-toolbar {
+  font-size: 1.25rem;
+  line-height: 2rem !important;
+  font-weight: 500;
+  letter-spacing: 0.0125em;
+  -webkit-font-smoothing: antialiased;
+  font-family: Roboto, sans serif;
+}
+
+.ng-black-back {
+  background-color: #000 !important;
+}
+
+.ng-black {
+  color: #000 !important;
+  font-weight: bold;
+}
+
+.ng-blue {
+  color: #40b3ff !important;
+}
+
+.dark-theme a,
+.dark-theme a:visited {
+  color: inherit;
+  text-decoration: none;
+}
+
+.dark-theme mat-card a,
+.dark-theme mat-card a:visited,
+.dark-theme .mat-button.mat-primary {
+  color: #0583e4;
+  text-decoration: none;
+}
+
+.dark-theme .mat-button.mat-primary:hover {
+  text-decoration: underline;
+}
+
+// end material
+
+h1,
+h2,
+h3 {
+  font-family: "Marr Sans", Helvetica, Arial, Roboto, sans-serif;
+}
+
+.ng-login-container {
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 15px;
+}
+
+.ng-center {
+  text-align: center;
+}
+
+.ng-dialog-text {
+  position: relative;
+  padding-top: 20px;
+}
+
+.cdk-overlay-pane.reAuthDialog {
+  position: relative !important;
+}
+
+.ng-light {
+  color: lighten($color: #000000, $amount: 0);
+}
+
+.ng-icon {
+  padding: 14px;
+}
+
+.ng-card-footer {
+  text-align: center;
+}
+
+.ng-form-icon {
+  //position: relative;
+  //top: 3px;
+  padding-right: 15px;
+}
+
+.ng-close-icon.mat-button {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 5px;
+  line-height: 14px;
+  min-width: auto;
+}
+
+.ng-icon-text {
+  padding-right: 14px;
+  vertical-align: middle;
+  padding-bottom: 5px;
+}
+
+.ng-photo-icon {
+  padding-right: 15px;
+  vertical-align: middle;
+  padding-bottom: 15px;
+  font-size: 30px;
+}
+
+.ng-icon-header {
+  padding-bottom: 14px;
+}
+
+.ng-aligned-with-icon {
+  position: relative;
+  top: -5px;
+  margin-left: 5px;
+}
+
+.ng-button {
+  padding-top: 5px !important;
+  height: 100px;
+}
+
+.ng-home-icon {
+  padding-right: 14px;
+  margin-bottom: 4px;
+}
+.ng-button-icon {
+  //padding: 0 14px;
+  padding-right: 14px;
+  margin-bottom: 4px;
+}
+
+.ng-menu-icon {
+  padding-bottom: 3px !important;
+}
+
+.ng-success {
+  color: green;
+}
+
+.ng-warn {
+  color: red;
+}
+
+.flex-container {
+  display: flex;
+  justify-content: space-between;
+}
+
+.ng-welcome {
+  margin: 0 15px 15px;
+  text-align: left;
+  font-size: 18px;
+}
+
+.ng-card {
+  margin: 0 15px 15px;
+  text-align: left;
+  font-size: 18px;
+  max-width: 86vw;
+}
+
+.ng-cat {
+  max-width: 200px;
+}
+
+.ng-message {
+  text-align: center;
+  margin: 0 auto;
+}
+
+.ng-cat-area {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.ng-cat-area > * {
+  flex: 1 50%;
+}
+
+.category-folder:hover {
+  font-weight: bold;
+}
+
+.ng-small {
+  font-size: 16px;
+}
+
+.ng-icon-small {
+  vertical-align: middle;
+  padding-bottom: 5px;
+}
+
+.ng-sidenav {
+  text-align: left;
+  //position: fixed !important;
+}
+
+.ng-transparent {
+  background-color: transparent !important;
+}
+
+.ng-title {
+  font-size: 30px;
+}
+
+.ng-right {
+  text-align: right;
+}
+
+.ng-post-title:hover {
+  opacity: 0.75;
+  cursor: pointer;
+}
+
+.ng-container {
+  max-width: 995px;
+  background-color: transparent !important;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+// Snackbar styling
+.ng-error {
+  background: red;
+  color: white;
+}
+
+.ng-error button {
+  background-color: red;
+  color: white;
+}
+
+.mat-snack-bar-container.ng-error {
+  @extend .ng-error;
+}
+
+.ng-error .mat-simple-snackbar-action {
+  color: white;
+}
+
+// end snackbar styling
+
+@media (max-width: 767px) {
+  .ng-nav {
+    height: 100px !important;
+  }
+}
+
+.ng-spacer {
+  flex: 1 1 auto !important;
+}
+
+.ng-sticky-header2 {
+  position: sticky;
+  height: 50px;
+}
+
+.ng-sticky-header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  margin-bottom: 20px;
+}
+
+.centered {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+// Forms
+
+.form-errors {
+  padding-top: 14px;
+}
+
+mat-form-field.mat-form-field {
+  font-size: 16px;
+  width: 100%;
+}
+
+.chip-list {
+  width: 100%;
+}
+
+.mat-chip-area {
+  display: flex;
+  flex-flow: row;
+  flex-wrap: wrap;
+}
+
+.ng-image {
+  height: auto;
+  cursor: pointer;
+}
+
+@media (max-width: 767px) {
+  .ng-image {
+    max-width: 250px;
+  }
+}
+
+.ng-image-box {
+  border: 15px solid transparent;
+  border-width: 15px 0 15px 0;
+}
+
+.ng-link {
+  cursor: pointer;
+}
+
+.ng-card-small {
+  margin: 15px;
+  min-height: 150px;
+  //width: 400px;
+}
+
+.ng-author {
+  display: flex;
+  align-items: center;
+}
+
+.ng-author img {
+  margin-right: 10px;
+}
+
+.content h3,
+.content p {
+  margin: 0;
+}
+
+.tags {
+  margin-right: 4px;
+}
+
+.tag_list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  display: inline;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.ng-footer {
+  border-collapse: collapse;
+  max-width: 1000px;
+  min-width: 300px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.tag_list li:hover {
+  font-weight: bold;
+}
+
+:focus {
+  outline: 0 !important;
+}
+
+.ng-heart {
+  color: darkred;
+}
+
+.tag-sm {
+  font-size: 1em;
+}
+
+.tag-med {
+  font-size: 1.25em;
+}
+.tag-lg {
+  font-size: 1.5em;
+}
+
+.margin-spacer {
+  margin: 20px;
+}
+
+.avatar {
+  width: 2.5em;
+  height: 2.5em;
+  border-radius: 50%;
+  //margin-bottom: 12px;
+}
+
+.avatar-account {
+  font-size: 30px;
+}
+
+.ng-home-icon {
+  color: rgba(0, 0, 0, 0.5);
+}
+
+.mat-drawer-side {
+  border-right: none !important;
+}
+
+.ng-select {
+  margin-top: 35px;
+  margin-bottom: 30px;
+}
+
+// Breadcrumbs
+
+.arrows {
+  white-space: nowrap;
+}
+.arrows li {
+  display: inline;
+  position: relative;
+  word-wrap: break-word;
+  white-space: normal;
+}
+
+.arrows li::after {
+  //content: "\21FE";
+  content: ">";
+  vertical-align: middle;
+}
+
+.arrows li:last-of-type::before,
+.arrows li:last-of-type::after {
+  display: none;
+}
+
+.arrows li a {
+  font: bold 28px;
+  text-decoration: none;
+}
+
+// Search
+
+.ng-search-bar {
+  justify-content: center;
+  width: 100% !important;
+}
+
+// posts
+
+.post-summary {
+  margin: 20px !important;
+  font-weight: 500;
+}
+
+code {
+  font-size: 1rem !important;
+}
+
+markdown a {
+  color: #1e88e5;
+  text-decoration: none;
+}
+
+markdown a:hover {
+  text-decoration: underline;
+  display: block;
+}
+
+/* Drop Zone */
+
+.ng-account-icon {
+  font-size: 180px;
+}
+
+.drop-zone,
+.drop-image {
+  width: 180px;
+}
+
+.drop-image {
+  display: block;
+}
+
+.drop-zone:hover,
+.drop-active {
+  opacity: 0.5;
+  border-style: dashed;
+}
+
+.g-button {
+  background-color: rgb(219, 14, 14) !important;
+  color: white;
+  font-weight: bold;
+}
+
+.a-button {
+  background-color: rgb(162, 186, 189) !important;
+  color: white;
+  font-weight: bold;
+}
+
+/* Expansion Panel */
+
+.mat-expansion-panel-header-title,
+.mat-expansion-panel-header-description {
+  flex-basis: 0;
+}
+
+.mat-expansion-panel-header-description {
+  justify-content: space-between;
+  align-items: center;
+}
+
+.img-preview > .mat-menu-content {
+  padding-bottom: 0px !important;
+  padding-top: 0px !important;
+  margin-bottom: -8px;
+}
+
+.img-preview {
+  overflow-y: hidden !important;
+}
+
+.post-image {
+  min-width: 100%;
+}
+
+div.trim {
+  max-height: 400px;
+  overflow: hidden;
+}
+
+// mobile
+
+@media (max-width: 767px) {
+  .ng-browser {
+    display: none !important;
+    visibility: hidden;
+  }
+  .ng-mobile {
+    display: block;
+    visibility: visible;
+  }
+}
+
+@media (min-width: 767px) {
+  .ng-mobile {
+    display: none !important;
+    visibility: hidden;
+  }
+  .ng-browser {
+    display: block;
+    visibility: visible;
+  }
+}
+
+markdown img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+}
+
+// paginator
+
+.mat-paginator-page-size-label {
+  width: 135px;
+}
+
+mat-paginator .mat-form-field {
+  width: 50px;
+}
+
+.dark-mode .ng-card-outline {
+  border: 1px solid hsla(0, 0%, 100%, 0.2);
+}
+
+.ng-card-outline {
+  border-style: solid;
+  border-width: thin;
+  border-color: rgba(0, 0, 0, 0.2);
+}
+
+// skeleton loader
+.fb-item {
+  margin: 10px auto;
+  border: 1px solid #eaeaea;
+  padding: 10px;
+}
+
+.gravatar {
+  height: 90px;
+}
+.gravatar-title {
+  padding: 10px;
+  height: 80px;
+}
+
+.first-section-wrapper,
+.second-section-wrapper {
+  flex: 1;
+}
+
+.ng-absolute {
+  position: absolute;
+}
+
+.tag-bar {
+  height: 200px;
+}
+
+.heart-count {
+  margin-left: 3px;
+  font-size: 16px;
+  vertical-align: -3px;
+}
+
+.ng-left {
+  margin-left: 10px;
+}
+
+.ng-right {
+  margin-right: 40px;
+}
+
+.ng-button-space {
+  margin-right: 40px !important;
+}
+
+.ng-content {
+  min-height: 500px;
+}
+
+.ng-text {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.ng-heart-container {
+  margin-top: 8.5px;
+}
+
+.dark-theme .ng-heart-button {
+  color: white !important;
+}
+
+.ng-front {
+  font-size: 16px;
+}
+
+.ng-green {
+  color: green;
+}
+
+.ng-fire {
+  color: #fff;
+}
+
+.text-left {
+  text-align: left;
+}
+
+//
+// social media
+//
+
+.resp-sharing-button__link,
+.resp-sharing-button__icon {
+  display: inline-block;
+}
+
+.resp-sharing-button__link {
+  text-decoration: none;
+  color: #fff;
+  margin: 0.5em;
+}
+
+.resp-sharing-button {
+  border-radius: 5px;
+  transition: 25ms ease-out;
+  padding: 0.5em 0.75em;
+  font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+}
+
+.resp-sharing-button__icon svg {
+  width: 1em;
+  height: 1em;
+  margin-right: 0.4em;
+  vertical-align: top;
+}
+
+.resp-sharing-button--small svg {
+  margin: 0;
+  vertical-align: middle;
+}
+
+/* Non solid icons get a stroke */
+.resp-sharing-button__icon {
+  stroke: #fff;
+  fill: none;
+}
+
+/* Solid icons get a fill */
+.resp-sharing-button__icon--solid,
+.resp-sharing-button__icon--solidcircle {
+  fill: #fff;
+  stroke: none;
+}
+
+.resp-sharing-button--twitter {
+  background-color: #55acee;
+}
+
+.resp-sharing-button--twitter:hover {
+  background-color: #2795e9;
+}
+
+.resp-sharing-button--pinterest {
+  background-color: #bd081c;
+}
+
+.resp-sharing-button--pinterest:hover {
+  background-color: #8c0615;
+}
+
+.resp-sharing-button--facebook {
+  background-color: #3b5998;
+}
+
+.resp-sharing-button--facebook:hover {
+  background-color: #2d4373;
+}
+
+.resp-sharing-button--tumblr {
+  background-color: #35465c;
+}
+
+.resp-sharing-button--tumblr:hover {
+  background-color: #222d3c;
+}
+
+.resp-sharing-button--reddit {
+  background-color: #5f99cf;
+}
+
+.resp-sharing-button--reddit:hover {
+  background-color: #3a80c1;
+}
+
+.resp-sharing-button--google {
+  background-color: #dd4b39;
+}
+
+.resp-sharing-button--google:hover {
+  background-color: #c23321;
+}
+
+.resp-sharing-button--linkedin {
+  background-color: #0077b5;
+}
+
+.resp-sharing-button--linkedin:hover {
+  background-color: #046293;
+}
+
+.resp-sharing-button--email {
+  background-color: #777;
+}
+
+.resp-sharing-button--email:hover {
+  background-color: #5e5e5e;
+}
+
+.resp-sharing-button--xing {
+  background-color: #1a7576;
+}
+
+.resp-sharing-button--xing:hover {
+  background-color: #114c4c;
+}
+
+.resp-sharing-button--whatsapp {
+  background-color: #25d366;
+}
+
+.resp-sharing-button--whatsapp:hover {
+  background-color: #1da851;
+}
+
+.resp-sharing-button--hackernews {
+  background-color: #ff6600;
+}
+.resp-sharing-button--hackernews:hover,
+.resp-sharing-button--hackernews:focus {
+  background-color: #fb6200;
+}
+
+.resp-sharing-button--vk {
+  background-color: #507299;
+}
+
+.resp-sharing-button--vk:hover {
+  background-color: #43648c;
+}
+
+.resp-sharing-button--facebook {
+  background-color: #3b5998;
+  border-color: #3b5998;
+}
+
+.resp-sharing-button--facebook:hover,
+.resp-sharing-button--facebook:active {
+  background-color: #2d4373;
+  border-color: #2d4373;
+}
+
+.resp-sharing-button--twitter {
+  background-color: #55acee;
+  border-color: #55acee;
+}
+
+.resp-sharing-button--twitter:hover,
+.resp-sharing-button--twitter:active {
+  background-color: #2795e9;
+  border-color: #2795e9;
+}
+
+.resp-sharing-button--email {
+  background-color: #777777;
+  border-color: #777777;
+}
+
+.resp-sharing-button--email:hover,
+.resp-sharing-button--email:active {
+  background-color: #5e5e5e;
+  border-color: #5e5e5e;
+}
+
+.resp-sharing-button--pinterest {
+  background-color: #bd081c;
+  border-color: #bd081c;
+}
+
+.resp-sharing-button--pinterest:hover,
+.resp-sharing-button--pinterest:active {
+  background-color: #8c0615;
+  border-color: #8c0615;
+}
+
+.resp-sharing-button--linkedin {
+  background-color: #0077b5;
+  border-color: #0077b5;
+}
+
+.resp-sharing-button--linkedin:hover,
+.resp-sharing-button--linkedin:active {
+  background-color: #046293;
+  border-color: #046293;
+}
+
+.resp-sharing-button--reddit {
+  background-color: #5f99cf;
+  border-color: #5f99cf;
+}
+
+.resp-sharing-button--reddit:hover,
+.resp-sharing-button--reddit:active {
+  background-color: #3a80c1;
+  border-color: #3a80c1;
+}
+
+.header {
+  grid-area: header;
+}
+.content {
+  grid-area: content;
+}
+.leftnav {
+  grid-area: leftnav;
+}
+.footer {
+  grid-area: footer;
+  text-align: center;
+}
+.wrapper {
+  margin-right: auto;
+  margin-left: auto;
+  max-width: 995px;
+  display: grid;
+  grid-template-areas:
+    "header"
+    "content"
+    "leftnav"
+    "footer";
+}
+
+@media (max-width: 699px) {
+  .tag_list > li {
+    display: inline-block;
+    margin-left: 5px;
+  }
+}
+
+.simple-wrapper {
+  grid-template-areas:
+    "header"
+    "content"
+    "footer";
+}
+.simple-wrapper .leftnav {
+  visibility: hidden;
+  display: none;
+}
+
+@media (min-width: 700px) {
+  .wrapper {
+    grid-template-columns: 1fr 4fr;
+    grid-template-rows: 1fr;
+    grid-template-areas:
+      "header header"
+      "leftnav content"
+      "footer footer";
+  }
+  nav ul {
+    flex-direction: column;
+  }
+}

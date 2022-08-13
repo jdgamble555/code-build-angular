@@ -22,7 +22,17 @@
       "es2020",
       "dom"
     ],
-    "types": ["node"]
+    "paths": {
+      "@shared/*": [
+        "src/app/shared/*"
+      ],
+      "@env/*": [
+        "src/environments/*"
+      ],
+      "@nav/*": [
+        "src/app/nav/*"
+      ]
+    }
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
