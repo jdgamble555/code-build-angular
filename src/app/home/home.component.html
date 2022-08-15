@@ -1,0 +1,29 @@
+<mat-card class="ng-card {{ this.dm.isDarkMode ? '' : 'ng-blue-back' }}">
+  <div class="ng-center">
+    <h1>
+      <mat-icon class="ng-icon-text {{ this.dm.isDarkMode ? 'ng-blue' : 'ng-black' }}">code</mat-icon>
+      {{ env.title }}
+    </h1>
+    <h2>{{ env.short_desc }}</h2>
+  </div>
+</mat-card>
+<mat-tab-group class="ng-card" animationDuration="0ms" (selectedIndexChange)="tabChange($event)">
+  <mat-tab label="New">
+    <ng-template matTabContent>
+      <br>
+
+    </ng-template>
+  </mat-tab>
+  <mat-tab label="Updated">
+    <ng-template matTabContent>
+      <br>
+
+    </ng-template>
+  </mat-tab>
+  <mat-tab label="Top">
+    <ng-template matTabContent>
+      <br>
+
+    </ng-template>
+  </mat-tab>
+</mat-tab-group>
