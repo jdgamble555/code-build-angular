@@ -1,14 +1,17 @@
 import { DOCUMENT } from '@angular/common';
 import { Inject, Injectable } from '@angular/core';
 import { Role } from '@auth/user.model';
+import { environment } from '@env/environment';
+import { createClient, Provider, SupabaseClient, User } from '@supabase/supabase-js';
 import { firstValueFrom, Observable, of } from 'rxjs';
-import { DbService } from './db.service';
 
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
+
+  private supabase: SupabaseClient;
 
   // TODO - fix type here
   user$: Observable<any | null>;
@@ -31,14 +34,33 @@ export class AuthService {
   };
 
   constructor(
-    private db: DbService,
     @Inject(DOCUMENT) private doc: Document
   ) {
-    this.user$ = of({});
+    this.user$ = new Observable((observer) => {
+      //this.supabase.auth.onAuthStateChange(observer);
+    })
+
+    /**
+     *
+     *
+export const user = readable<User | null>(null, (set: Subscriber<User | null>) => {
+    set(supabase.auth.user());
+    const auth = supabase.auth.onAuthStateChange(
+        (_, session) => session ? set(session.user) : set(null)
+    );
+    return auth ? auth.data?.unsubscribe : undefined;
+});
+     */
+
+    // init supabase
+    this.supabase = createClient(
+      environment.supabase_url,
+      environment.supabase_key
+    );
   }
 
-  async getUser(): Promise<any | null> {
-    return;
+  async getUser(): Promise<User | null> {
+    return this.supabase.auth.user();
   }
 
   //
@@ -46,16 +68,15 @@ export class AuthService {
   //
 
   async emailLogin(email: string, password: string): Promise<any> {
-    return;
+    return await this.supabase.auth.signIn({ email, password });
   }
 
-  async emailSignUp(email: string, password: string): Promise<void> {
-
-    return;
+  async emailSignUp(email: string, password: string): Promise<any> {
+    return await this.supabase.auth.signUp({ email, password });
   }
 
   async sendEmailLink(email: string): Promise<any> {
-    return;
+    return await this.supabase.auth.signIn({ email });
   }
 
   async confirmSignIn(url: string, email?: string): Promise<boolean> {
@@ -70,7 +91,9 @@ export class AuthService {
   }
 
   async oAuthLogin(p: string): Promise<boolean> {
-
+    const { user, session, error } = await this.supabase.auth.signIn({
+      provider: p as Provider,
+    });
     return false;
   }
 
@@ -78,8 +101,8 @@ export class AuthService {
     return;
   }
 
-  logout(): void {
-    return;
+  async logout(): Promise<any> {
+    return await this.supabase.auth.signOut();
   }
 
   //
@@ -102,18 +125,8 @@ export class AuthService {
   // Profile
   //
 
-  async updateUsername(username: string, currentUsername?: string): Promise<any> {
-    // update in firebase authentication
-    const user = await this.getUser();
-
-    if (user) {
-      try {
-        await this.db.updateUsername(username, user.uid, currentUsername);
-      } catch (e: any) {
-        console.error(e);
-      }
-      return { message: this.messages.usernameUpdated };
-    }
+  async updateUsername(username: string) {
+    return { message: '' };
   }
 
   async updateEmail(email: string): Promise<any> {
@@ -158,3 +171,29 @@ export class AuthService {
     return sFormat(msg, v);
   }
 }
+
+/**
+ * export interface Profile {
+    username: string;
+    website: string;
+    photo_url: string;
+};
+
+export const _getProfile = async (): Promise<DB> => {
+    const { data, error } = await supabase
+        .from('profiles')
+        .select(`username, website, photo_url`);
+    return { data: data[0], error: error?.message };
+};
+
+export const _updateProfile = async ({ username, website, photo_url }: Profile): Promise<DB> => {
+    const user = supabase.auth.user();
+    const { data, error } = await supabase.from('profiles').upsert({
+        id: user.id,
+        username,
+        website,
+        photo_url
+    });
+    return { data: data[0], error: error?.message };
+};
+ */
