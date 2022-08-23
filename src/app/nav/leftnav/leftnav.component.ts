@@ -1,4 +1,6 @@
 import { Component, isDevMode } from '@angular/core';
+import { ReadService } from 'src/app/platform/supabase/read.service';
+import { Observable } from 'rxjs';
 
 
 
@@ -9,11 +11,12 @@ import { Component, isDevMode } from '@angular/core';
 })
 export class LeftnavComponent {
 
-  //total: Observable<string>;
+  total: Observable<string>;
 
   isDev: boolean;
 
-  constructor() {
+  constructor(private read: ReadService) {
+    this.total = this.read.getTotal('posts');
     this.isDev = isDevMode();
   }
 

@@ -1,11 +1,10 @@
 import { NgModule } from '@angular/core';
 
-
 @NgModule({
   declarations: [],
-  imports: []
+  imports: [
+
+  ],
+  providers: [],
 })
-export class DbModule {
-
-
-}
+export class DbModule { }

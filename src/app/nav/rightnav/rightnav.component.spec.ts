@@ -1,7 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { CoreModule } from 'src/app/core/core.module';
-import { AuthService } from 'src/app/platform/firebase/auth.service';
-
+import { CoreModule } from '@core/core.module';
+import { AuthService } from 'src/app/platform/supabase/auth.service';
 import { RightnavComponent } from './rightnav.component';
 
 describe('RightnavComponent', () => {

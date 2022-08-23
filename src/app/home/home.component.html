@@ -1,7 +1,9 @@
 <mat-card class="ng-card {{ this.dm.isDarkMode ? '' : 'ng-blue-back' }}">
   <div class="ng-center">
     <h1>
-      <mat-icon class="ng-header-icon {{ this.dm.isDarkMode ? 'ng-blue' : 'ng-black' }}">code</mat-icon>
+      <mat-icon class="ng-header-icon {{ this.dm.isDarkMode ? 'ng-blue' : 'ng-black' }}">
+        code
+      </mat-icon>
       <span>{{ env.title }}</span>
     </h1>
     <h2>{{ env.short_desc }}</h2>
@@ -11,16 +13,19 @@
   <mat-tab label="New">
     <ng-template matTabContent>
       <br>
+      <app-post-list></app-post-list>
     </ng-template>
   </mat-tab>
   <mat-tab label="Updated">
     <ng-template matTabContent>
       <br>
+      <app-post-list type="updated"></app-post-list>
     </ng-template>
   </mat-tab>
   <mat-tab label="Top">
     <ng-template matTabContent>
       <br>
+      <app-post-list type="liked"></app-post-list>
     </ng-template>
   </mat-tab>
 </mat-tab-group>

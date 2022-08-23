@@ -94,10 +94,10 @@ export class TagService {
   }
 
   /**
-   * Removies tag at spot in array
-   * @param index
-   * @param control
-   * @param chipList
+   * Removes the tag from the form field
+   * Necessary for MatChips
+   * @param tag tag
+   * @param tags - tags array
    */
   remove(index: number, control: FormArray, chipList: MatChipList): void {
 

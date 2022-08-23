@@ -1,12 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { BrowserTransferStateModule } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
-import { MarkdownModule, MarkdownService } from 'ngx-markdown';
-import { CoreModule } from 'src/app/core/core.module';
-import { FirebaseModule } from 'src/app/platform/firebase/firebase.module';
-import { ReadService } from 'src/app/platform/firebase/read.service';
-import { TagListComponent } from 'src/app/post/tag-list/tag-list.component';
-
+import { CoreModule } from '@core/core.module';
+import { DbModule } from 'src/app/platform/supabase/db.module';
+import { ReadService } from 'src/app/platform/supabase/read.service';
+import { TagListComponent } from '@post/tag-list/tag-list.component';
+import { MarkdownModule} from 'ngx-markdown';
 import { LeftnavComponent } from './leftnav.component';
 
 describe('LeftnavComponent', () => {
@@ -16,7 +14,7 @@ describe('LeftnavComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [LeftnavComponent, TagListComponent],
-      imports: [CoreModule, FirebaseModule, MarkdownModule.forRoot(), BrowserTransferStateModule, RouterModule.forRoot([])],
+      imports: [CoreModule, DbModule, MarkdownModule.forRoot(), RouterModule.forRoot([])],
       providers: [ReadService]
     })
       .compileComponents();

@@ -11,7 +11,10 @@
         <mat-icon>close</mat-icon>
       </button>
       <mat-autocomplete #auto="matAutocomplete" autoActiveFirstOption>
-        <mat-option style="white-space: pre"> </mat-option>
+        <mat-option style="white-space: pre" *ngFor="let term of terms | async"
+          [routerLink]="['/post', term.id, term.slug]" (click)="this.isActiveSearch = !this.isActiveSearch">
+          {{ term.title }}
+        </mat-option>
       </mat-autocomplete>
     </div>
   </mat-toolbar-row>
@@ -29,7 +32,7 @@
     <button mat-button class="ng-button-icon" (click)="this.isActiveSearch = !this.isActiveSearch">
       <mat-icon>search</mat-icon>
     </button>
-    <div *ngIf="false">
+    <div *ngIf="user$ | async as user; else guest">
       <mat-menu #appMenu="matMenu">
         <button mat-menu-item routerLink="/settings">
           <mat-icon class="ng-menu-icon">settings</mat-icon>
@@ -46,11 +49,27 @@
           <span>Dashboard</span>
         </button>
         <mat-divider></mat-divider>
+        <ng-container *ngIf="user.role === 'admin'">
+          <button mat-menu-item [routerLink]="['/user', user.uid]">
+            <mat-icon class="ng-menu-icon">account_box</mat-icon>
+            <span>My Posts</span>
+          </button>
+          <mat-divider></mat-divider>
+          <button mat-menu-item routerLink="/new">
+            <mat-icon class="ng-menu-icon">post_add</mat-icon>
+            <span>New Post</span>
+          </button>
+          <mat-divider></mat-divider>
+        </ng-container>
         <button mat-menu-item (click)="logout()">
           <mat-icon class="ng-menu-icon">power_settings_new</mat-icon>
           <span>Logout</span>
         </button>
       </mat-menu>
+      <a mat-icon-button [matMenuTriggerFor]="appMenu">
+        <img class="avatar" *ngIf="user.photoURL" [src]="user?.photoURL" />
+        <mat-icon *ngIf="!user.photoURL" class="avatar avatar-account">account_circle</mat-icon>
+      </a>
     </div>
     <ng-template #guest>
       <button mat-button routerLink="/login">Login</button>

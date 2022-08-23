@@ -1,0 +1,112 @@
+<div class="ng-login-container">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>
+        <ng-container *ngIf="isRegister">Register</ng-container>
+        <ng-container *ngIf="isLogin">Login</ng-container>
+        <ng-container *ngIf="isReset">Reset Password</ng-container>
+        <ng-container *ngIf="isCreateUser">Create Username</ng-container>
+        <ng-container *ngIf="isPasswordless">Login with a Magic Link</ng-container>
+        <ng-container *ngIf="isReturnLogin">Confirm Your Email</ng-container>
+        <ng-container *ngIf="isVerify">
+          <mat-icon class="ng-icon-text">warning</mat-icon>Email not verified
+        </ng-container>
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+
+      <ng-container *ngIf="isVerify">
+        Please check your junk mail folder and log back in.
+        <div class="margin-spacer"></div>
+        <button mat-raised-button color="accent" (click)="sendEmail()">
+          Resend verfication email
+        </button>
+      </ng-container>
+
+      <form [formGroup]="userForm" (ngSubmit)="onSubmit()">
+        <mat-form-field [color]="getField('email')?.valid && 'accent'" appearance="outline"
+          *ngIf="!isVerify && !isCreateUser">
+          <mat-icon matPrefix color="primary" class="ng-form-icon">email</mat-icon>
+          <input matInput formControlName="email" type="email" placeholder="Email" autocomplete="off" />
+          <mat-error *ngIf="getField('email')?.invalid">
+            {{ getError('email') }}
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field [color]="getField('username')?.valid && 'accent'" appearance="outline" *ngIf="isCreateUser">
+          <mat-icon matPrefix color="primary" class="ng-form-icon">person</mat-icon>
+          <input matInput formControlName="username" type="text" placeholder="Username" autocomplete="off"
+            [errorStateMatcher]="matcher" />
+          <mat-error *ngIf="getField('username')?.invalid">
+            {{ getError('username') }}
+          </mat-error>
+          <mat-hint *ngIf="getField('username')?.valid">{{ userForm.value.username }} is available!</mat-hint>
+        </mat-form-field>
+
+        <mat-form-field [color]="getField('email')?.valid && 'accent'" *ngIf="isLogin || isRegister"
+          appearance="outline">
+          <mat-icon matPrefix color="primary" class="ng-form-icon">lock</mat-icon>
+          <mat-icon matSuffix color="primary" (click)="passhide = !passhide">{{ passhide ? 'visibility_off' :
+            'visibility' }}</mat-icon>
+          <input matInput formControlName="password" type="password" placeholder="Password" autocomplete="off"
+            [type]="passhide ? 'password' : 'text'" />
+          <mat-error *ngIf="getField('password')?.invalid">
+            {{ getError('password') }}
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field [color]="getField('confirmPassword')?.valid && 'accent'" *ngIf="isRegister"
+          appearance="outline">
+          <mat-icon color="primary" matPrefix class="ng-form-icon">lock</mat-icon>
+          <mat-icon color="primary" matSuffix (click)="confirmhide = !confirmhide">{{ confirmhide ? 'visibility_off' :
+            'visibility' }}
+          </mat-icon>
+          <input matInput formControlName="confirmPassword" type="password" placeholder="Confirm password"
+            autocomplete="off" [type]="confirmhide ? 'password' : 'text'" />
+          <mat-error *ngIf="getField('confirmPassword')?.invalid">
+            {{ getError('confirmPassword') }}
+          </mat-error>
+        </mat-form-field>
+
+        <button mat-raised-button color="primary" type="submit" [disabled]="userForm.invalid || loading">
+          <ng-container *ngIf="isReset">Send Reset Email</ng-container>
+          <ng-container *ngIf="isCreateUser">Create</ng-container>
+          <ng-container *ngIf="isLogin || isReturnLogin">Login</ng-container>
+          <ng-container *ngIf="isPasswordless">Send Link</ng-container>
+          <ng-container *ngIf="isRegister">Register</ng-container>
+        </button>
+      </form>
+    </mat-card-content>
+    <mat-card-footer class="ng-card-footer" *ngIf="!isVerify && !isCreateUser && !isReturnLogin">
+      <button mat-button color="primary" *ngIf="isLogin" routerLink="/reset">
+        Forgot password?
+      </button>
+      <button mat-button color="primary" *ngIf="isReset || isRegister || isPasswordless" routerLink="/login">
+        {{ isPasswordless ? 'Login with Password' : 'Already registered' }}
+      </button>
+      <button mat-button color="primary" *ngIf="isLogin || isPasswordless" routerLink="/register">
+        Register
+      </button>
+      <mat-divider></mat-divider>
+      <div class="margin-spacer"></div>
+      <div class="margin-spacer"></div>
+      <div class="social-login or bold">OR</div>
+      <div class="margin-spacer"></div>
+      <!--<button class="a-button provider-button-login" mat-button (click)="providerLogin('apple.com')">
+        <mat-icon class="ng-button-icon" matSuffix>login</mat-icon>
+        Login with Apple
+      </button>-->
+      <div class="margin-spacer"></div>
+      <button class="g-button provider-button-login" mat-button (click)="providerLogin('google.com')">
+        <mat-icon class="ng-button-icon" matSuffix>login</mat-icon>
+        Login with Google
+      </button>
+      <div class="margin-spacer"></div>
+      <button *ngIf="!isPasswordless" mat-raised-button color="primary" routerLink="/passwordless">
+        <mat-icon class="ng-button-icon" matSuffix>link</mat-icon>
+        Login with a Magic Link
+      </button>
+      <div class="margin-spacer"></div>
+    </mat-card-footer>
+  </mat-card>
+</div>

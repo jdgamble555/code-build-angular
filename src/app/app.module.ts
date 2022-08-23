@@ -1,25 +1,36 @@
-import { NgModule } from '@angular/core';
+import { NgModule, SecurityContext } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { environment } from '@env/environment';
+
+import { HomeComponent } from './home/home.component';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CoreModule } from './core/core.module';
-import { NavModule } from './nav/nav.module';
-import { HomeComponent } from './home/home.component';
-
+import { MarkdownModule } from 'ngx-markdown';
+import { DashboardComponent } from './dashboard/dashboard.component';
+import { DbModule } from 'src/app/platform/supabase/db.module';
+import { environment } from '@env/environment';
+import { CommentComponent } from '@post/comment/comment.component';
+import { PostComponent } from '@post/post.component';
+import { PostListComponent } from '@post/post-list/post-list.component';
+import { NavModule } from '@nav/nav.module';
 
 
 @NgModule({
   declarations: [
     AppComponent,
-    HomeComponent
+    HomeComponent,
+    PostComponent,
+    PostListComponent,
+    DashboardComponent,
+    CommentComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'serverApp' }),
     AppRoutingModule,
+    DbModule,
     NavModule,
     ServiceWorkerModule.register('ngsw-worker.js', {
       enabled: environment.production,
@@ -28,7 +39,10 @@ import { HomeComponent } from './home/home.component';
       registrationStrategy: 'registerWhenStable:30000'
     }),
     BrowserAnimationsModule,
-    CoreModule
+    CoreModule,
+    MarkdownModule.forRoot({
+      sanitize: SecurityContext.NONE
+    })
   ],
   providers: [],
   bootstrap: [AppComponent]
