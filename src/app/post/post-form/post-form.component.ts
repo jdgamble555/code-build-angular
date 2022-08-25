@@ -4,14 +4,14 @@ import { MatChipList } from '@angular/material/chips';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
-import { ImageUploadService } from 'src/app/platform/supabase/image-upload.service';
-import { AuthService } from 'src/app/platform/supabase/auth.service';
-import { DbService } from 'src/app/platform/supabase/db.service';
 import { TagService } from '@shared/tag/tag.service';
 import { SnackbarService } from '@shared/snack-bar/snack-bar.service';
 import { DialogService } from '@shared/confirm-dialog/dialog.service';
 import { Post } from '@post/post.model';
 import { NavService } from '@nav/nav.service';
+import { ImageUploadService } from '@db/image-upload.service';
+import { AuthService } from '@db/auth.service';
+import { DbService } from '@db/db.service';
 
 
 
@@ -190,7 +190,7 @@ export class PostFormComponent {
       const file = target.files[0];
 
       // get user id
-      const uid = (await this.auth.getUser())?.uid;
+      const uid = (await this.auth.getUser())?.id;
 
       // upload image with spinner
       this.imageLoading = true;
@@ -234,7 +234,7 @@ export class PostFormComponent {
     const formValue = this.postForm.value;
     const slug = this.ts.slugify(formValue.title);
 
-    const uid = (await this.auth.getUser())?.uid;
+    const uid = (await this.auth.getUser())?.id;
 
     let data: Post = {
       authorId: uid,
@@ -299,7 +299,7 @@ export class PostFormComponent {
 
   async deletePost(): Promise<void> {
 
-    const uid = (await this.auth.getUser())?.uid as string;
+    const uid = (await this.auth.getUser())?.id as string;
 
     const confirm = this.dialog.confirmDialog(this.messages.deleteConfirm);
     // delete when confirmed

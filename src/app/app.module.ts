@@ -10,7 +10,6 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CoreModule } from './core/core.module';
 import { MarkdownModule } from 'ngx-markdown';
 import { DashboardComponent } from './dashboard/dashboard.component';
-import { DbModule } from 'src/app/platform/supabase/db.module';
 import { environment } from '@env/environment';
 import { CommentComponent } from '@post/comment/comment.component';
 import { PostComponent } from '@post/post.component';
@@ -30,7 +29,6 @@ import { NavModule } from '@nav/nav.module';
   imports: [
     BrowserModule.withServerTransition({ appId: 'serverApp' }),
     AppRoutingModule,
-    DbModule,
     NavModule,
     ServiceWorkerModule.register('ngsw-worker.js', {
       enabled: environment.production,

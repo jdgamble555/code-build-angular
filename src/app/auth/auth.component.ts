@@ -8,9 +8,9 @@ import {
   ValidatorFn
 } from '@angular/forms';
 import { ActivatedRoute, Router, UrlSegment } from '@angular/router';
-import { AuthService } from 'src/app/platform/supabase/auth.service';
-import { DbService } from 'src/app/platform/supabase/db.service';
-import { ReadService } from 'src/app/platform/supabase/read.service';
+import { AuthService } from '@db/auth.service';
+import { DbService } from '@db/db.service';
+import { ReadService } from '@db/read.service';
 import { NavService } from '@nav/nav.service';
 import { matchValidator, MyErrorStateMatcher } from '@shared/form-validators';
 import { SnackbarService } from '@shared/snack-bar/snack-bar.service';

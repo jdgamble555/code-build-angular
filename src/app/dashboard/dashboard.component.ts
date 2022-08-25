@@ -1,12 +1,11 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { Role, UserRec } from '@auth/user.model';
-import { AuthService } from 'src/app/platform/supabase/auth.service';
-import { DbService } from 'src/app/platform/supabase/db.service';
-import { ReadService } from 'src/app/platform/supabase/read.service';
+import { AuthService } from '@db/auth.service';
+import { DbService } from '@db/db.service';
+import { ReadService } from '@db/read.service';
 import { NavService } from '@nav/nav.service';
 import { firstValueFrom } from 'rxjs';
-
 
 
 @Component({
@@ -38,7 +37,7 @@ export class DashboardComponent {
       .then((user) => {
         if (user) {
           // see if user is in db
-          firstValueFrom(this.read.getUser(user?.uid))
+          firstValueFrom(this.read.getUser(user?.id))
             .then((userDoc: UserRec) => {
               if (userDoc) {
                 if (userDoc.username) {
@@ -47,9 +46,9 @@ export class DashboardComponent {
                   this.pCount = userDoc.postsCount;
                   this.bCount = userDoc.bookmarksCount;
                   this.dCount = userDoc.draftsCount;
-                  if (user.displayName) {
+                  /*if (user.displayName) {
                     this.displayName = user.displayName;
-                  }
+                  }*/
                 } else {
                   this.router.navigate(['/username']);
                 }
@@ -57,12 +56,12 @@ export class DashboardComponent {
                 // add user to db
                 try {
                   this.db.createUser({
-                    displayName: user.displayName,
+                    //displayName: user.displayName,
                     email: user.email,
-                    phoneNumber: user.phoneNumber,
-                    photoURL: user.photoURL,
+                    phoneNumber: user.phone,
+                    //photoURL: user.photoURL,
                     role: Role.Author
-                  }, user.uid);
+                  }, user.id);
                 } catch (e: any) {
                   console.error(e);
                 }

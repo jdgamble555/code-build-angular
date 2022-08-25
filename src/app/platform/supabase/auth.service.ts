@@ -3,7 +3,7 @@ import { Inject, Injectable } from '@angular/core';
 import { Role } from '@auth/user.model';
 import { environment } from '@env/environment';
 import { createClient, Provider, SupabaseClient, User } from '@supabase/supabase-js';
-import { firstValueFrom, Observable, of } from 'rxjs';
+import { firstValueFrom, Observable, of, Subscriber } from 'rxjs';
 
 
 @Injectable({
@@ -36,27 +36,21 @@ export class AuthService {
   constructor(
     @Inject(DOCUMENT) private doc: Document
   ) {
-    this.user$ = new Observable((observer) => {
-      //this.supabase.auth.onAuthStateChange(observer);
-    })
-
-    /**
-     *
-     *
-export const user = readable<User | null>(null, (set: Subscriber<User | null>) => {
-    set(supabase.auth.user());
-    const auth = supabase.auth.onAuthStateChange(
-        (_, session) => session ? set(session.user) : set(null)
-    );
-    return auth ? auth.data?.unsubscribe : undefined;
-});
-     */
 
     // init supabase
     this.supabase = createClient(
       environment.supabase_url,
       environment.supabase_key
     );
+
+    this.user$ = new Observable((subscriber: Subscriber<User | null>) => {
+      subscriber.next(this.supabase.auth.user());
+      const auth = this.supabase.auth.onAuthStateChange(({}, session) => {
+        subscriber.next(session?.user);
+      });
+      return auth.data?.unsubscribe;
+    });
+
   }
 
   async getUser(): Promise<User | null> {
@@ -125,7 +119,7 @@ export const user = readable<User | null>(null, (set: Subscriber<User | null>) =
   // Profile
   //
 
-  async updateUsername(username: string) {
+  async updateUsername(username: string, currentUsername?: string) {
     return { message: '' };
   }
 

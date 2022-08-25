@@ -128,7 +128,7 @@ export class AuthSettingsComponent implements OnInit {
           // get email verified
           this.auth.getUser().then(user => {
             if (user) {
-              this.isVerified = user?.emailVerified;
+              this.isVerified = !!user?.email_confirmed_at
             }
           });
 
@@ -378,11 +378,11 @@ export class AuthSettingsComponent implements OnInit {
     // remove from storage bucket
     const user = await this.auth.getUser();
 
-    const url = user?.photoURL || '';
+   // const url = user?.photoURL || '';
 
     // delete the image from url
     try {
-      await this.is.deleteImage(url);
+      //await this.is.deleteImage(url);
     } catch (e: any) {
       // when there is no previous image to delete
       if (e.code === 'storage/invalid-argument') {
@@ -409,7 +409,7 @@ export class AuthSettingsComponent implements OnInit {
       const image = this.is.blobToFile(file, file?.name);
 
       const user = await this.auth.getUser();
-      const uid = user?.uid;
+      const uid = user?.id;
 
       let imageURL;
       try {
