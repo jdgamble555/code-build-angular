@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Output, Input } from '@angular/core';
 import { UserRec } from '@auth/user.model';
-import { AuthService } from 'src/app/platform/supabase/auth.service';
-import { ReadService } from 'src/app/platform/supabase/read.service';
+import { AuthService } from '@db/auth.service';
+import { ReadService } from '@db/read.service';
 import { environment } from '@env/environment';
 import { NavService } from '@nav/nav.service';
 import { Post } from '@post/post.model';

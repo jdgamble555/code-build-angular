@@ -8,20 +8,19 @@ import {
   ValidatorFn
 } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
-import { firstValueFrom, Observable, of, Subscription } from 'rxjs';
-
+import { Observable, of, Subscription } from 'rxjs';
 import { debounceTime, map, take } from 'rxjs/operators';
 import { Router } from '@angular/router';
-import { AuthService } from 'src/app/platform/supabase/auth.service';
-import { ImageUploadService } from 'src/app/platform/supabase/image-upload.service';
-import { ReadService } from 'src/app/platform/supabase/read.service';
-import { DbService } from 'src/app/platform/supabase/db.service';
 import { ReLoginComponent } from './re-login/re-login.component';
 import { UserRec } from '@auth/user.model';
 import { DialogService } from '@shared/confirm-dialog/dialog.service';
 import { SnackbarService } from '@shared/snack-bar/snack-bar.service';
 import { matchValidator, MyErrorStateMatcher } from '@shared/form-validators';
 import { NavService } from '@nav/nav.service';
+import { DbService } from '@db/db.service';
+import { ReadService } from '@db/read.service';
+import { ImageUploadService } from '@db/image-upload.service';
+import { AuthService } from '@db/auth.service';
 
 @Component({
   selector: 'app-auth-settings',
@@ -92,7 +91,7 @@ export class AuthSettingsComponent implements OnInit {
     private d: MatDialog,
     private nav: NavService,
     public is: ImageUploadService,
-    private read: ReadService,
+    public read: ReadService,
     private db: DbService,
     private router: Router
   ) {
@@ -106,31 +105,30 @@ export class AuthSettingsComponent implements OnInit {
     this.buildAccountForm();
 
     // get user info
-    firstValueFrom(this.read.userRec)
-      .then(async (user: UserRec | null) => {
-        if (user) {
-          const username = user?.username;
-          const displayName = user?.displayName;
-          const email = user?.email;
+    this.read.getUser()
+      .then(async (userRec: UserRec | null) => {
+        if (userRec) {
+          const username = userRec?.username;
+          const displayName = userRec?.display_name;
+          const email = userRec?.email;
           if (username) {
             this.currentUsername = username;
             this.getField('username').setValue(username);
           }
           if (displayName) {
             this.currentDisplayName = displayName;
-            this.getField('displayName').setValue(user!.displayName);
+            this.getField('displayName').setValue(userRec!.display_name);
           }
           if (email) {
             this.currentEmail = email;
-            this.getField('email').setValue(user!.email);
+            this.getField('email').setValue(userRec!.email);
           }
 
           // get email verified
-          this.auth.getUser().then(user => {
-            if (user) {
-              this.isVerified = !!user?.email_confirmed_at
-            }
-          });
+          const user = this.auth.getUser();
+          if (user) {
+            this.isVerified = !!user?.email_confirmed_at
+          }
 
           // get providers
           this.providers = await this.auth.getProviders() as string[];
@@ -378,7 +376,7 @@ export class AuthSettingsComponent implements OnInit {
     // remove from storage bucket
     const user = await this.auth.getUser();
 
-   // const url = user?.photoURL || '';
+    // const url = user?.photoURL || '';
 
     // delete the image from url
     try {

@@ -1,9 +1,9 @@
 import { DOCUMENT } from '@angular/common';
 import { Inject, Injectable } from '@angular/core';
-import { Role } from '@auth/user.model';
+//import { Role } from '@auth/user.model';
 import { environment } from '@env/environment';
 import { createClient, Provider, SupabaseClient, User } from '@supabase/supabase-js';
-import { firstValueFrom, Observable, of, Subscriber } from 'rxjs';
+import { Observable, Subscriber } from 'rxjs';
 
 
 @Injectable({
@@ -11,10 +11,10 @@ import { firstValueFrom, Observable, of, Subscriber } from 'rxjs';
 })
 export class AuthService {
 
-  private supabase: SupabaseClient;
+  public supabase: SupabaseClient;
 
   // TODO - fix type here
-  user$: Observable<any | null>;
+  user$: Observable<User | null>;
 
   private messages = {
     accountRemoved: 'Your account has been deleted and you have been logged out.',
@@ -43,18 +43,24 @@ export class AuthService {
       environment.supabase_key
     );
 
-    this.user$ = new Observable((subscriber: Subscriber<User | null>) => {
-      subscriber.next(this.supabase.auth.user());
-      const auth = this.supabase.auth.onAuthStateChange(({}, session) => {
+    this.user$ = this.authState();
+
+  }
+
+  authState(): Observable<User | null> {
+    return new Observable((subscriber: Subscriber<User | null>) => {
+      subscriber.next(this.getUser());
+      const auth = this.supabase.auth.onAuthStateChange(({ }, session) => {
         subscriber.next(session?.user);
       });
       return auth.data?.unsubscribe;
     });
-
   }
 
-  async getUser(): Promise<User | null> {
-    return this.supabase.auth.user();
+  getUser(): User | null {
+    const u = this.supabase.auth.user();
+    console.log(u);
+    return u;
   }
 
   //

@@ -22,7 +22,6 @@ export class ImageUploadService {
     uploadingImage = false;
 
     constructor(
-      private storage: Storage,
       @Inject(DOCUMENT) private document: Document
     ) { }
 

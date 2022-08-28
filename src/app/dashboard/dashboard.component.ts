@@ -5,7 +5,6 @@ import { AuthService } from '@db/auth.service';
 import { DbService } from '@db/db.service';
 import { ReadService } from '@db/read.service';
 import { NavService } from '@nav/nav.service';
-import { firstValueFrom } from 'rxjs';
 
 
 @Component({
@@ -33,44 +32,42 @@ export class DashboardComponent {
     private ns: NavService
   ) {
     // see if logged in
-    this.auth.getUser()
-      .then((user) => {
-        if (user) {
-          // see if user is in db
-          firstValueFrom(this.read.getUser(user?.id))
-            .then((userDoc: UserRec) => {
-              if (userDoc) {
-                if (userDoc.username) {
-                  // update count views
-                  this.user = userDoc;
-                  this.pCount = userDoc.postsCount;
-                  this.bCount = userDoc.bookmarksCount;
-                  this.dCount = userDoc.draftsCount;
-                  /*if (user.displayName) {
-                    this.displayName = user.displayName;
-                  }*/
-                } else {
-                  this.router.navigate(['/username']);
-                }
-              } else {
-                // add user to db
-                try {
-                  this.db.createUser({
-                    //displayName: user.displayName,
-                    email: user.email,
-                    phoneNumber: user.phone,
-                    //photoURL: user.photoURL,
-                    role: Role.Author
-                  }, user.id);
-                } catch (e: any) {
-                  console.error(e);
-                }
+    const user = this.auth.getUser();
+    if (user) {
+      // see if user is in db
+      this.read.getUser()
+        .then((userRec: UserRec | null) => {
+          if (userRec) {
+            if (userRec.username) {
+              // update count views
+              this.user = userRec;
+              this.pCount = userRec.postsCount;
+              this.bCount = userRec.bookmarksCount;
+              this.dCount = userRec.draftsCount;
+              if (userRec.display_name) {
+                this.displayName = userRec.display_name;
               }
-            });
-        } else {
-          this.router.navigate(['/login']);
-        }
-      });
+            } else {
+              this.router.navigate(['/username']);
+            }
+          } else {
+            // add user to db
+            try {
+              this.db.createUser({
+                //displayName: userRec.display_name,
+                email: user.email,
+                //phoneNumber: user.phone,
+                //photoURL: user.photoURL,
+                role: Role.Author
+              }, user.id);
+            } catch (e: any) {
+              console.error(e);
+            }
+          }
+        });
+    } else {
+      this.router.navigate(['/login']);
+    }
     this.ns.closeLeftNav();
     this.ns.addTitle('Dashboard');
   }

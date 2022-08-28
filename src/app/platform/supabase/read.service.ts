@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { UserRec } from '@auth/user.model';
 import { Post, Tag } from '@post/post.model';
-import { combineLatest, Observable, of } from 'rxjs';
-import { debounceTime, map, switchMap, take } from 'rxjs/operators';
+import { User } from '@supabase/supabase-js';
+import { Observable, of, Subscriber } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 import { AuthService } from './auth.service';
 
 
@@ -18,14 +19,40 @@ export class ReadService {
   ) {
 
     // get user doc if logged in
-    this.userRec = this.auth.user$.pipe(
-      switchMap((user: any | null) =>
+    this.userRec = this.userSub();
+  }
+
+  subRecord(col: string, field: string, value: string): Observable<any> {
+    return new Observable((subscriber: Subscriber<any>) => {
+      this.auth.supabase.from(col).select('*').eq(field, value).single().then((payload: any) => {
+        subscriber.next(payload.data);
+      });
+      return this.auth.supabase.from(`${col}:${field}=eq.${value}`).on('*', (payload: any) => {
+        subscriber.next(payload.new);
+      }).subscribe();
+    });
+  }
+
+  //
+  // User
+  //
+
+  async getUser(): Promise<UserRec | null> {
+    const id = this.auth.supabase.auth.user()?.id;
+    const { data, error } = await this.auth.supabase.from<UserRec>('profiles').select('*').eq('id', id).single();
+    return data ? data : null;
+  }
+
+  userSub(): Observable<UserRec | null> {
+    return this.auth.user$.pipe(
+      switchMap((user: User | null) =>
         user
-          ? this.getUser(user.uid)
+          ? this.subRecord('profiles', 'id', user?.id)
           : of(null)
       )
     );
   }
+
   /**
    * Get a total count for the collection
    * @param col - Collection Path
@@ -48,18 +75,6 @@ export class ReadService {
    */
   getTagTotal(t: string): Observable<string> {
     return of('');
-  }
-  //
-  // User
-  //
-
-  /**
-   * Get user document
-   * @param id
-   * @returns
-   */
-  getUser(id: string): Observable<any> {
-    return of(null);
   }
 
   /**
