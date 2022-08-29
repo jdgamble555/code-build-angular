@@ -16,4 +16,5 @@ export interface UserRec {
   draftsCount?: number;
   postsCount?: number;
   bookmarksCount?: number;
+  website?: string
 };

@@ -4,7 +4,7 @@ import { UserRec } from '@auth/user.model';
 import { Post } from '@post/post.model';
 import { MarkdownService } from 'ngx-markdown';
 import { Observable, of } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
+import { SupabaseService } from './supabase.service';
 
 
 @Injectable({
@@ -14,7 +14,8 @@ export class DbService {
 
   constructor(
     private markdownService: MarkdownService,
-    @Inject(DOCUMENT) private document: Document
+    @Inject(DOCUMENT) private document: Document,
+    private sb: SupabaseService
   ) { }
   //
   // User
@@ -36,7 +37,17 @@ export class DbService {
     return;
   }
 
-  async createUser(user: UserRec, id: string): Promise<void> {
+  async createUser(userRec: UserRec): Promise<void> {
+    const user = this.sb.supabase.auth.user();
+    const { data, error } = await this.sb.supabase.from('profiles').upsert({
+      id: user?.id,
+      username: userRec.username,
+      photo_url: userRec.photo_url,
+      website: userRec.website
+    });
+    if (error) {
+      console.log(error);
+    }
     return;
   }
 

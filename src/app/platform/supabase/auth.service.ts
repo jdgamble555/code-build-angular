@@ -1,9 +1,9 @@
 import { DOCUMENT } from '@angular/common';
 import { Inject, Injectable } from '@angular/core';
-//import { Role } from '@auth/user.model';
-import { environment } from '@env/environment';
-import { createClient, Provider, SupabaseClient, User } from '@supabase/supabase-js';
-import { Observable, Subscriber } from 'rxjs';
+import { Provider, User } from '@supabase/supabase-js';
+import { Observable } from 'rxjs';
+import { DbService } from './db.service';
+import { SupabaseService } from './supabase.service';
 
 
 @Injectable({
@@ -11,9 +11,6 @@ import { Observable, Subscriber } from 'rxjs';
 })
 export class AuthService {
 
-  public supabase: SupabaseClient;
-
-  // TODO - fix type here
   user$: Observable<User | null>;
 
   private messages = {
@@ -34,33 +31,17 @@ export class AuthService {
   };
 
   constructor(
-    @Inject(DOCUMENT) private doc: Document
+    @Inject(DOCUMENT) private doc: Document,
+    private sb: SupabaseService,
+    private db: DbService
   ) {
 
-    // init supabase
-    this.supabase = createClient(
-      environment.supabase_url,
-      environment.supabase_key
-    );
+    this.user$ = this.sb.authState();
 
-    this.user$ = this.authState();
-
-  }
-
-  authState(): Observable<User | null> {
-    return new Observable((subscriber: Subscriber<User | null>) => {
-      subscriber.next(this.getUser());
-      const auth = this.supabase.auth.onAuthStateChange(({ }, session) => {
-        subscriber.next(session?.user);
-      });
-      return auth.data?.unsubscribe;
-    });
   }
 
   getUser(): User | null {
-    const u = this.supabase.auth.user();
-    console.log(u);
-    return u;
+    return this.sb.supabase.auth.user();
   }
 
   //
@@ -68,15 +49,15 @@ export class AuthService {
   //
 
   async emailLogin(email: string, password: string): Promise<any> {
-    return await this.supabase.auth.signIn({ email, password });
+    return await this.sb.supabase.auth.signIn({ email, password });
   }
 
   async emailSignUp(email: string, password: string): Promise<any> {
-    return await this.supabase.auth.signUp({ email, password });
+    return await this.sb.supabase.auth.signUp({ email, password });
   }
 
   async sendEmailLink(email: string): Promise<any> {
-    return await this.supabase.auth.signIn({ email });
+    return await this.sb.supabase.auth.signIn({ email });
   }
 
   async confirmSignIn(url: string, email?: string): Promise<boolean> {
@@ -91,7 +72,7 @@ export class AuthService {
   }
 
   async oAuthLogin(p: string): Promise<boolean> {
-    const { user, session, error } = await this.supabase.auth.signIn({
+    const { user, session, error } = await this.sb.supabase.auth.signIn({
       provider: p as Provider,
     });
     return false;
@@ -102,7 +83,7 @@ export class AuthService {
   }
 
   async logout(): Promise<any> {
-    return await this.supabase.auth.signOut();
+    return await this.sb.supabase.auth.signOut();
   }
 
   //

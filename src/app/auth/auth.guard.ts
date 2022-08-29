@@ -30,7 +30,7 @@ export class RoleGuard implements CanActivate {
 export class LoginGuard implements CanActivate {
   constructor(private auth: AuthService, private router: Router) { }
   async canActivate(): Promise<boolean> {
-    const user = await this.auth.getUser();
+    const user = this.auth.getUser();
     const isLoggedIn = !!user;
     if (!isLoggedIn) {
       this.router.navigate(['/login']);
@@ -45,7 +45,7 @@ export class LoginGuard implements CanActivate {
 export class NotLoginGuard implements CanActivate {
   constructor(private auth: AuthService, private router: Router) { }
   async canActivate(): Promise<boolean> {
-    const user = await this.auth.getUser();
+    const user = this.auth.getUser();
     const isLoggedIn = !!user;
     if (isLoggedIn) {
       this.router.navigate(['/settings']);
@@ -61,7 +61,7 @@ export class EmailGuard implements CanActivate {
   constructor(private auth: AuthService, private router: Router) { }
   async canActivate(): Promise<boolean> {
     // make sure logged in first...
-    const user = await this.auth.getUser();
+    const user = this.auth.getUser();
     const emailVerified = !!(user && user?.email_confirmed_at);
     if (!emailVerified) {
       this.router.navigate(['/verify']);
@@ -81,7 +81,7 @@ export class UsernameGuard implements CanActivate {
   ) { }
   async canActivate(): Promise<boolean> {
     // make sure logged in first...
-    const user = await this.auth.getUser();
+    const user = this.auth.getUser();
     if (user) {
       const hasUsername = await firstValueFrom(this.db.hasUsername(user?.id));
       if (!hasUsername) {

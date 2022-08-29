@@ -2,9 +2,10 @@ import { Injectable } from '@angular/core';
 import { UserRec } from '@auth/user.model';
 import { Post, Tag } from '@post/post.model';
 import { User } from '@supabase/supabase-js';
-import { Observable, of, Subscriber } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { AuthService } from './auth.service';
+import { SupabaseService } from './supabase.service';
 
 
 @Injectable({
@@ -15,22 +16,12 @@ export class ReadService {
   userRec: Observable<UserRec | null>;
 
   constructor(
-    private auth: AuthService
+    private auth: AuthService,
+    private sb: SupabaseService
   ) {
 
     // get user doc if logged in
     this.userRec = this.userSub();
-  }
-
-  subRecord(col: string, field: string, value: string): Observable<any> {
-    return new Observable((subscriber: Subscriber<any>) => {
-      this.auth.supabase.from(col).select('*').eq(field, value).single().then((payload: any) => {
-        subscriber.next(payload.data);
-      });
-      return this.auth.supabase.from(`${col}:${field}=eq.${value}`).on('*', (payload: any) => {
-        subscriber.next(payload.new);
-      }).subscribe();
-    });
   }
 
   //
@@ -38,8 +29,8 @@ export class ReadService {
   //
 
   async getUser(): Promise<UserRec | null> {
-    const id = this.auth.supabase.auth.user()?.id;
-    const { data, error } = await this.auth.supabase.from<UserRec>('profiles').select('*').eq('id', id).single();
+    const id = this.sb.supabase.auth.user()?.id;
+    const { data, error } = await this.sb.supabase.from<UserRec>('profiles').select('*').eq('id', id).single();
     return data ? data : null;
   }
 
@@ -47,7 +38,7 @@ export class ReadService {
     return this.auth.user$.pipe(
       switchMap((user: User | null) =>
         user
-          ? this.subRecord('profiles', 'id', user?.id)
+          ? this.sb.subWhere('profiles', 'id', user?.id)
           : of(null)
       )
     );
