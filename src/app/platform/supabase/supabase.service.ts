@@ -25,6 +25,9 @@ export class SupabaseService {
       const auth = this.supabase.auth.onAuthStateChange(async (event, session) => {
         subscriber.next(session?.user);
 
+        // todo - pipe this
+        // add event & session
+
         // add info on sign in
         if (event === 'SIGNED_IN') {
           const { error } = await this.supabase.from('profiles').upsert({
