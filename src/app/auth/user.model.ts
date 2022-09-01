@@ -6,15 +6,26 @@ export enum Role {
 };
 
 export interface UserRec {
-  display_name?: string | null;
+  displayName?: string | null;
   email?: string | null;
-  photo_url?: string | null;
+  phoneNumber?: string | null;
+  photoURL?: string | null;
   role?: Role;
-  id?: string;
+  uid?: string;
   username?: string;
   heartsCount?: number;
   draftsCount?: number;
   postsCount?: number;
   bookmarksCount?: number;
-  website?: string
+  createdAt?: Date;
+  updatedAt?: Date;
 };
+
+export interface UserAuth {
+  uid: string;
+  email: string;
+  displayName?: string | null;
+  phoneNumber?: string | null;
+  photoURL?: string | null;
+  emailVerified: boolean | null;
+}

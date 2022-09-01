@@ -1,4 +1,4 @@
-<div *ngIf="read.userRec | async as user">
+<div *ngIf="auth.user$ | async as user">
   <mat-card class="ng-card-outline">
     <form [formGroup]="accountForm">
       <h1>Settings</h1>
@@ -10,8 +10,8 @@
           </mat-expansion-panel-header>
           <div libDropZone (dropped)="uploadImage($event)" (hovered)="toggleHover($event)" class="drop-zone">
             <div (click)="file.click()">
-              <img *ngIf="user.photo_url" [src]="user.photo_url" class="drop-image" />
-              <mat-icon *ngIf="!user.photo_url" class="ng-account-icon">account_circle</mat-icon>
+              <img *ngIf="user.photoURL" [src]="user.photoURL" class="drop-image" />
+              <mat-icon *ngIf="!user.photoURL" class="ng-account-icon">account_circle</mat-icon>
             </div>
           </div>
           <br />
@@ -23,7 +23,7 @@
               <div class="margin-spacer"></div>
             </div>
           </div>
-          <div *ngIf="user?.photo_url">
+          <div *ngIf="user?.photoURL">
             <button mat-stroked-button (click)="deleteImage()">Delete</button>
           </div>
           <div class="margin-spacer"></div>
@@ -72,11 +72,11 @@
             <mat-panel-description>Change Your Email</mat-panel-description>
           </mat-expansion-panel-header>
           <mat-card class="ng-card mat-elevation-z0 ng-card-outline">
-            <mat-icon class="ng-icon-text {{ isVerified ? 'ng-green' : 'ng-warn' }}">
-              {{ isVerified ? 'verified_user' : 'error' }}
+            <mat-icon class="ng-icon-text {{ emailVerified ? 'ng-green' : 'ng-warn' }}">
+              {{ emailVerified ? 'verified_user' : 'error' }}
             </mat-icon>
-            Your Email is {{ isVerified ? '' : 'NOT' }} Verified.
-            <ng-container *ngIf="!isVerified">
+            Your Email is {{ emailVerified ? '' : 'NOT' }} Verified.
+            <ng-container *ngIf="!emailVerified">
               <div class="margin-spacer"></div>
               <button mat-raised-button color="accent" (click)="sendEmail()">
                 Resend verfication email
@@ -141,8 +141,8 @@
               <button class="g-button provider-button ng-button-space" mat-button>
                 Google
               </button>
-              <mat-slide-toggle color="primary" #g [checked]="isProvider('google')"
-                (change)="updateProvider(g, 'google')">
+              <mat-slide-toggle color="primary" #g [checked]="isProvider('google.com')"
+                (change)="updateProvider(g, 'google.com')">
               </mat-slide-toggle>
             </div>
           </div>

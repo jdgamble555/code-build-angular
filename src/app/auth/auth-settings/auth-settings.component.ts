@@ -11,16 +11,16 @@ import { MatDialog } from '@angular/material/dialog';
 import { Observable, of, Subscription } from 'rxjs';
 import { debounceTime, map, take } from 'rxjs/operators';
 import { Router } from '@angular/router';
+import { AuthService } from '@db/auth.service';
+import { ImageUploadService } from '@db/image-upload.service';
+import { ReadService } from '@db/read.service';
+import { DbService } from '@db/db.service';
 import { ReLoginComponent } from './re-login/re-login.component';
 import { UserRec } from '@auth/user.model';
 import { DialogService } from '@shared/confirm-dialog/dialog.service';
 import { SnackbarService } from '@shared/snack-bar/snack-bar.service';
 import { matchValidator, MyErrorStateMatcher } from '@shared/form-validators';
 import { NavService } from '@nav/nav.service';
-import { DbService } from '@db/db.service';
-import { ReadService } from '@db/read.service';
-import { ImageUploadService } from '@db/image-upload.service';
-import { AuthService } from '@db/auth.service';
 
 @Component({
   selector: 'app-auth-settings',
@@ -43,7 +43,7 @@ export class AuthSettingsComponent implements OnInit {
   currentUsername!: string;
   currentEmail!: string;
   currentDisplayName!: string;
-  isVerified!: boolean;
+  emailVerified!: boolean | null;
 
   passSub!: Subscription;
 
@@ -51,8 +51,7 @@ export class AuthSettingsComponent implements OnInit {
 
   messages: any = {
     deleteAccount: 'Are you sure you want to delete your account?',
-    selectImage: 'You must choose an image file type.',
-    email_sent: 'Your confirmation email has been sent!'
+    selectImage: 'You must choose an image file type.'
   }
 
   validationMessages: any = {
@@ -91,7 +90,7 @@ export class AuthSettingsComponent implements OnInit {
     private d: MatDialog,
     private nav: NavService,
     public is: ImageUploadService,
-    public read: ReadService,
+    private read: ReadService,
     private db: DbService,
     private router: Router
   ) {
@@ -106,29 +105,30 @@ export class AuthSettingsComponent implements OnInit {
 
     // get user info
     this.read.getUser()
-      .then(async (userRec: UserRec | null) => {
-        if (userRec) {
-          const username = userRec?.username;
-          const displayName = userRec?.display_name;
-          const email = userRec?.email;
+      .then(async (user: UserRec | null) => {
+        if (user) {
+          const username = user?.username;
+          const displayName = user?.displayName;
+          const email = user?.email;
           if (username) {
             this.currentUsername = username;
             this.getField('username').setValue(username);
           }
           if (displayName) {
             this.currentDisplayName = displayName;
-            this.getField('displayName').setValue(userRec!.display_name);
+            this.getField('displayName').setValue(user!.displayName);
           }
           if (email) {
             this.currentEmail = email;
-            this.getField('email').setValue(userRec!.email);
+            this.getField('email').setValue(user!.email);
           }
 
           // get email verified
-          const user = this.auth.getUser();
-          if (user) {
-            this.isVerified = !!user?.email_confirmed_at
-          }
+          this.auth.getUser().then(user => {
+            if (user) {
+              this.emailVerified = user?.emailVerified;
+            }
+          });
 
           // get providers
           this.providers = await this.auth.getProviders() as string[];
@@ -202,27 +202,30 @@ export class AuthSettingsComponent implements OnInit {
   async updateProfile() {
 
     // update displayName
-    try {
-      const displayName = this.getField('displayName').value;
-      const r = await this.auth.updateProfile({
-        displayName
-      });
-      this.currentDisplayName = displayName;
+    const displayName = this.getField('displayName').value;
+    const r = await this.auth.updateProfile({
+      displayName
+    });
+    this.currentDisplayName = displayName;
+    if (r.message) {
       this.sb.showMsg(r.message);
-    } catch (e: any) {
-      this.sb.showError(e);
+    }
+    if (r.error) {
+      this.sb.showError(r.error);
     }
   }
 
   async updateUsername() {
 
     const username = this.getField('username').value;
-
     // update username
     const r = await this.auth.updateUsername(username, this.currentUsername);
     if (r.message) {
       this.currentUsername = username;
       this.sb.showMsg(r.message);
+    }
+    if (r.error) {
+      this.sb.showError(r.error);
     }
   }
 
@@ -230,22 +233,23 @@ export class AuthSettingsComponent implements OnInit {
 
     // update email
     const email = this.getField('email').value;
-    try {
-      const r = await this.auth.updateEmail(email);
-      this.currentEmail = email;
-      this.sb.showMsg(r.message);
-    } catch (e: any) {
-      if (e.code === 'auth/requires-recent-login') {
-        const ra = await this.reAuth();
-        // update code here
-        ra.afterClosed()
-          .subscribe((closed: any) => {
-            if (!closed) {
-              this.updateEmail();
-            }
-          });
-      } else {
-        this.sb.showError(e);
+    const { reAuth, error, message } = await this.auth.updateEmail(email);
+    this.currentEmail = email;
+    if (message) {
+      this.sb.showMsg(message);
+    }
+    if (reAuth) {
+      const ra = await this.reAuth();
+      // update code here
+      ra.afterClosed()
+        .subscribe((closed: any) => {
+          if (!closed) {
+            this.updateEmail();
+          }
+        });
+    } else {
+      if (error) {
+        this.sb.showError(error);
       }
     }
   }
@@ -253,23 +257,25 @@ export class AuthSettingsComponent implements OnInit {
    * Updates the user's password
    */
   async updatePass() {
-    try {
-      const r = await this.auth.updatePass(this.accountForm.value.password);
-      this.sb.showMsg(r.message);
-      this.accountForm.reset();
-      this.passFormDirective.resetForm();
-    } catch (e: any) {
-      if (e.code === 'auth/requires-recent-login') {
-        const ra = await this.reAuth();
-        // update code here
-        ra.afterClosed()
-          .subscribe((closed: any) => {
-            if (!closed) {
-              this.updatePass();
-            }
-          });
-      } else {
-        this.sb.showError(e);
+
+    const { reAuth, message, error } = await this.auth.updatePass(this.accountForm.value.password);
+    if (message) {
+      this.sb.showMsg(message);
+    }
+    this.accountForm.reset();
+    this.passFormDirective.resetForm();
+    if (reAuth) {
+      const ra = await this.reAuth();
+      // update code here
+      ra.afterClosed()
+        .subscribe((closed: any) => {
+          if (!closed) {
+            this.updatePass();
+          }
+        });
+    } else {
+      if (error) {
+        this.sb.showError(error);
       }
     }
   }
@@ -297,16 +303,17 @@ export class AuthSettingsComponent implements OnInit {
    * @param p provider
    */
   async updateProvider(e: any, p: any): Promise<void> {
-    try {
-      if (e.checked) {
-        const r = await this.auth.addProvider(p);
-        this.sb.showMsg(r.message);
-      } else {
-        const r = await this.auth.removeProvider(p);
-        this.sb.showMsg(r.message);
-      }
-    } catch (e: any) {
-      this.sb.showError(e);
+    let r = null;
+    if (e.checked) {
+      r = await this.auth.addProvider(p);
+    } else {
+      r = await this.auth.removeProvider(p);
+    }
+    if (r.message) {
+      this.sb.showMsg(r.message);
+    }
+    if (r.error) {
+      this.sb.showError(r.error);
     }
   }
   /**
@@ -327,24 +334,27 @@ export class AuthSettingsComponent implements OnInit {
    * Deletes the user info
    */
   private async deleteUser(): Promise<void> {
+
     // delete profile image
-    try {
-      await this.deleteImage();
-      await this.auth.deleteUser();
-    } catch (e: any) {
-      if (e.code === 'auth/requires-recent-login') {
-        const ra = await this.reAuth();
-        ra.afterClosed()
-          .subscribe((closed: any) => {
-            if (!closed) {
-              this.updateEmail();
-            }
-          });
-      } else {
-        this.sb.showError(e);
-      }
-      this.auth.logout();
+    await this.deleteImage();
+    const { reAuth, error, message } = await this.auth.deleteUser();
+    if (message) {
+      this.sb.showMsg(message);
     }
+    if (reAuth) {
+      const ra = await this.reAuth();
+      ra.afterClosed()
+        .subscribe((closed: any) => {
+          if (!closed) {
+            this.updateEmail();
+          }
+        });
+    } else {
+      if (error) {
+        this.sb.showError(error);
+      }
+    }
+    this.auth.logout();
   }
   /**
    * Reauthenticate the user with a dialog
@@ -375,18 +385,14 @@ export class AuthSettingsComponent implements OnInit {
 
     // remove from storage bucket
     const user = await this.auth.getUser();
-
-    // const url = user?.photoURL || '';
+    const url = user?.photoURL || '';
 
     // delete the image from url
     try {
-      //await this.is.deleteImage(url);
-    } catch (e: any) {
-      // when there is no previous image to delete
-      if (e.code === 'storage/invalid-argument') {
-        return;
-      }
+      await this.is.deleteImage(url);
       await this.auth.updateProfile({ photoURL: null });
+    } catch (e: any) {
+      this.sb.showError(e);
     }
   }
   /**
@@ -407,7 +413,7 @@ export class AuthSettingsComponent implements OnInit {
       const image = this.is.blobToFile(file, file?.name);
 
       const user = await this.auth.getUser();
-      const uid = user?.id;
+      const uid = user?.uid;
 
       let imageURL;
       try {

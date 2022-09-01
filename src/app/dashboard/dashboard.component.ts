@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { UserRec } from '@auth/user.model';
+import { UserAuth, UserRec } from '@auth/user.model';
 import { AuthService } from '@db/auth.service';
 import { ReadService } from '@db/read.service';
 import { NavService } from '@nav/nav.service';
@@ -30,31 +30,33 @@ export class DashboardComponent {
     private ns: NavService
   ) {
     // see if logged in
-    const user = this.auth.getUser();
-    if (user) {
-      // see if user is in db
-      this.read.getUser()
-        .then((userRec: UserRec | null) => {
-          if (userRec) {
-            if (userRec.username) {
-              // update count views
-              this.user = userRec;
-              this.pCount = userRec.postsCount;
-              this.bCount = userRec.bookmarksCount;
-              this.dCount = userRec.draftsCount;
-              if (userRec.display_name) {
-                this.displayName = userRec.display_name;
+    this.auth.getUser()
+      .then((user: UserAuth | null) => {
+        if (user) {
+          // see if user is in db
+          this.read.getUser()
+            .then((userRec: UserRec | null) => {
+              if (userRec) {
+                if (userRec.username) {
+                  // update count views
+                  this.user = userRec;
+                  this.pCount = userRec.postsCount;
+                  this.bCount = userRec.bookmarksCount;
+                  this.dCount = userRec.draftsCount;
+                  if (userRec.displayName) {
+                    this.displayName = userRec.displayName;
+                  }
+                } else {
+                  this.router.navigate(['/username']);
+                }
               }
-            } else {
-              this.router.navigate(['/username']);
-            }
-          }
-        });
-    } else {
-      this.router.navigate(['/login']);
-    }
-    this.ns.closeLeftNav();
-    this.ns.addTitle('Dashboard');
+            });
+        } else {
+          this.router.navigate(['/login']);
+        }
+        this.ns.closeLeftNav();
+        this.ns.addTitle('Dashboard');
+      });
   }
 
   tabChange(index: number) {

@@ -3,6 +3,15 @@ import { environment } from '@env/environment';
 import { createClient, SupabaseClient, User } from '@supabase/supabase-js';
 import { Observable, Subscriber } from 'rxjs';
 
+export interface sb_User {
+  id: string;
+  created_at: Date;
+  updated_at?: Date;
+  photo_url?: string;
+  username?: string;
+  display_name?: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -22,23 +31,8 @@ export class SupabaseService {
   authState(): Observable<User | null> {
     return new Observable((subscriber: Subscriber<User | null>) => {
       subscriber.next(this.supabase.auth.user());
-      const auth = this.supabase.auth.onAuthStateChange(async (event, session) => {
+      const auth = this.supabase.auth.onAuthStateChange(async ({ }, session) => {
         subscriber.next(session?.user);
-
-        // todo - pipe this
-        // add event & session
-
-        // add info on sign in
-        if (event === 'SIGNED_IN') {
-          const { error } = await this.supabase.from('profiles').upsert({
-            id: session?.user?.id,
-            photo_url: session?.user?.user_metadata['avatar_url'],
-            display_name: session?.user?.user_metadata['full_name']
-          });
-          if (error) {
-            console.error(error);
-          }
-        }
       });
       return auth.data?.unsubscribe;
     });

@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { RouterModule } from '@angular/router';
 import { CoreModule } from '@core/core.module';
-import { DbModule } from 'src/app/platform/supabase/db.module';
+import { DbModule } from '@db/db.module';
 import { MarkdownModule } from 'ngx-markdown';
 
 

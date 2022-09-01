@@ -14,12 +14,12 @@
         [disabled]="!userForm.valid">Re-login</button>
     </form>
   </div>
-  <div *ngIf="providers?.includes('password') && providers?.includes('google')">
+  <div *ngIf="providers?.includes('password') && providers?.includes('google.com')">
     <div class="social-login or bold">OR</div>
   </div>
-  <div *ngIf="providers?.includes('google')">
+  <div *ngIf="providers?.includes('google.com')">
     <div class="margin-spacer"></div>
-    <button class="g-button provider-button-relogin" mat-button (click)="providerLogin('google')">
+    <button class="g-button provider-button-relogin" mat-button (click)="providerLogin('google.com')">
       Re-login with Google
     </button>
   </div>

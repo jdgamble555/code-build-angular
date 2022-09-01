@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
 import { UserRec } from '@auth/user.model';
 import { Post, Tag } from '@post/post.model';
-import { User } from '@supabase/supabase-js';
 import { Observable, of } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
+import { map, switchMap } from 'rxjs/operators';
 import { AuthService } from './auth.service';
-import { SupabaseService } from './supabase.service';
+import { sb_User, SupabaseService } from './supabase.service';
+
+
 
 
 @Injectable({
@@ -30,17 +31,32 @@ export class ReadService {
 
   async getUser(): Promise<UserRec | null> {
     const id = this.sb.supabase.auth.user()?.id;
-    const { data, error } = await this.sb.supabase.from<UserRec>('profiles').select('*').eq('id', id).single();
-    return data ? data : null;
+    const { data: user, error } = await this.sb.supabase.from('profiles').select('*').eq('id', id).single();
+    if (error) {
+      console.error(error);
+    }
+    return user ? this.mapUser(user) : null;
+  }
+
+  private mapUser(user: sb_User): UserRec {
+    return ({
+      uid: user.id,
+      photoURL: user.photo_url,
+      displayName: user.display_name,
+      createdAt: user.created_at,
+      updatedAt: user.updated_at,
+      username: user.username
+    });
   }
 
   userSub(): Observable<UserRec | null> {
     return this.auth.user$.pipe(
-      switchMap((user: User | null) =>
+      switchMap((user: any | null) =>
         user
-          ? this.sb.subWhere('profiles', 'id', user?.id)
+          ? this.sb.subWhere('profiles', 'id', user?.uid)
           : of(null)
-      )
+      ),
+      map((user: sb_User) => this.mapUser(user))
     );
   }
 

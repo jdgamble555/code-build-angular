@@ -37,13 +37,13 @@ export class DbService {
     return;
   }
 
-  async createUser(userRec: UserRec): Promise<void> {
+  async createUser(): Promise<void> {
     const user = this.sb.supabase.auth.user();
     const { data, error } = await this.sb.supabase.from('profiles').upsert({
       id: user?.id,
-      username: userRec.username,
-      photo_url: userRec.photo_url,
-      website: userRec.website
+      photo_url: user?.user_metadata['avatar_url'],
+      //phoneNumber: u.phone,
+      display_name: user?.user_metadata['full_name']
     });
     if (error) {
       console.log(error);

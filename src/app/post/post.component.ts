@@ -121,10 +121,10 @@ export class PostComponent implements OnDestroy {
   toggleAction(action: string, toggle?: boolean) {
 
     // toggle save and like
-    if (this.user$ && this.user$.id && toggle !== undefined) {
+    if (this.user$ && this.user$.uid && toggle !== undefined) {
       toggle
-        ? this.read.unActionPost(this.postId, this.user$.id, action)
-        : this.read.actionPost(this.postId, this.user$.id, action);
+        ? this.read.unActionPost(this.postId, this.user$.uid, action)
+        : this.read.actionPost(this.postId, this.user$.uid, action);
     } else {
       this.router.navigate(['login']);
     }

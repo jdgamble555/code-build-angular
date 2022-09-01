@@ -1,17 +1,25 @@
 import { DOCUMENT } from '@angular/common';
 import { Inject, Injectable } from '@angular/core';
+import { UserAuth } from '@auth/user.model';
 import { Provider, User } from '@supabase/supabase-js';
-import { Observable } from 'rxjs';
+import { firstValueFrom, map, Observable, tap } from 'rxjs';
 import { DbService } from './db.service';
-import { SupabaseService } from './supabase.service';
+import { sb_User, SupabaseService } from './supabase.service';
 
+export interface AuthAction {
+  reAuth?: boolean | null;
+  isNew?: boolean | null;
+  isConfirmed?: boolean | null;
+  error: string | null;
+  message: string | null;
+}
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
-  user$: Observable<User | null>;
+  user$: Observable<UserAuth | null>;
 
   private messages = {
     accountRemoved: 'Your account has been deleted and you have been logged out.',
@@ -22,7 +30,9 @@ export class AuthService {
     providerRemoved: '{0} has been removed from the account.',
     resetPassword: 'Your password reset link has been sent.',
     usernameUpdated: 'Your username has been updated!',
-    sendEmailLink: 'Your email login link has been sent.'
+    sendEmailLink: 'Your email login link has been sent.',
+    loginSuccess: 'You have been successfully logged in!',
+    emailConfirm: 'Your email has been confirmed!'
   };
 
   private errors = {
@@ -36,12 +46,39 @@ export class AuthService {
     private db: DbService
   ) {
 
-    this.user$ = this.sb.authState();
+    this.user$ = this._user();
 
   }
 
-  getUser(): User | null {
-    return this.sb.supabase.auth.user();
+  private _user(): Observable<UserAuth | null> {
+    return this.sb.authState().pipe(
+      map((u: User | null) =>
+        u ? ({
+          uid: u.id,
+          email: u.email,
+          emailVerified: !!u.email_confirmed_at,
+          photoURL: u?.user_metadata['avatar_url'],
+          phoneNumber: u.phone,
+          displayName: u?.user_metadata['full_name']
+        } as UserAuth)
+          : null
+      ),
+      tap((u: UserAuth | null) => {
+        if (u) {
+          // add user info if user DNE
+          this.sb.supabase.from<sb_User>('profiles').select('*').eq('id', u?.uid).single()
+            .then(({ data }) => {
+              if (!data) {
+                this.db.createUser();
+              }
+            });
+        }
+      })
+    )
+  }
+
+  async getUser(): Promise<UserAuth | null> {
+    return await firstValueFrom(this.user$);
   }
 
   //
@@ -60,9 +97,10 @@ export class AuthService {
     return await this.sb.supabase.auth.signIn({ email });
   }
 
-  async confirmSignIn(url: string, email?: string): Promise<boolean> {
-
-    return false;
+  async confirmSignIn(url: string, email?: string): Promise<AuthAction> {
+    let message = null;
+    let error = null;
+    return { message, error };
   }
 
   async resetPassword(email: string): Promise<any> {
@@ -71,11 +109,12 @@ export class AuthService {
     return { message: this.messages.resetPassword };
   }
 
-  async oAuthLogin(p: string): Promise<boolean> {
-    const { user, session, error } = await this.sb.supabase.auth.signIn({
+  async oAuthLogin(p: string): Promise<AuthAction> {
+    const { error } = await this.sb.supabase.auth.signIn({
       provider: p as Provider,
     });
-    return false;
+    const message = this.messages.loginSuccess;
+    return { message, error: error?.message || null };
   }
 
   async oAuthReLogin(p: string): Promise<any> {
@@ -106,7 +145,7 @@ export class AuthService {
   // Profile
   //
 
-  async updateUsername(username: string, currentUsername?: string) {
+  async updateUsername(username: string, currentUsername?: string): Promise<any> {
     return { message: '' };
   }
 
@@ -115,7 +154,7 @@ export class AuthService {
     return;
   }
 
-  async sendVerificationEmail() {
+  async sendVerificationEmail(): Promise<any> {
 
     return;
   }

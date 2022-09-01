@@ -89,7 +89,7 @@ export class PostListComponent implements OnInit, OnDestroy {
 
     // get uid for user
     if (this.ns.isBrowser) {
-      this.input.uid = this?.auth.getUser()?.id || undefined;
+      this.input.uid = (await this.auth.getUser())?.uid || undefined;
       if (this.type === 'bookmarks' || this.type === 'drafts' || this.type === 'user') {
         if (!this.input.uid) {
           this.router.navigate(['login']);
@@ -177,10 +177,10 @@ export class PostListComponent implements OnInit, OnDestroy {
 
   async toggleAction(id: string, action: string, toggle?: boolean) {
     // toggle save and like
-    if (this.user && this.user.id && toggle !== undefined) {
+    if (this.user && this.user.uid && toggle !== undefined) {
       toggle
-        ? await this.read.unActionPost(id, this.user.id, action)
-        : await this.read.actionPost(id, this.user.id, action);
+        ? await this.read.unActionPost(id, this.user.uid, action)
+        : await this.read.actionPost(id, this.user.uid, action);
     } else {
       this.router.navigate(['login']);
     }

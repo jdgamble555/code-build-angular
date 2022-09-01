@@ -5,8 +5,8 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterModule } from '@angular/router';
 import { CoreModule } from '@core/core.module';
-import { AuthService } from 'src/app/platform/supabase/auth.service';
-import { DbModule } from 'src/app/platform/supabase/db.module';
+import { AuthService } from '@db/auth.service';
+import { DbModule } from '@db/db.module';
 import { MarkdownModule } from 'ngx-markdown';
 
 

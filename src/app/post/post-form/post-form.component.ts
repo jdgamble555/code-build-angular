@@ -190,7 +190,7 @@ export class PostFormComponent {
       const file = target.files[0];
 
       // get user id
-      const uid = (await this.auth.getUser())?.id;
+      const uid = (await this.auth.getUser())?.uid;
 
       // upload image with spinner
       this.imageLoading = true;
@@ -234,7 +234,7 @@ export class PostFormComponent {
     const formValue = this.postForm.value;
     const slug = this.ts.slugify(formValue.title);
 
-    const uid = (await this.auth.getUser())?.id;
+    const uid = (await this.auth.getUser())?.uid;
 
     let data: Post = {
       authorId: uid,
@@ -299,7 +299,7 @@ export class PostFormComponent {
 
   async deletePost(): Promise<void> {
 
-    const uid = (await this.auth.getUser())?.id as string;
+    const uid = (await this.auth.getUser())?.uid as string;
 
     const confirm = this.dialog.confirmDialog(this.messages.deleteConfirm);
     // delete when confirmed

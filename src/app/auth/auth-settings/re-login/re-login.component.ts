@@ -1,7 +1,7 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, AbstractControl } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
-import { AuthService } from 'src/app/platform/supabase/auth.service';
+import { AuthService } from '@db/auth.service';
 import { SnackbarService } from '@shared/snack-bar/snack-bar.service';
 
 @Component({
@@ -31,11 +31,15 @@ export class ReLoginComponent implements OnInit {
     this.buildForm();
   }
 
-  providerLogin(provider: string) {
-    this.auth.oAuthReLogin(provider)
-      .then(() => {
-        this.d.close();
-      });
+  async providerLogin(provider: string) {
+    const { message, error } = await this.auth.oAuthReLogin(provider);
+    if (message) {
+      this.sb.showMsg(message);
+    }
+    if (error) {
+      this.sb.showError(error);
+    }
+    this.d.close();
   }
 
   login(): void {
