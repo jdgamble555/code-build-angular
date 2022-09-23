@@ -15,7 +15,7 @@ export interface Post {
   tags?: any;
   slug?: string;
   minutes?: string;
-  authorDoc?: UserRec | any;
+  author?: UserRec | any;
   published?: boolean;
   heartsCount?: number;
   bookmarksCount?: number;
@@ -41,4 +41,4 @@ export interface PostInput {
   pageSize?: number,
   drafts?: boolean
 };
-  
+

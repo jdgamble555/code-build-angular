@@ -62,7 +62,8 @@ export class UserDbService {
 
   async getUsernameFromId(uid: string): Promise<UserRequest> {
     const { data, error } = await this.sb.supabase.from('profiles').select('*').eq('id', uid).single();
-    return { data: data.username, error };
+    console.log(data);
+    return { data, error };
   }
 
   async logout(): Promise<void> {

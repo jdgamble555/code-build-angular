@@ -6,11 +6,11 @@
       {{ post.title }}
     </h1>
     <h6><i>{{ post.minutes }} min read</i></h6>
-    <div class="ng-author ng-link" [routerLink]="['/u', post.authorId, post.authorDoc?.username]">
-      <img *ngIf="post.authorDoc?.photoURL" class="avatar" src="{{ post.authorDoc?.photoURL }}"
-        alt="{{ post.authorDoc?.displayName }}" />
-      <mat-icon *ngIf="!post.authorDoc?.photoURL" class="ng-photo-icon">account_circle</mat-icon>
-      <p><small><b>{{ post.authorDoc?.username }}</b>
+    <div class="ng-author ng-link" [routerLink]="['/u', post.authorId, post.author?.username]">
+      <img *ngIf="post.author?.photoURL" class="avatar" src="{{ post.author?.photoURL }}"
+        alt="{{ post.author?.displayName }}" />
+      <mat-icon *ngIf="!post.author?.photoURL" class="ng-photo-icon">account_circle</mat-icon>
+      <p><small><b>{{ post.author?.username }}</b>
           <ng-container *ngIf="post.createdAt">
             on {{ post.createdAt | date: 'EEEE, MMMM d, yyyy' }}
           </ng-container>

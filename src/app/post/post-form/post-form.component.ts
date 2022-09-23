@@ -93,7 +93,7 @@ export class PostFormComponent implements OnDestroy {
         return;
       }
 
-      this.patchPost = this.ps.getPostData(this.id)
+      this.patchPost = this.ps.getPostById(this.id)
         .then(({ error, data }: { data: Post | null, error: any }) => {
 
           if (error) {
@@ -314,7 +314,7 @@ export class PostFormComponent implements OnDestroy {
 
     if (publish && !error) {
       this.sb.showMsg(this.messages.published);
-      this.router.navigate(['/post', this.id, slug]);
+      this.router.navigate(['/', this.id, slug]);
     }
   }
 

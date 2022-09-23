@@ -122,7 +122,7 @@ export class SeoService {
     // generate summary schema
     const urls: string[] = [];
     for (const x of posts) {
-      urls.push(`${environment.site}/post/${x.id}/${x.slug}`);
+      urls.push(`${environment.site}/p/${x.id}/${x.slug}`);
     }
 
     const list = [];

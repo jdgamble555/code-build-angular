@@ -15,12 +15,9 @@ import { HomeComponent } from './nav/home/home.component';
 const routes: Routes = [
   { path: '', component: HomeComponent, canActivate: [PostListGuard], data: { revalidate: 0 } },
 
-  // backwards compatible with old app, will be removed later
-  { path: 'blog/post/:slug', component: PostComponent, canActivate: [PostGuard] },
-
   // post
-  { path: 'post/:id', component: PostComponent, canActivate: [PostGuard] },
-  { path: 'post/:id/:slug', component: PostComponent, canActivate: [PostGuard], data: { revalidate: 0 } },
+  { path: 'p/:pid', component: PostComponent, canActivate: [PostGuard] },
+  { path: 'p/:pid/:slug', component: PostComponent, canActivate: [PostGuard], data: { revalidate: 0 } },
 
   // post list
   { path: 't/:tag', component: PostListComponent, canActivate: [PostListGuard], data: { revalidate: 0 } },

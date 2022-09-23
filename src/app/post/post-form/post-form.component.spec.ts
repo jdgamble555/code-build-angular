@@ -1,5 +1,4 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { StorageModule } from '@angular/fire/storage';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
@@ -24,7 +23,6 @@ describe('PostFormComponent', () => {
         CoreModule,
         ReactiveFormsModule,
         RouterModule.forRoot([]),
-        StorageModule,
         DbModule,
         MarkdownModule.forRoot(),
         MatSnackBarModule,

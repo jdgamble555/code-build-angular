@@ -1,12 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterModule } from '@angular/router';
+import { CoreModule } from '@core/core.module';
 import { DbModule } from '@db/db.module';
+import { PostListComponent } from '@post/post-list/post-list.component';
 import { MarkdownModule } from 'ngx-markdown';
-import { CoreModule } from '../../core/core.module';
-
-import { PostListComponent } from '../../post/post-list/post-list.component';
-
 import { HomeComponent } from './home.component';
 
 describe('HomeComponent', () => {

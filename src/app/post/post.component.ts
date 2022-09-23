@@ -5,7 +5,6 @@ import { UserDbService } from '@db/user/user-db.service';
 import { environment } from '@env/environment';
 import { NavService } from '@nav/nav.service';
 import { SeoService } from '@shared/seo/seo.service';
-import { SnackbarService } from '@shared/snack-bar/snack-bar.service';
 import { MarkdownService } from 'ngx-markdown';
 import { Observable, of, Subscription } from 'rxjs';
 import { Post } from './post.model';
@@ -32,8 +31,7 @@ export class PostComponent {
     private us: UserDbService,
     private seo: SeoService,
     public ns: NavService,
-    private ms: MarkdownService,
-    private sb: SnackbarService
+    private ms: MarkdownService
   ) {
     this.env = environment;
     this.ns.openLeftNav();
@@ -56,25 +54,25 @@ export class PostComponent {
       domain: this.env.title,
       image: r?.image || undefined,
       description,
-      user: r?.authorDoc.username
+      user: r?.author.username
     });
 
     // generate schema
     // todo - create schema service, add full content, use new type within types
     this.seo.setBlogSchema({
       title: r?.title,
-      author: r?.authorDoc.displayName,
-      username: r?.authorDoc.username,
+      author: r?.author.displayName,
+      username: r?.author.username,
       authorId: r?.authorId,
-      authorURL: `${environment.site}/u/${r?.authorId}/${r?.authorDoc.username}`,
+      authorURL: `${environment.site}/u/${r?.authorId}/${r?.author.username}`,
       image: r?.image || undefined,
       description,
-      keywords: r?.tags.join(', '),
+      keywords: r?.tags?.join(', '),
       createdAt: new Date(r?.createdAt || null).toISOString(),
       updatedAt: new Date(r?.updatedAt || null).toISOString(),
       time: r?.minutes,
       id: r?.id,
-      url: `${environment.site}/post/${r?.id}/${r?.slug}`
+      url: `${environment.site}/p/${r?.id}/${r?.slug}`
     });
   }
 }

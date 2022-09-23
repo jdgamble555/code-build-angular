@@ -17,7 +17,7 @@ export class PostGuard implements CanActivate {
   async canActivate(next: ActivatedRouteSnapshot): Promise<boolean> {
 
     let slug = next.paramMap.get('slug');
-    const id = next.paramMap.get('id');
+    const id = next.paramMap.get('pid');
     let error = null;
     let data = null;
 
@@ -40,19 +40,10 @@ export class PostGuard implements CanActivate {
       if (data && data.slug) {
         slug = data.slug;
       }
-
-    } else if (slug && !id) {
-
-      // old blog url, so redirect correctly with id
-      ({ error, data } = await this.ps.getPostBySlug(slug));
-      if (error) {
-        console.error(error);
-      }
     }
-
     // redirect to correct location, or go home
     data
-      ? this.router.navigate(['/post', data.id, slug])
+      ? this.router.navigate(['/p', data.id, slug])
       : this.router.navigate(['/']);
 
     return false;
