@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
+import { DbModule } from '@db/db.module';
 import { environment } from '@env/environment';
 import { createClient, SupabaseClient, User } from '@supabase/supabase-js';
-import { Observable, Subscriber } from 'rxjs';
+import { from, of, Observable, Subscriber, switchMap } from 'rxjs';
 
 export interface sb_User {
   id: string;
@@ -10,10 +11,12 @@ export interface sb_User {
   photo_url?: string;
   username?: string;
   display_name?: string;
+  email?: string;
+  role?: string;
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: DbModule
 })
 export class SupabaseService {
 
@@ -30,23 +33,73 @@ export class SupabaseService {
 
   authState(): Observable<User | null> {
     return new Observable((subscriber: Subscriber<User | null>) => {
-      subscriber.next(this.supabase.auth.user());
+      this.supabase.auth.getSession().then(session =>
+        subscriber.next(session.data.session?.user)
+      );
       const auth = this.supabase.auth.onAuthStateChange(async ({ }, session) => {
         subscriber.next(session?.user);
       });
-      return auth.data?.unsubscribe;
+      return auth.data.subscription.unsubscribe;
     });
   }
 
-  subWhere(col: string, field: string, value: string): Observable<any> {
-    return new Observable((subscriber: Subscriber<any>) => {
-      this.supabase.from(col).select('*').eq(field, value).single().then((payload: any) => {
+  subWhere<T>(table: string, field: string, value: string): Observable<T> {
+    return new Observable((subscriber: Subscriber<T>) => {
+      this.supabase.from(table).select('*').eq(field, value).single().then(payload => {
         subscriber.next(payload.data);
       });
-      return this.supabase.from(`${col}:${field}=eq.${value}`).on('*', (payload: any) => {
-        subscriber.next(payload.new);
-      }).subscribe();
+      const filter = `${field}=eq.${value}`;
+      return this.supabase.channel('public:' + `${table}:${filter}`).on('postgres_changes', {
+        event: '*', schema: 'public', table, filter
+      }, (payload: { new: T | undefined; }) => {
+        subscriber.next(payload.new)
+      })
     });
   }
 
+  /*async upload(folder: string, path: string, file: File | null) {
+    const url = `${environment.supabase_url}/storage/v1/object/${folder}/${path}`;
+
+    // headers
+    const authBearer = this.supabase.auth.session()?.access_token ?? environment.supabase_key;
+    const headers: any = {};
+    headers['apikey'] = environment.supabase_key;
+    headers['Authorization'] = `Bearer ${authBearer}`;
+
+    // progress, error
+    let pct: number | null = null;
+    let error: Error | null = null;
+
+    const req = new XMLHttpRequest();
+
+    await new Promise<void>((res: any, rej: any) => {
+      req.upload.onprogress = ev => {
+        pct = (ev.loaded / ev.total) * 100;
+        console.log(`Upload progress = ${ev.loaded} / ${ev.total} = ${pct}`);
+      };
+
+      // transfer complete
+      req.upload.onload = () => res(null);
+
+      // You might want to also listen to onabort, onerror, ontimeout
+      req.open("POST", url);
+      for (const [key, value] of Object.entries<any>(headers)) {
+        req.setRequestHeader(key, value);
+      }
+      req.send(file);
+      req.onerror = error => rej(error);
+    }).catch(e => error = e);
+
+    return { error, progress: pct };
+  }*/
 }
+
+/*
+  private _getAuthHeaders(): GenericObject {
+    const headers: GenericObject = { ...this.headers }
+    const authBearer = this.auth.session()?.access_token ?? this.supabaseKey
+    headers['apikey'] = this.supabaseKey
+    headers['Authorization'] = headers['Authorization'] || `Bearer ${authBearer}`
+    return headers
+  }
+  */

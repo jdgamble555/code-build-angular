@@ -1,8 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterModule } from '@angular/router';
 import { CoreModule } from '@core/core.module';
-import { AuthService } from 'src/app/platform/supabase/auth.service';
-import { DbModule } from 'src/app/platform/supabase/db.module';
+import { AuthService } from '@db/auth/auth.service';
+import { DbModule } from '@db/db.module';
 import { MarkdownModule, MarkdownService } from 'ngx-markdown';
 import { HeaderComponent } from './header.component';
 

@@ -1,7 +1,8 @@
 import { Component, EventEmitter, Output, Input } from '@angular/core';
+import { Router } from '@angular/router';
 import { UserRec } from '@auth/user.model';
-import { AuthService } from '@db/auth.service';
-import { ReadService } from '@db/read.service';
+import { PostDbService } from '@db/post/post-db.service';
+import { UserDbService } from '@db/user/user-db.service';
 import { environment } from '@env/environment';
 import { NavService } from '@nav/nav.service';
 import { Post } from '@post/post.model';
@@ -23,16 +24,17 @@ export class HeaderComponent {
   env: any;
 
   isActiveSearch = false;
-  terms!: Observable<Post[] | null>;
+  terms!: Post[] | null;
   user$: Observable<UserRec | null>;
 
   constructor(
-    private auth: AuthService,
     public ns: NavService,
     public dm: DarkModeService,
-    private read: ReadService
+    private ps: PostDbService,
+    private us: UserDbService,
+    private router: Router
   ) {
-    this.user$ = this.read.userRec;
+    this.user$ = this.ns.isBrowser ? this.us.user$ : of(null);
     this.dm.setTheme();
     this.env = environment;
   }
@@ -41,13 +43,33 @@ export class HeaderComponent {
     this.dm.toggleTheme();
   }
 
+  bookmarksPage() {
+    this.ns.type = 'bookmarks';
+    this.ns.dashboardIndex = 0;
+    this.router.navigate(['/dashboard']);
+  }
+
+  userPostsPage() {
+    this.ns.type = 'user';
+    this.ns.dashboardIndex = 1;
+    this.router.navigate(['/dashboard']);
+  }
+
   logout() {
-    this.auth.logout();
+    this.us.logout();
     this.ns.home();
   }
 
-  search(event: Event) {
+  async search(event: Event): Promise<void> {
     const term = (<HTMLInputElement>event.target).value;
-    this.terms = term ? this.read.searchPost(term) : of(null);
+    let data = null;
+    let error = null;
+    if (term) {
+      ({ data, error } = await this.ps.searchPost(term));
+      if (error) {
+        console.error(error);
+      }
+    }
+    this.terms = data ? data : null;
   }
 }

@@ -2,6 +2,8 @@ import { DOCUMENT } from '@angular/common';
 import { Inject, Injectable } from '@angular/core';
 import { Title, Meta } from '@angular/platform-browser';
 import { Router } from '@angular/router';
+import { environment } from '@env/environment';
+import { Post } from '@post/post.model';
 
 @Injectable({
   providedIn: 'root'
@@ -46,7 +48,10 @@ export class SeoService {
       { name: 'twitter:site', content: '@' + domain },
       { name: 'twitter:image:alt', content: title },
       { name: 'twitter:image', content: image },
-      { name: 'twitter:description', content: description }
+      { name: 'twitter:description', content: description },
+
+      // regular meta description
+      { name: 'description', content: description }
     ]);
 
     if (imageW) {
@@ -58,6 +63,7 @@ export class SeoService {
     if (locale) {
       this.setTags([{ name: 'og:locale', content: locale }]);
     }
+
   }
   private setTags(tags: any): void {
     tags.forEach((tag: any) => {
@@ -70,14 +76,21 @@ export class SeoService {
       }
     });
   }
-  setSchema({
+
+  setBlogSchema({
     title = '',
     author = '',
     description = '',
     image = '',
     keywords = '',
     createdAt = '',
-    updatedAt = ''
+    updatedAt = '',
+    time = '',
+    id = '',
+    url = '',
+    authorURL = '',
+    username = '',
+    authorId = ''
   }): void {
 
     const s = {
@@ -86,19 +99,65 @@ export class SeoService {
       "headline": title,
       "author": {
         "@type": "Person",
-        "name": author
+        "name": author,
+        "url": authorURL,
+        "alternateName": username,
+        "identifier": authorId
       },
       "datePublished": createdAt,
       "dateModified": !!updatedAt ? updatedAt : createdAt,
       "description": description,
       "image": image,
-      "keywords": keywords
+      "keywords": keywords,
+      "timeRequired": time + 'M',
+      "identifier": id,
+      "url": url
     };
 
-    const element: HTMLScriptElement = this.doc.createElement('script') as HTMLScriptElement;
-    element.type = "application/ld+json";
-    element.innerHTML = JSON.stringify(s);
-    const head = this.doc.getElementsByTagName('head')[0];
-    head.appendChild(element);
+    this.generateSchema(s);
   }
+
+  setSummarySchema(posts: Post[]): void {
+
+    // generate summary schema
+    const urls: string[] = [];
+    for (const x of posts) {
+      urls.push(`${environment.site}/post/${x.id}/${x.slug}`);
+    }
+
+    const list = [];
+
+    for (let [i, url] of urls.entries()) {
+      list.push({
+        "@type": "ListItem",
+        "position": i + 1,
+        "url": url
+      });
+    }
+
+    const s = {
+      "@context": "https://schema.org/",
+      "@type": "ItemList",
+      "itemListElement": list
+    };
+
+    this.generateSchema(s);
+  }
+
+  generateSchema(s: any) {
+
+    // Generate or Update existing json-ld script tag
+    const type = 'application/ld+json';
+    const script = this.doc.querySelector(`script[type="${type}"]`) as HTMLScriptElement;
+    if (script) {
+      script.innerHTML = JSON.stringify(s);
+    } else {
+      const element = this.doc.createElement('script') as HTMLScriptElement;
+      element.type = type;
+      element.innerHTML = JSON.stringify(s);
+      const head = this.doc.getElementsByTagName('head')[0];
+      head.appendChild(element);
+    }
+  }
+
 }

@@ -1,17 +1,19 @@
-import { Component, ViewChild } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Component, OnDestroy, ViewChild } from '@angular/core';
+import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatChipList } from '@angular/material/chips';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Observable } from 'rxjs';
-import { map, tap } from 'rxjs/operators';
+import { ImageUploadService } from '@db/image/image-upload.service';
 import { TagService } from '@shared/tag/tag.service';
 import { SnackbarService } from '@shared/snack-bar/snack-bar.service';
 import { DialogService } from '@shared/confirm-dialog/dialog.service';
 import { Post } from '@post/post.model';
 import { NavService } from '@nav/nav.service';
-import { ImageUploadService } from '@db/image-upload.service';
-import { AuthService } from '@db/auth.service';
-import { DbService } from '@db/db.service';
+import { PostDbService } from '@db/post/post-db.service';
+import { PostEditService } from '@db/post/post-edit.service';
+import { blobToData, blobToFile, previewImage } from '@shared/image-tools/image-tools';
+import { post_form_messages, post_form_validation_messages } from './post-form.messages';
+import { Subscription } from 'rxjs';
+import { UserDbService } from '@db/user/user-db.service';
 
 
 
@@ -20,30 +22,14 @@ import { DbService } from '@db/db.service';
   templateUrl: './post-form.component.html',
   styleUrls: ['./post-form.component.scss']
 })
-export class PostFormComponent {
+export class PostFormComponent implements OnDestroy {
 
   @ViewChild('chipList') chipList!: MatChipList;
 
-  validationMessages: any = {
-    title: {
-      required: 'Title is required.',
-      minlength: 'Title must be at least 2 characters long.'
-    },
-    content: {
-      required: 'Content is required.',
-      minlength: 'Content must be at least 3 characters long.'
-    },
-    tags: {
-      required: 'At least one tag is required.',
-      min: 'You cannot have more than 5 tags.'
-    }
-  };
+  validationMessages = post_form_validation_messages;
+  messages = post_form_messages;
 
-  messages = {
-    published: 'Your post is now published!',
-    deleted: 'Your post is now deleted!',
-    deleteConfirm: 'Are you sure you want to delete your post?'
-  };
+  confirmSub!: Subscription;
 
   postForm: FormGroup;
   isNewPage = true;
@@ -61,7 +47,7 @@ export class PostFormComponent {
 
   postSaving = false;
   title!: string;
-  patchPost!: Observable<Post>;
+  patchPost!: any;
   state!: string;
 
   constructor(
@@ -70,8 +56,9 @@ export class PostFormComponent {
     private route: ActivatedRoute,
     public ts: TagService,
     public is: ImageUploadService,
-    private auth: AuthService,
-    private db: DbService,
+    private ps: PostDbService,
+    private us: UserDbService,
+    private pes: PostEditService,
     public sb: SnackbarService,
     private ns: NavService,
     private dialog: DialogService
@@ -84,9 +71,20 @@ export class PostFormComponent {
 
     const r = this.router.url;
 
-    // edit post
     if (r.startsWith('/edit')) {
       this.isNewPage = false;
+    }
+
+    // add title
+    this.title = (this.isNewPage ? 'New' : 'Edit') + ' Post';
+
+    // nav bar
+    this.ns.addTitle(this.title);
+    this.ns.closeLeftNav();
+
+    // edit post
+    if (!this.isNewPage) {
+
       this.id = this.route.snapshot.paramMap.get('id') as string;
 
       if (!this.id) {
@@ -95,9 +93,15 @@ export class PostFormComponent {
         return;
       }
 
-      this.patchPost = this.db.getPostData(this.id).pipe(
-        tap((post: Post) => {
-          if (post) {
+      this.patchPost = this.ps.getPostData(this.id)
+        .then(({ error, data }: { data: Post | null, error: any }) => {
+
+          if (error) {
+            console.error(error);
+          }
+          if (data) {
+
+            const post = data;
 
             // add cover image
             this.image = post.image || null;
@@ -110,23 +114,20 @@ export class PostFormComponent {
             // add tags
             this.ts.addTags(post.tags, this.tagsField);
 
+            const { tags, ...rest } = post;
+            return rest;
+
           } else {
             // error, id does not exist in db
             this.router.navigate(['home']);
+            return;
           }
-        }),
-        map((r: Post) => {
-          const { tags, ...rest } = r;
-          return rest;
-        }));
+        });
     }
+  }
 
-    // add title
-    this.title = (this.isNewPage ? 'New' : 'Edit') + ' Post';
-
-    // nav bar
-    this.ns.addTitle(this.title);
-    this.ns.closeLeftNav();
+  get contentControl() {
+    return this.postForm.get('content') as FormControl;
   }
 
   // get tags field as form array
@@ -142,9 +143,11 @@ export class PostFormComponent {
   // get error
   getError(field: string): any {
     const errors = this.validationMessages[field];
-    for (const e of Object.keys(errors)) {
-      if (this.postForm.get(field)?.hasError(e)) {
-        return errors[e];
+    if (errors) {
+      for (const e of Object.keys(errors)) {
+        if (this.postForm.get(field)?.hasError(e)) {
+          return errors[e];
+        }
       }
     }
   }
@@ -163,17 +166,20 @@ export class PostFormComponent {
   async addCoverImage(event: Event): Promise<void> {
 
     // get blob for upload
-    const p = await this.is.previewImage(event);
+    const p = await previewImage(this.ns.doc, event);
 
     if (p && p.blob) {
       // get data to preview image
-      this.imageView = await this.is.blobToData(p.blob);
-      this.imageFile = this.is.blobToFile(p.blob, p.filename);
+      this.imageView = await blobToData(p.blob);
+      this.imageFile = blobToFile(p.blob, p.filename);
       this.postForm.updateValueAndValidity();
 
       // delete tmp cover image
       if (this.imageTmp) {
-        await this.is.deleteImage(this.imageTmp);
+        const { error } = await this.is.deleteImage(this.imageTmp);
+        if (error) {
+          console.error(error);
+        }
         this.imageTmp = null;
       }
     }
@@ -190,28 +196,37 @@ export class PostFormComponent {
       const file = target.files[0];
 
       // get user id
-      const uid = (await this.auth.getUser())?.uid;
-
+      let { data: user, error } = await this.us.getUser();
+      if (error) {
+        console.error(error);
+      }
+      const uid = user?.uid;
+      let image = null;
       // upload image with spinner
       this.imageLoading = true;
-      const image = await this.is.uploadImage(`post_images/${uid}`, file);
+      ({ data: image, error } = await this.is.uploadImage(`post_images/${uid}`, file));
+      if (error) {
+        console.error(error);
+      }
       this.imageLoading = false;
 
-      // save url to db
-      await this.db.addPostImage(this.id, image);
+      if (image) {
+        // save url to db
+        await this.pes.addPostImage(this.id, image);
 
-      // add url to imageUploads array
-      this.imageUploads.push(image);
+        // add url to imageUploads array
+        this.imageUploads.push(image);
 
-      // show msg
-      this.sb.showMsg('Image Added!', 500);
+        // show msg
+        this.sb.showMsg('Image Added!', 500);
+      }
     }
   }
 
   async deletePostImage(val: string): Promise<void> {
 
     // delete image in db
-    await this.db.deletePostImage(this.id, val);
+    await this.pes.deletePostImage(this.id, val);
 
     // delete image file
     await this.is.deleteImage(val);
@@ -234,7 +249,11 @@ export class PostFormComponent {
     const formValue = this.postForm.value;
     const slug = this.ts.slugify(formValue.title);
 
-    const uid = (await this.auth.getUser())?.uid;
+    let { data: user, error: e } = await this.us.getUser();
+    if (e) {
+      console.error(e);
+    }
+    const uid = user?.uid;
 
     let data: Post = {
       authorId: uid,
@@ -248,28 +267,30 @@ export class PostFormComponent {
 
     // if new image, upload it
     if (this.imageFile) {
-      try {
-        const image = await this.is.uploadImage(`cover_images/${uid}`, this.imageFile);
-        data = {
-          ...data,
-          imageTmp: image
-        };
-        this.imageFile = undefined;
-        this.imageTmp = image;
-      } catch (e: any) {
-        console.error(e);
-        error = true;
-      }
+
+        const { data: image, error: e1 } = await this.is.uploadImage(`cover_images/${uid}`, this.imageFile);
+        if (e1) {
+          console.error(e1);
+          error = true;
+        }
+        if (image) {
+          data = {
+            ...data,
+            imageTmp: image
+          };
+          this.imageFile = undefined;
+          this.imageTmp = image;
+        }
     }
 
     // if delete image or change image
     if (publish && this.image !== this.imageView) {
+
       // delete old cover image file
       if (this.image) {
-        try {
-          await this.is.deleteImage(this.image);
-        } catch (e: any) {
-          console.error(e);
+        const { error: e2 } = await this.is.deleteImage(this.image);
+        if (e2) {
+          console.error(e2);
           error = true;
         }
       }
@@ -284,10 +305,10 @@ export class PostFormComponent {
     }
 
     // add post to db
-    try {
-      this.id = await this.db.setPost(data, this.id, publish);
-    } catch (e: any) {
-      console.error(e);
+    const { data: _data, error: e3 } = await this.pes.setPost(data, this.id, publish);
+    this.id = _data?.id;
+    if (e3) {
+      console.error(e3);
       error = true;
     }
 
@@ -299,11 +320,9 @@ export class PostFormComponent {
 
   async deletePost(): Promise<void> {
 
-    const uid = (await this.auth.getUser())?.uid as string;
-
     const confirm = this.dialog.confirmDialog(this.messages.deleteConfirm);
     // delete when confirmed
-    confirm.afterClosed()
+    this.confirmSub = confirm.afterClosed()
       .subscribe((confirmed: any) => {
 
         // delete files
@@ -322,7 +341,7 @@ export class PostFormComponent {
             }
           }
           // delete post
-          this.db.deletePost(this.id, uid);
+          this.pes.deletePost(this.id);
           this.sb.showMsg(this.messages.deleted)
           this.ns.home();
         }
@@ -331,5 +350,9 @@ export class PostFormComponent {
 
   updateState(e: any): void {
     this.state = e;
+  }
+
+  ngOnDestroy(): void {
+    if (this.confirmSub) this.confirmSub.unsubscribe();
   }
 }

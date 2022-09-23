@@ -1,6 +1,6 @@
 <form [formGroup]="postForm" appAutoSave [getData]="patchPost" [setData]="onSubmit.bind(this)"
   (stateChange)="updateState($event)">
-  <mat-card class="ng-card">
+  <mat-card class="ng-card centered ng-edit mat-elevation-z0 ng-card-outline">
     <mat-card-title>{{ title }}</mat-card-title>
     <br />
     <mat-card-content>
@@ -21,6 +21,47 @@
           {{ getError('title') }}
         </mat-error>
       </mat-form-field>
+      <mat-tab-group animationDuration="0ms">
+        <mat-tab label="Content">
+          <br />
+          <button mat-button color="accent"><a href="https://www.markdownguide.org/basic-syntax/" target="_new">Markdown
+              Guide</a></button>
+          <app-markdown-editor [form]="postForm" controlName="content"></app-markdown-editor>
+          <!--<mat-form-field appearance="outline">
+            <textarea matInput rows="10" formControlName="content" placeholder="Content" required></textarea>
+            <mat-error *ngIf="getField('content')?.invalid">
+              {{ getError('content') }}
+            </mat-error>
+          </mat-form-field>-->
+        </mat-tab>
+        <mat-tab label="Preview">
+          <markdown [data]="postForm.value.content"></markdown>
+        </mat-tab>
+        <mat-tab label="Images" [disabled]="!this.id || this.state !== 'synced'">
+          <button type="button" class="ng-button-space" mat-raised-button (click)="inlineInput.click()">Upload
+            Image</button>
+          <p></p>
+          <input hidden type="file" accept="image/*" #inlineInput (change)="addPostImage($event)" multiple>
+          <mat-spinner *ngIf="imageLoading"></mat-spinner>
+          <mat-form-field *ngFor="let url of imageUploads" appearance="fill">
+            <input matInput value="![Alt Text]({{ url }})">
+            <button type="button" matSuffix mat-icon-button cdkCopyToClipboard="![Alt Text]({{ url }})"
+              (click)="sb.showMsg('Copied!', 500)">
+              <mat-icon>content_copy</mat-icon>
+            </button>
+            <button type="button" matSuffix mat-icon-button [matMenuTriggerFor]="menu">
+              <mat-icon>preview</mat-icon>
+            </button>
+            <mat-menu class="img-preview" #menu="matMenu" xPosition="before">
+              <img [src]="url" width="200px">
+            </mat-menu>
+            <button type="button" matSuffix mat-icon-button (click)="deletePostImage(url)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </mat-form-field>
+        </mat-tab>
+      </mat-tab-group>
+      <br />
       <mat-form-field class="chip-list">
         <mat-chip-list #chipList aria-label="Tag selection">
           <mat-chip *ngFor="let tag of tagsField.controls; let i = index" [selectable]="ts.selectable"
@@ -36,49 +77,6 @@
           {{ getError('tags') }}
         </mat-error>
       </mat-form-field>
-      <mat-tab-group animationDuration="0ms">
-        <mat-tab label="Content">
-          <br />
-          <button mat-button color="accent"><a href="https://www.markdownguide.org/basic-syntax/" target="_new">Markdown
-              Guide</a></button>
-          <mat-form-field appearance="outline">
-            <textarea matInput rows="10" formControlName="content" placeholder="Content" required></textarea>
-            <mat-error *ngIf="getField('content')?.invalid">
-              {{ getError('content') }}
-            </mat-error>
-          </mat-form-field>
-        </mat-tab>
-        <mat-tab label="Preview">
-          <mat-card>
-            <markdown [data]="postForm.value.content"></markdown>
-          </mat-card>
-        </mat-tab>
-        <mat-tab label="Images" [disabled]="!this.id || this.state !== 'synced'">
-          <mat-card>
-            <button type="button" class="ng-button-space" mat-raised-button (click)="inlineInput.click()">Upload
-              Image</button>
-            <p></p>
-            <input hidden type="file" accept="image/*" #inlineInput (change)="addPostImage($event)" multiple>
-            <mat-spinner *ngIf="imageLoading"></mat-spinner>
-            <mat-form-field *ngFor="let url of imageUploads" appearance="fill">
-              <input matInput value="![Alt Text]({{ url }})">
-              <button type="button" matSuffix mat-icon-button cdkCopyToClipboard="![Alt Text]({{ url }})"
-                (click)="sb.showMsg('Copied!', 500)">
-                <mat-icon>content_copy</mat-icon>
-              </button>
-              <button type="button" matSuffix mat-icon-button [matMenuTriggerFor]="menu">
-                <mat-icon>preview</mat-icon>
-              </button>
-              <mat-menu class="img-preview" #menu="matMenu" xPosition="before">
-                <img [src]="url" width="200px">
-              </mat-menu>
-              <button type="button" matSuffix mat-icon-button (click)="deletePostImage(url)">
-                <mat-icon>delete</mat-icon>
-              </button>
-            </mat-form-field>
-          </mat-card>
-        </mat-tab>
-      </mat-tab-group>
     </mat-card-content>
     <mat-card-actions>
       <div class="flex-container">

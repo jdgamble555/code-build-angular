@@ -1,7 +1,9 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, AbstractControl } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
-import { AuthService } from '@db/auth.service';
+import { auth_messages } from '@auth/auth.messages';
+import { AuthEditService } from '@db/auth/auth-edit.service';
+import { AuthService } from '@db/auth/auth.service';
 import { SnackbarService } from '@shared/snack-bar/snack-bar.service';
 
 @Component({
@@ -11,17 +13,16 @@ import { SnackbarService } from '@shared/snack-bar/snack-bar.service';
 })
 export class ReLoginComponent implements OnInit {
 
-  //reAuth: boolean = null;
-
-  providers: any = '';
-
+  messages = auth_messages;
   userForm!: FormGroup;
+  providers: any = '';
 
   constructor(
     private fb: FormBuilder,
     public auth: AuthService,
     private d: MatDialogRef<ReLoginComponent>,
     private sb: SnackbarService,
+    private aes: AuthEditService,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
     this.providers = data.providers;
@@ -32,12 +33,11 @@ export class ReLoginComponent implements OnInit {
   }
 
   async providerLogin(provider: string) {
-    const { message, error } = await this.auth.oAuthReLogin(provider);
-    if (message) {
-      this.sb.showMsg(message);
-    }
+    const { error } = await this.aes.oAuthReLogin(provider);
     if (error) {
       this.sb.showError(error);
+    } else {
+      this.sb.showMsg(this.messages.loginSuccess);
     }
     this.d.close();
   }

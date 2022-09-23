@@ -19,13 +19,19 @@ export interface UserRec {
   bookmarksCount?: number;
   createdAt?: Date;
   updatedAt?: Date;
+  emailVerified?: boolean;
+  providers?: string[];
 };
 
-export interface UserAuth {
-  uid: string;
-  email: string;
-  displayName?: string | null;
-  phoneNumber?: string | null;
-  photoURL?: string | null;
-  emailVerified: boolean | null;
+export interface AuthAction {
+  reAuth?: boolean | null;
+  isNew?: boolean | null;
+  isConfirmed?: boolean | null;
+  error: any;
+}
+
+export interface UserRequest {
+  error: any,
+  data?: UserRec | null;
+  exists?: boolean | null;
 }

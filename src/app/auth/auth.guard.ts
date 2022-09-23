@@ -3,19 +3,23 @@ import {
   CanActivate,
   Router
 } from '@angular/router';
-import { AuthService } from '@db/auth.service';
-import { DbService } from '@db/db.service';
-import { ReadService } from '@db/read.service';
-import { firstValueFrom } from 'rxjs';
+import { UserDbService } from '@db/user/user-db.service';
 import { Role } from './user.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class RoleGuard implements CanActivate {
-  constructor(private read: ReadService, private router: Router) { }
+  // must be an admin
+  constructor(
+    private us: UserDbService,
+    private router: Router
+  ) { }
   async canActivate(): Promise<boolean> {
-    const user = await this.read.getUser();
+    const { error, data: user } = await this.us.getUser();
+    if (error) {
+      console.error(error);
+    }
     const isAdmin = !!(user && user.role === Role.Admin);
     if (!isAdmin) {
       this.router.navigate(['/home']);
@@ -27,9 +31,16 @@ export class RoleGuard implements CanActivate {
   providedIn: 'root'
 })
 export class LoginGuard implements CanActivate {
-  constructor(private auth: AuthService, private router: Router) { }
+  // must be logged in
+  constructor(
+    private us: UserDbService,
+    private router: Router
+  ) { }
   async canActivate(): Promise<boolean> {
-    const user = await this.auth.getUser();
+    const { error, data: user } = await this.us.getUser();
+    if (error) {
+      console.error(error);
+    }
     const isLoggedIn = !!user;
     if (!isLoggedIn) {
       this.router.navigate(['/login']);
@@ -42,9 +53,16 @@ export class LoginGuard implements CanActivate {
   providedIn: 'root'
 })
 export class NotLoginGuard implements CanActivate {
-  constructor(private auth: AuthService, private router: Router) { }
+  // cannot access if logged in
+  constructor(
+    private us: UserDbService,
+    private router: Router
+  ) { }
   async canActivate(): Promise<boolean> {
-    const user = await this.auth.getUser();
+    const { error, data: user } = await this.us.getUser();
+    if (error) {
+      console.error(error);
+    }
     const isLoggedIn = !!user;
     if (isLoggedIn) {
       this.router.navigate(['/settings']);
@@ -56,40 +74,59 @@ export class NotLoginGuard implements CanActivate {
 @Injectable({
   providedIn: 'root'
 })
-export class EmailGuard implements CanActivate {
-  constructor(private auth: AuthService, private router: Router) { }
+export class NotUsernameGuard implements CanActivate {
+  constructor(
+    private us: UserDbService,
+    private router: Router
+  ) { }
   async canActivate(): Promise<boolean> {
-    // make sure logged in first...
-    const user = await this.auth.getUser();
-    const emailVerified = !!(user && user?.emailVerified);
-    if (!emailVerified) {
-      this.router.navigate(['/verify']);
+
+    // only allow if logged in and no username
+    const { error, data } = await this.us.getUser();
+    if (error) {
+      console.error(error);
     }
-    return emailVerified;
+    if (data && data.uid) {
+      if (!data.username) {
+        return true;
+      }
+
+      // username exists, go to dashboard
+      this.router.navigate(['/dashboard']);
+    } else {
+
+      // login page
+      this.router.navigate(['/login']);
+    }
+    return false;
   }
 }
 
 @Injectable({
   providedIn: 'root'
 })
-export class UsernameGuard implements CanActivate {
+export class UsernameEmailVerifiedGuard implements CanActivate {
+  // must be logged in, email verified, and has username
   constructor(
-    private auth: AuthService,
-    private router: Router,
-    private db: DbService
+    private us: UserDbService,
+    private router: Router
   ) { }
   async canActivate(): Promise<boolean> {
-    // make sure logged in first...
-    const user = await this.auth.getUser();
-    if (user) {
-      const hasUsername = await firstValueFrom(this.db.hasUsername(user?.uid));
-      if (!hasUsername) {
+    const { error, data } = await this.us.getUser();
+    if (error) {
+      console.error(error);
+    }
+    if (data) {
+      if (!data.emailVerified) {
+        this.router.navigate(['/verify']);
+      } else if (!data.username) {
         this.router.navigate(['/username']);
+      } else {
+        return true;
       }
-      return hasUsername;
     } else {
       this.router.navigate(['/login']);
-      return false;
     }
+    return false;
   }
 }

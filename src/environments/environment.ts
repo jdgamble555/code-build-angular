@@ -10,10 +10,14 @@ export const environment = {
   title: 'Code.Build',
   domain: 'code.build',
   description: 'A blog about Databases, Searching, Indexing, Programming, Security, Hosting, and Other Website Technologies!',
-  short_desc: 'An easier way to code',
+  short_desc: 'An easier way to code your web applications !',
   site: "https://code.build",
   storage: 'code-build',
-  author: 'Jonathan Gamble'
+  author: 'Jonathan Gamble',
+  icon: 'code',
+  icon_class: 'ng-dark-blue',
+  icon_dark_class: 'ng-blue',
+  back: 'ng-black-back'
 };
 
 /*

@@ -1,9 +1,9 @@
-import { Component } from '@angular/core';
-import { Router } from '@angular/router';
-import { UserAuth, UserRec } from '@auth/user.model';
-import { AuthService } from '@db/auth.service';
-import { ReadService } from '@db/read.service';
+import { Component, ViewChild } from '@angular/core';
+import { MatTabGroup } from '@angular/material/tabs';
+import { UserRec } from '@auth/user.model';
+import { UserDbService } from '@db/user/user-db.service';
 import { NavService } from '@nav/nav.service';
+import { Observable } from 'rxjs';
 
 
 @Component({
@@ -13,59 +13,26 @@ import { NavService } from '@nav/nav.service';
 })
 export class DashboardComponent {
 
-  displayName!: string;
-
-  tabName = 'posts';
-
-  pCount: number | undefined = 0;
-  dCount: number | undefined = 0;
-  bCount: number | undefined = 0;
-
-  user!: UserRec | null;
+  user$: Observable<UserRec | null>;
 
   constructor(
-    public read: ReadService,
-    private auth: AuthService,
-    private router: Router,
-    private ns: NavService
+    public us: UserDbService,
+    public ns: NavService
   ) {
+
+    this.ns.type = 'bookmarks';
+
     // see if logged in
-    this.auth.getUser()
-      .then((user: UserAuth | null) => {
-        if (user) {
-          // see if user is in db
-          this.read.getUser()
-            .then((userRec: UserRec | null) => {
-              if (userRec) {
-                if (userRec.username) {
-                  // update count views
-                  this.user = userRec;
-                  this.pCount = userRec.postsCount;
-                  this.bCount = userRec.bookmarksCount;
-                  this.dCount = userRec.draftsCount;
-                  if (userRec.displayName) {
-                    this.displayName = userRec.displayName;
-                  }
-                } else {
-                  this.router.navigate(['/username']);
-                }
-              }
-            });
-        } else {
-          this.router.navigate(['/login']);
-        }
-        this.ns.closeLeftNav();
-        this.ns.addTitle('Dashboard');
-      });
+    this.user$ = this.us.user$;
   }
 
   tabChange(index: number) {
-    if (index === 1) {
-      this.tabName = 'drafts';
-    } else if (index === 2) {
-      this.tabName = 'bookmarks';
+    if (index === 0) {
+      this.ns.type = 'bookmarks';
+    } else if (index === 1) {
+      this.ns.type = 'user';
     } else {
-      this.tabName = 'posts';
+      this.ns.type = 'drafts';
     }
   }
 }

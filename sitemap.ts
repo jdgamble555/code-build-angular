@@ -1,4 +1,5 @@
 import { Post } from '@post/post.model';
+//import { SitemapStream } from 'sitemap';
 
 
 export const sitemap = async ({ }, res: any) => {

@@ -1,13 +1,11 @@
 import { DOCUMENT, isPlatformBrowser, isPlatformServer } from '@angular/common';
 import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
 import { Router } from '@angular/router';
-import { firstValueFrom, isObservable, Observable, tap } from 'rxjs';
 import { environment } from '@env/environment';
-import { StateService } from '@shared/state/state.service';
+import { PostType } from '@post/post.model';
 import { SeoService } from '@shared/seo/seo.service';
 
 
-declare const Zone: any;
 interface Link {
   name: string;
   location: string;
@@ -19,17 +17,19 @@ interface Link {
 export class NavService {
 
   simple = false;
-
   private title: string;
+  dashboardIndex = 0;
+
+  directories: Link[];
+  type: PostType = 'new';
+
   isBrowser: Boolean;
   isServer: Boolean;
   doc: Document;
-  directories: Link[];
 
   constructor(
     @Inject(PLATFORM_ID) platformId: Object,
     @Inject(DOCUMENT) private document: Document,
-    private state: StateService,
     private router: Router,
     private seo: SeoService
   ) {
@@ -38,12 +38,6 @@ export class NavService {
     this.isServer = isPlatformServer(platformId);
     this.doc = this.document;
     this.directories = [];
-  }
-
-  load<T>(key: string, obs: Observable<T>): Promise<T> {
-    return this.isServer
-      ? this.waitFor(obs.pipe(tap((data: T) => this.state.saveState(key, data))))
-      : this.state.hasState(key) ? Promise.resolve(this.state.getState(key)) : firstValueFrom(obs);
   }
 
   // add title
@@ -67,7 +61,6 @@ export class NavService {
 
   // add bread crumb
   addBC(name: string, location?: string) {
-
     if (!location) {
       location = '';
     }
@@ -79,30 +72,24 @@ export class NavService {
   }
 
   openLeftNav(): void {
-    this.simple = false;
+    // wait for view to render
+    if (this.isBrowser) {
+      setTimeout(() => {
+        this.simple = false;
+      }, 0);
+    }
   }
+  
   closeLeftNav(): void {
-    this.simple = true;
+    // wait for view to render
+    if (this.isBrowser) {
+      setTimeout(() => {
+        this.simple = true;
+      }, 0);
+    }
   }
 
   home(): void {
     this.router.navigate(['/']);
-  }
-
-  async waitFor<T>(prom: Promise<T> | Observable<T>): Promise<T> {
-    if (isObservable(prom)) {
-      prom = firstValueFrom(prom);
-    }
-    const macroTask = Zone.current
-      .scheduleMacroTask(
-        `WAITFOR-${Math.random()}`,
-        () => { },
-        {},
-        () => { }
-      );
-    return prom.then((p: T) => {
-      macroTask.invoke();
-      return p;
-    });
   }
 }

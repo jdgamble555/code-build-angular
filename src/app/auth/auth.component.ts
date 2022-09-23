@@ -1,38 +1,40 @@
-
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import {
   FormGroup,
   FormBuilder,
   Validators,
-  AbstractControl,
-  ValidatorFn
+  AbstractControl
 } from '@angular/forms';
-import { ActivatedRoute, Router, UrlSegment } from '@angular/router';
-import { AuthAction, AuthService } from '@db/auth.service';
-import { DbService } from '@db/db.service';
-import { ReadService } from '@db/read.service';
+import { ActivatedRoute, Router } from '@angular/router';
+import { AuthService } from '@db/auth/auth.service';
 import { NavService } from '@nav/nav.service';
 import { matchValidator, MyErrorStateMatcher } from '@shared/form-validators';
 import { SnackbarService } from '@shared/snack-bar/snack-bar.service';
-import { of, Subscription } from 'rxjs';
-import { debounceTime, map, take } from 'rxjs/operators';
-import { UserRec } from './user.model';
+import { auth_messages, auth_validation_messages } from './auth.messages';
+import { AuthAction } from './user.model';
 
+enum AuthType {
+  login = 'login',
+  register = 'register',
+  reset = 'reset',
+  verify = 'verify',
+  passwordless = 'passwordless'
+};
 
 @Component({
   selector: 'app-auth',
   templateUrl: './auth.component.html',
   styleUrls: ['./auth.component.scss']
 })
-export class AuthComponent implements OnInit, OnDestroy {
+export class AuthComponent implements OnInit {
 
   matcher = new MyErrorStateMatcher();
+  validationMessages: any = auth_validation_messages;
+  messages = auth_messages;
 
   userForm!: FormGroup;
 
-  routeSub: Subscription;
-
-  type!: 'login' | 'register' | 'reset' | 'verify' | 'passwordless' | 'username';
+  type!: AuthType;
   loading = false;
 
   passhide = true;
@@ -42,34 +44,10 @@ export class AuthComponent implements OnInit, OnDestroy {
   isRegister = false;
   isReset = false;
   isVerify = false;
-  isCreateUser = false;
   isPasswordless = false;
   isReturnLogin = false;
 
   title!: string;
-
-  validationMessages: any = {
-    email: {
-      required: 'Email is required.',
-      email: 'Email must be a valid email address.'
-    },
-    password: {
-      required: 'Password is required.',
-      pattern: 'Password must include at least one letter and one number.',
-      minlength: 'Password must be at least 6 characters long.',
-      maxlength: 'Password cannot be more than 25 characters long.'
-    },
-    confirmPassword: {
-      required: 'Confirm password is required.',
-      matching: 'Passwords must match.'
-    },
-    username: {
-      required: 'A valid username is required.',
-      minlength: 'Username must be at least 3 characters long.',
-      maxlength: 'Username cannot be more than 25 characters long.',
-      unavailable: 'That username is taken.'
-    }
-  };
 
   constructor(
     private auth: AuthService,
@@ -77,16 +55,11 @@ export class AuthComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private router: Router,
     private nav: NavService,
-    private sb: SnackbarService,
-    private db: DbService,
-    private read: ReadService
+    private sb: SnackbarService
   ) {
 
     // get type from route
-    this.routeSub = this.route.url
-      .subscribe((r: UrlSegment[]) => {
-        this.type = r[0].path as any;
-      });
+    this.type = this.route.parent?.routeConfig?.path as AuthType;
     this.nav.closeLeftNav();
   }
 
@@ -105,31 +78,20 @@ export class AuthComponent implements OnInit, OnDestroy {
     } else if (this.type === 'verify') {
       this.isVerify = true;
       this.title = 'Verify Email Address';
-    } else if (this.type === 'username') {
-      // see if there is already a username
-      await this.read.getUser()
-        .then((user: UserRec | null) => {
-          if (user && user.username) {
-            this.router.navigate(['/dashboard']);
-          }
-        });
-      this.isCreateUser = true;
-      this.title = 'Create Username';
     } else if (this.type === 'passwordless') {
       this.isPasswordless = true;
       this.title = 'Passwordless Login';
     } else if (this.type === '_login') {
       const url = this.router.url;
       // signin with link
-      const { isConfirmed, error, message } = await this.auth.confirmSignIn(url)
+      const { isConfirmed, error } = await this.auth.confirmSignIn(url)
       isConfirmed
         ? this.router.navigate(['/dashboard'])
         : null;
       if (error) {
         this.sb.showError(error);
-      }
-      if (message) {
-        this.sb.showMsg(message);
+      } else {
+        this.sb.showMsg(this.messages.sendEmailLink);
       }
       this.isReturnLogin = true;
       this.title = 'Passwordless Login';
@@ -138,6 +100,11 @@ export class AuthComponent implements OnInit, OnDestroy {
     this.nav.addTitle(this.title);
 
     // init form controls
+    const emailControl = this.fb.control('', [
+      Validators.required,
+      Validators.email
+    ]);
+
     const passwordControl = this.fb.control('', [
       Validators.pattern('^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9]+)$'),
       Validators.minLength(6),
@@ -149,21 +116,10 @@ export class AuthComponent implements OnInit, OnDestroy {
       Validators.required
     ]);
 
-    if (!this.isCreateUser && !this.isVerify) {
-      this.userForm = this.fb.group({
-        email: ['', [
-          Validators.required,
-          Validators.email
-        ]]
-      });
-    } else {
-      this.userForm = this.fb.group({
-        username: ['', [
-          Validators.required,
-          Validators.minLength(3),
-          Validators.maxLength(25),
-        ], this.isAvailable('jdgamble555')]
-      });
+    this.userForm = this.fb.group({});
+
+    if (!this.isVerify) {
+      this.userForm.addControl('email', emailControl);
     }
 
     if (this.isLogin || this.isRegister) {
@@ -188,9 +144,11 @@ export class AuthComponent implements OnInit, OnDestroy {
   // get error
   getError(field: string): any {
     const errors = this.validationMessages[field];
-    for (const e of Object.keys(errors)) {
-      if (this.userForm.get(field)?.hasError(e)) {
-        return errors[e];
+    if (errors) {
+      for (const e of Object.keys(errors)) {
+        if (this.userForm.get(field)?.hasError(e)) {
+          return errors[e];
+        }
       }
     }
   }
@@ -198,6 +156,7 @@ export class AuthComponent implements OnInit, OnDestroy {
   async onSubmit(): Promise<void> {
 
     this.loading = true;
+    let message = null;
     let r: AuthAction | null = null;
 
     if (this.isLogin) {
@@ -205,36 +164,37 @@ export class AuthComponent implements OnInit, OnDestroy {
         this.getField('email')?.value,
         this.getField('password')?.value
       );
+      message = this.messages.loginSuccess;
     } else if (this.isRegister) {
       r = await this.auth.emailSignUp(
         this.getField('email')?.value,
         this.getField('password')?.value
       );
+      message = this.messages.accountCreated;
     } else if (this.isReset) {
       r = await this.auth.resetPassword(
         this.getField('email')?.value
       );
-    } else if (this.isCreateUser) {
-      const username = (this.getField('username')?.value as string).toLowerCase();
-      r = await this.auth.updateUsername(username);
+      message = this.messages.resetPassword;
     } else if (this.isPasswordless) {
       r = await this.auth.sendEmailLink(
         this.getField('email')?.value
       );
+      message = this.messages.sendEmailLink;
     } else if (this.isReturnLogin) {
       const url = this.router.url;
       r = await this.auth.confirmSignIn(
         url,
         this.getField('email')?.value,
       );
+      message = this.messages.loginSuccess;
     }
     if (r) {
       if (r.error) {
         this.sb.showError(r.error);
-      }
-      if (r.message) {
-        this.sb.showMsg(r.message);
-        if (this.isLogin || this.isRegister || this.isCreateUser || this.isReturnLogin) {
+      } else if (message) {
+        this.sb.showMsg(message);
+        if (this.isLogin || this.isRegister || this.isReturnLogin) {
           this.router.navigate(['/dashboard']);
         } else if (this.isPasswordless) {
           this.router.navigate(['/login']);
@@ -245,47 +205,23 @@ export class AuthComponent implements OnInit, OnDestroy {
   }
 
   async providerLogin(provider: string): Promise<void> {
-    const { error, message, isNew } = await this.auth.oAuthLogin(provider);
+    const { error, isNew } = await this.auth.oAuthLogin(provider);
     isNew
       ? this.router.navigate(['/username'])
       : this.router.navigate(['/dashboard']);
     if (error) {
       this.sb.showError(error);
-    }
-    if (message) {
-      this.sb.showMsg(message);
+    } else {
+      this.sb.showMsg(this.messages.loginSuccess);
     }
   }
 
   async sendEmail(): Promise<void> {
-    const { error, message } = await this.auth.sendVerificationEmail();
+    const { error } = await this.auth.sendVerificationEmail();
     if (error) {
       this.sb.showError(error);
+    } else {
+      this.sb.showMsg(this.messages.emailVerifySent);
     }
-    if (message) {
-      this.sb.showMsg(message);
-    }
-  }
-
-  isAvailable(current?: string): ValidatorFn {
-    return (control: AbstractControl): { [key: string]: any } | null => {
-
-      const field = control.value;
-      if (field === current) {
-        return of(null);
-      }
-      return this.db.validUsername(field).pipe(
-        debounceTime(500),
-        take(1),
-        map((f: any) => f
-          ? { 'unavailable': true }
-          : null
-        )
-      );
-    }
-  }
-
-  ngOnDestroy(): void {
-    this.routeSub.unsubscribe();
   }
 }
