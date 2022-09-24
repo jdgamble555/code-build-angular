@@ -1,6 +1,7 @@
 import { DOCUMENT } from '@angular/common';
 import { Inject, Injectable } from '@angular/core';
 import { PostEditModule } from '@db/post-edit.module';
+import { post_to_supabase } from '@db/supabase.types';
 import { Post } from '@post/post.model';
 import { MarkdownService } from 'ngx-markdown';
 import { SupabaseService } from '../supabase.service';
@@ -34,19 +35,8 @@ export class PostEditService {
 
     // todo - add sb_post type
 
-    let new_data: any = {
-      title: data.title,
-      author: data.authorId,
-      content: data.content,
-      image: data.image,
-      imageUploads: data.imageUploads,
-      slug: data.slug,
-      minutes: data.minutes,
-      published: publish
-    };
-    if (id) {
-      new_data = { ...new_data, id };
-    }
+    let new_data = post_to_supabase({ ...data, id, published: publish });
+
     const { error, data: _data } = await this.sb.supabase.from('posts').upsert(new_data).select().single();
     return { error, data: _data };
   }

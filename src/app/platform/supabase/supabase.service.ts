@@ -2,18 +2,7 @@ import { Injectable } from '@angular/core';
 import { DbModule } from '@db/db.module';
 import { environment } from '@env/environment';
 import { createClient, SupabaseClient, User } from '@supabase/supabase-js';
-import { from, of, Observable, Subscriber, switchMap } from 'rxjs';
-
-export interface sb_User {
-  id: string;
-  created_at: Date;
-  updated_at?: Date;
-  photo_url?: string;
-  username?: string;
-  display_name?: string;
-  email?: string;
-  role?: string;
-}
+import { Observable, Subscriber } from 'rxjs';
 
 @Injectable({
   providedIn: DbModule

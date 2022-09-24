@@ -1,17 +1,12 @@
-export enum Role {
-  Admin = "admin",
-  Editor = "editor",
-  Author = "author",
-  Subscriber = "subscriber"
-};
+export type Role  = 'admin' | 'editor' | 'author' | 'subscriber';
 
 export interface UserRec {
-  displayName?: string | null;
-  email?: string | null;
-  phoneNumber?: string | null;
-  photoURL?: string | null;
-  role?: Role;
   uid?: string;
+  displayName?: string;
+  email?: string;
+  phoneNumber?: string;
+  photoURL?: string;
+  role?: Role;
   username?: string;
   heartsCount?: number;
   draftsCount?: number;

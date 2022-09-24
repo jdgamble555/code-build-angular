@@ -299,8 +299,8 @@ export class PostFormComponent implements OnDestroy {
       data = {
         ...data,
         image: this.imageView
-          ? this.imageTmp
-          : null
+          ? this.imageTmp || undefined
+          : undefined
       };
     }
 

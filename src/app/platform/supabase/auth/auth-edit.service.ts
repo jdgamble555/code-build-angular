@@ -44,8 +44,8 @@ export class AuthEditService {
   }
 
   async updateProfile({ displayName, photoURL }: {
-    displayName?: string | null | undefined;
-    photoURL?: string | null | undefined;
+    displayName?: string;
+    photoURL?: string;
   }): Promise<AuthAction> {
     let data = {};
     if (displayName) {

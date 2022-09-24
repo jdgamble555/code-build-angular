@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
 import { UserRec, UserRequest } from '@auth/user.model';
 import { DbModule } from '@db/db.module';
+import { supabase_to_user_rec, supabase_user } from '@db/supabase.types';
 import { User } from '@supabase/supabase-js';
 import { map, Observable, of, switchMap } from 'rxjs';
-import { sb_User, SupabaseService } from '../supabase.service';
+import { SupabaseService } from '../supabase.service';
 
 @Injectable({
   providedIn: DbModule
@@ -20,26 +21,14 @@ export class UserDbService {
     this.user$ = this.userSub();
   }
 
-  // todo - fix all this mapping crap
-  private mapUser = (user: sb_User): UserRec => ({
-    uid: user?.id,
-    photoURL: user?.photo_url,
-    displayName: user?.display_name,
-    createdAt: user?.created_at,
-    updatedAt: user?.updated_at,
-    username: user?.username,
-    email: user?.email,
-    role: user?.role as any
-  });
-
   private userSub(): Observable<UserRec | null> {
     return this.sb.authState().pipe(
-      switchMap((user: User | null) =>
+      switchMap(user =>
         user
-          ? this.sb.subWhere<sb_User>('profiles', 'id', user?.id)
+          ? this.sb.subWhere<supabase_user>('profiles', 'id', user?.id)
           : of(null)
       ),
-      map(user => user ? this.mapUser(user) : null)
+      map(user => user ? supabase_to_user_rec(user) : null)
     );
   }
 
@@ -47,7 +36,7 @@ export class UserDbService {
     const user = (await this.sb.supabase.auth.getSession()).data.session?.user;
     let { data, error } = await this.sb.supabase.from('profiles').select('*').eq('id', user?.id).single();
     data = { ...data, email: user?.email };
-    return { data: data ? this.mapUser(data) : null, error };
+    return { data: data ? supabase_to_user_rec(data) : null, error };
   }
 
   async createUser(user: UserRec, id: string): Promise<UserRequest> {

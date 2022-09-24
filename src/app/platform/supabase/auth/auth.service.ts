@@ -3,8 +3,9 @@ import { AuthAction, UserRec } from '@auth/user.model';
 import { DbModule } from '@db/db.module';
 import { UserDbService } from '@db/user/user-db.service';
 import { map, Observable, tap } from 'rxjs';
-import { Provider, User } from '@supabase/supabase-js';
+import { Provider } from '@supabase/supabase-js';
 import { SupabaseService } from '../supabase.service';
+import { auth_to_user_rec } from '@db/supabase.types';
 
 @Injectable({
   providedIn: DbModule
@@ -22,20 +23,9 @@ export class AuthService {
 
   // User
 
-  private _mapUser(u: User): UserRec {
-    return ({
-      uid: u.id,
-      email: u.email,
-      emailVerified: !!u.email_confirmed_at,
-      photoURL: u?.user_metadata['avatar_url'],
-      phoneNumber: u.phone,
-      displayName: u?.user_metadata['full_name']
-    } as UserRec);
-  }
-
   private _user(): Observable<UserRec | null> {
     return this.sb.authState().pipe(
-      map(u => u ? this._mapUser(u) : null),
+      map(u => u ? auth_to_user_rec(u) : null),
       tap(async (u: UserRec | null) => {
         if (u) {
           // add user info if user DNE
@@ -59,7 +49,7 @@ export class AuthService {
 
   async getUser(): Promise<UserRec | null> {
     const user = (await this.sb.supabase.auth.getSession()).data.session?.user;
-    const _data = user ? this._mapUser(user) : null;
+    const _data = user ? auth_to_user_rec(user) : null;
     return _data;
   }
 

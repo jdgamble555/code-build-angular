@@ -7,7 +7,7 @@ export interface Post {
   title?: string;
   authorId?: string;
   content?: string;
-  image?: string | null;
+  image?: string;
   imageTmp?: string;
   imageUploads?: string[];
   createdAt?: Date | any;

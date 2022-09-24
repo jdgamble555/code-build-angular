@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { UserRec } from '@auth/user.model';
 import { DbModule } from '@db/db.module';
 import { decode, encode } from '@db/sb-tools';
+import { supabase_to_post } from '@db/supabase.types';
 import { UserDbService } from '@db/user/user-db.service';
 import { Post, PostInput } from '@post/post.model';
 import { SupabaseService } from '../supabase.service';
@@ -37,12 +38,7 @@ export class PostDbService {
     let data: any = null;
     let error = null;
     ({ data, error } = await this.sb.supabase.from('posts').select('*, author!inner(*)').eq('id', id).eq('published', true).single());
-    data = () => ({
-      ...data,
-      //author: { ..._d.author, id: encode(_d.author.id) },
-      createdAt: data.created_at,
-      updatedAt: data.updated_at
-    });
+    data = supabase_to_post(data);
     return { data, error };
   }
 
@@ -77,12 +73,8 @@ export class PostDbService {
 
     ({ data, count } = await this.sb.supabase.from('posts').select('*, author!inner(*)', { count: 'exact' }).eq('published', true));
 
-    data = data?.map(_d => ({
-      ..._d,
-      //author: { ..._d.author, id: encode(_d.author.id) },
-      createdAt: _d.created_at,
-      updatedAt: _d.updated_at
-    }));
+    data = data?.map(_d => supabase_to_post(_d));
+
     return {
       error,
       data: data || null,

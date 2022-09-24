@@ -23,6 +23,8 @@ export class PostListGuard implements CanActivate {
     const username = next.paramMap.get('username');
     const tag = next.paramMap.get('tag');
 
+    const x = 'me';
+
     // home
     if (!uid && !username && !tag) {
 

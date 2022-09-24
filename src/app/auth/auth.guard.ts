@@ -20,7 +20,7 @@ export class RoleGuard implements CanActivate {
     if (error) {
       console.error(error);
     }
-    const isAdmin = !!(user && user.role === Role.Admin);
+    const isAdmin = !!(user && user.role === 'admin');
     if (!isAdmin) {
       this.router.navigate(['/home']);
     }
@@ -117,6 +117,7 @@ export class UsernameEmailVerifiedGuard implements CanActivate {
       console.error(error);
     }
     if (data) {
+      console.log(data);
       if (!data.emailVerified) {
         this.router.navigate(['/verify']);
       } else if (!data.username) {
