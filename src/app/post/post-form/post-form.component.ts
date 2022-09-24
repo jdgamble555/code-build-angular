@@ -6,7 +6,7 @@ import { ImageUploadService } from '@db/image/image-upload.service';
 import { TagService } from '@shared/tag/tag.service';
 import { SnackbarService } from '@shared/snack-bar/snack-bar.service';
 import { DialogService } from '@shared/confirm-dialog/dialog.service';
-import { Post } from '@post/post.model';
+import { Post, PostRequest } from '@post/post.model';
 import { NavService } from '@nav/nav.service';
 import { PostDbService } from '@db/post/post-db.service';
 import { PostEditService } from '@db/post/post-edit.service';
@@ -94,7 +94,7 @@ export class PostFormComponent implements OnDestroy {
       }
 
       this.patchPost = this.ps.getPostById(this.id)
-        .then(({ error, data }: { data: Post | null, error: any }) => {
+        .then(({ error, data }: PostRequest) => {
 
           if (error) {
             console.error(error);
@@ -200,7 +200,7 @@ export class PostFormComponent implements OnDestroy {
       if (error) {
         console.error(error);
       }
-      const uid = user?.uid;
+      const uid = user?.id;
       let image = null;
       // upload image with spinner
       this.imageLoading = true;
@@ -253,9 +253,9 @@ export class PostFormComponent implements OnDestroy {
     if (e) {
       console.error(e);
     }
-    const uid = user?.uid;
+    const uid = user?.id;
 
-    let data: Post = {
+    let data: any = {
       authorId: uid,
       tags: this.ts.getTags(this.tagsField),
       content: formValue.content,
@@ -268,19 +268,19 @@ export class PostFormComponent implements OnDestroy {
     // if new image, upload it
     if (this.imageFile) {
 
-        const { data: image, error: e1 } = await this.is.uploadImage(`cover_images/${uid}`, this.imageFile);
-        if (e1) {
-          console.error(e1);
-          error = true;
-        }
-        if (image) {
-          data = {
-            ...data,
-            imageTmp: image
-          };
-          this.imageFile = undefined;
-          this.imageTmp = image;
-        }
+      const { data: image, error: e1 } = await this.is.uploadImage(`cover_images/${uid}`, this.imageFile);
+      if (e1) {
+        console.error(e1);
+        error = true;
+      }
+      if (image) {
+        data = {
+          ...data,
+          imageTmp: image
+        };
+        this.imageFile = undefined;
+        this.imageTmp = image;
+      }
     }
 
     // if delete image or change image
@@ -306,7 +306,7 @@ export class PostFormComponent implements OnDestroy {
 
     // add post to db
     const { data: _data, error: e3 } = await this.pes.setPost(data, this.id, publish);
-    this.id = _data?.id;
+    this.id = _data?.id ?? this.id;
     if (e3) {
       console.error(e3);
       error = true;

@@ -19,8 +19,8 @@ import { UserDbService } from '@db/user/user-db.service';
 export class PostListComponent implements OnDestroy {
 
   user$: Observable<UserRec | null> = of(null);
-  posts!: Post[] | null;
-  total!: string | null;
+  posts?: Post[];
+  total?: number;
   input: PostInput = {};
   env: any;
   private routeSub!: Subscription;
@@ -45,8 +45,8 @@ export class PostListComponent implements OnDestroy {
     this.ns.openLeftNav();
     this.ns.resetBC();
 
-    let count: string | null = p.count;
-    let data: Post[] | null = p.posts;
+    let count: number | undefined = p.count;
+    let data: Post[] | undefined = p.posts;
 
     // dynamic routes not ssr
     const tag = this.route.snapshot.params['tag'];

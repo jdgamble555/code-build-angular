@@ -1,21 +1,21 @@
-export type Role  = 'admin' | 'editor' | 'author' | 'subscriber';
+export type Role = 'admin' | 'editor' | 'author' | 'subscriber';
 
 export interface UserRec {
-  uid?: string;
+  id: string;
+  email: string;
+  role: Role;
+  emailVerified: boolean;
+  providers: string[];
+  createdAt: Date;
+  updatedAt?: Date;
   displayName?: string;
-  email?: string;
   phoneNumber?: string;
   photoURL?: string;
-  role?: Role;
   username?: string;
   heartsCount?: number;
   draftsCount?: number;
   postsCount?: number;
   bookmarksCount?: number;
-  createdAt?: Date;
-  updatedAt?: Date;
-  emailVerified?: boolean;
-  providers?: string[];
 };
 
 export interface AuthAction {

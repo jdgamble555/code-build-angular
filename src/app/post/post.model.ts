@@ -1,28 +1,26 @@
-import { UserRec } from '../auth/user.model';
+import { UserRec } from "@auth/user.model";
 
 export type PostType = 'bookmarks' | 'liked' | 'updated' | 'user' | 'drafts' | 'new' | 'tag' | null;
 
 export interface Post {
-  id?: string;
-  title?: string;
-  authorId?: string;
-  content?: string;
+  id: string;
+  title: string;
+  content: string;
+  slug: string;
+  minutes: string;
+  author: UserRec;
+  published: boolean;
+  createdAt: Date | any;
+  updatedAt?: Date | any;
   image?: string;
   imageTmp?: string;
   imageUploads?: string[];
-  createdAt?: Date | any;
-  updatedAt?: Date | any;
   tags?: any;
-  slug?: string;
-  minutes?: string;
-  author?: UserRec | any;
-  published?: boolean;
   heartsCount?: number;
   bookmarksCount?: number;
   draftsCount?: number;
   liked?: boolean;
   saved?: boolean;
-  _tmpDoc?: any;
 }
 
 export interface Tag {
@@ -39,6 +37,21 @@ export interface PostInput {
   field?: string,
   page?: number,
   pageSize?: number,
-  drafts?: boolean
+ drafts?: boolean
 };
+
+export interface PostRequest {
+  error: any,
+  data?: Post,
+  exists?: boolean,
+  count?: number
+};
+
+export interface PostListRequest {
+  error: any,
+  data?: Post[],
+  exists?: boolean,
+  count?: number
+};
+
 

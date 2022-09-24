@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { UserRec, UserRequest } from '@auth/user.model';
+import { UserRequest } from '@auth/user.model';
 import { AuthEditModule } from '@db/auth-edit.module';
 import { SupabaseService } from '../supabase.service';
 
@@ -14,8 +14,7 @@ export class UserEditService {
     return (await this.sb.supabase.auth.getUser()).data.user?.id || null;
   }
 
-  async updateUser({ displayName, photoURL, phoneNumber, email }: UserRec): Promise<{ error: any }> {
-    // don't need email for supabase
+  async updateUser({ displayName, photoURL, phoneNumber }: { displayName?: string, photoURL?: string, phoneNumber?: string }): Promise<UserRequest> {
     const uid = await this.getUid();
     const { error } = await this.sb.supabase.from('profiles').upsert({
       id: uid,

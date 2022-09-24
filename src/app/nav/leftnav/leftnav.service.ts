@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { PostDbService } from '@db/post/post-db.service';
+import { PostRequest } from '@post/post.model';
 import { StateService } from '@shared/state/state.service';
 
 @Injectable({
@@ -9,7 +10,7 @@ export class LeftnavService {
 
   // service to preload post count
 
-  postTotal: string | null = null;
+  postTotal?: number;
 
   constructor(
     private state: StateService,
@@ -21,11 +22,11 @@ export class LeftnavService {
     this.postTotal = await this.state.loadState('post-count', this._getPostCount());
   }
 
-  private async _getPostCount(): Promise<string | null> {
-    const { data, error } = await this.ps.getTotal('posts');
+  private async _getPostCount(): Promise<number | undefined> {
+    const { data, count, error } = await this.ps.getTotal('posts');
     if (error) {
       console.error(error);
     }
-    return data;
+    return count;
   }
 }

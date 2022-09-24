@@ -4,7 +4,6 @@ import {
   Router
 } from '@angular/router';
 import { UserDbService } from '@db/user/user-db.service';
-import { Role } from './user.model';
 
 @Injectable({
   providedIn: 'root'
@@ -86,7 +85,7 @@ export class NotUsernameGuard implements CanActivate {
     if (error) {
       console.error(error);
     }
-    if (data && data.uid) {
+    if (data && data.id) {
       if (!data.username) {
         return true;
       }
@@ -117,7 +116,6 @@ export class UsernameEmailVerifiedGuard implements CanActivate {
       console.error(error);
     }
     if (data) {
-      console.log(data);
       if (!data.emailVerified) {
         this.router.navigate(['/verify']);
       } else if (!data.username) {

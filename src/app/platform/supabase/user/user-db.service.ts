@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { UserRec, UserRequest } from '@auth/user.model';
 import { DbModule } from '@db/db.module';
-import { supabase_to_user_rec, supabase_user } from '@db/supabase.types';
+import { decode } from '@db/sb-tools';
+import { combine_user, supabase_user, user_to_supabase } from '@db/supabase.types';
 import { User } from '@supabase/supabase-js';
 import { map, Observable, of, switchMap } from 'rxjs';
 import { SupabaseService } from '../supabase.service';
@@ -21,22 +22,34 @@ export class UserDbService {
     this.user$ = this.userSub();
   }
 
+  // todo - merge auth and user
+
   private userSub(): Observable<UserRec | null> {
     return this.sb.authState().pipe(
       switchMap(user =>
         user
-          ? this.sb.subWhere<supabase_user>('profiles', 'id', user?.id)
+          ? this._subUserRec(user)
           : of(null)
-      ),
-      map(user => user ? supabase_to_user_rec(user) : null)
+      )
     );
+  }
+
+  private _subUserRec(user: User): Observable<UserRec | null> {
+    return this.sb.subWhere<supabase_user>('profiles', 'id', user.id)
+      .pipe(
+        map(data => data ? combine_user(user, data) : null)
+      );
   }
 
   async getUser(): Promise<UserRequest> {
     const user = (await this.sb.supabase.auth.getSession()).data.session?.user;
-    let { data, error } = await this.sb.supabase.from('profiles').select('*').eq('id', user?.id).single();
-    data = { ...data, email: user?.email };
-    return { data: data ? supabase_to_user_rec(data) : null, error };
+    let data = null;
+    let error = null;
+    if (user) {
+      ({ data, error } = await this.sb.supabase.from('profiles').select('*').eq('id', user.id).single());
+      data = data ? combine_user(user, data) : null;
+    }
+    return { data, error };
   }
 
   async createUser(user: UserRec, id: string): Promise<UserRequest> {
@@ -50,8 +63,8 @@ export class UserDbService {
   }
 
   async getUsernameFromId(uid: string): Promise<UserRequest> {
-    const { data, error } = await this.sb.supabase.from('profiles').select('*').eq('id', uid).single();
-    console.log(data);
+    const id = decode(uid);
+    const { data, error } = await this.sb.supabase.from('profiles').select('*').eq('id', id).single();
     return { data, error };
   }
 

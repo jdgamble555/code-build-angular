@@ -19,7 +19,7 @@ export class PostGuard implements CanActivate {
     let slug = next.paramMap.get('slug');
     const id = next.paramMap.get('pid');
     let error = null;
-    let data = null;
+    let data;
 
     if (id) {
 
@@ -29,7 +29,7 @@ export class PostGuard implements CanActivate {
       }
 
       // handle bad slugs due to renamed posts
-      if (slug && data && (data.slug === slug)) {
+      if (slug && data && !Array.isArray(data) && (data.slug === slug)) {
 
         // use guard as a resolver to pass data to component
         next.data = { ...next.data, post: data };

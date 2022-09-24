@@ -7,10 +7,10 @@
         <mat-icon color="primary" class="ng-icon-text">library_books</mat-icon>{{ post.title }}
       </h1>
       <h6><i>{{ post.minutes }} min read</i></h6>
-      <div class="ng-author ng-link" [routerLink]="['/u', post.author.id, post.author?.username]">
-        <img *ngIf="post.author?.photoURL" class="avatar" src="{{ post.author?.photoURL }}" />
+      <div class="ng-author ng-link" [routerLink]="['/u', post.author.id, post.author.username]">
+        <img *ngIf="post.author?.photoURL" class="avatar" src="{{ post.author.photoURL }}" />
         <mat-icon *ngIf="!post.author?.photoURL" class="ng-photo-icon">account_circle</mat-icon>
-        <p><small><b>{{ post.author?.username }}</b>
+        <p><small><b>{{ post.author.username }}</b>
             <ng-container *ngIf="post.createdAt"> on
               {{ post.createdAt | date: 'EEEE, MMMM d, yyyy' }}</ng-container>
             <ng-container *ngIf="post.updatedAt"> (last modified on
@@ -29,12 +29,12 @@
         <div class="flex-container">
           <ng-container *ngIf="this.user$ | async as user; else elseBlock">
             <div>
-              <app-save [postId]="post.id" [userId]="user.uid">
+              <app-save [postId]="post.id" [userId]="user.id">
               </app-save>
-              <app-heart [count]="post.heartsCount" [postId]="post.id" [userId]="user.uid">
+              <app-heart [count]="post.heartsCount" [postId]="post.id" [userId]="user.id">
               </app-heart>
             </div>
-            <ng-container *ngIf="post.authorId === user.uid || (user.role | lowercase) === 'admin' || (user.role | lowercase) === 'editor'">
+            <ng-container *ngIf="post.author.id === user.id || (user.role | lowercase) === 'admin' || (user.role | lowercase) === 'editor'">
               <button mat-icon-button [routerLink]="['/edit', post.id]">
                 <mat-icon>edit</mat-icon>
               </button>
@@ -54,7 +54,7 @@
   </mat-card>
 </div>
 <ng-container *ngIf="total as t">
-  <ng-container *ngIf="t ==='none'">
+  <ng-container *ngIf="!t">
     <mat-card class="ng-card">There are no posts here yet!</mat-card>
   </ng-container>
   <mat-paginator class="ng-transparent" [length]="t" [pageSize]="5" [pageSizeOptions]="[5, 10, 20]"

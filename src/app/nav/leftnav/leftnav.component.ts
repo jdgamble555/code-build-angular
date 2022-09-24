@@ -8,7 +8,7 @@ import { LeftnavService } from './leftnav.service';
 })
 export class LeftnavComponent {
 
-  total!: string | null;
+  total?: number;
   isDev: boolean;
 
   constructor(private lns: LeftnavService) {

@@ -1,13 +1,9 @@
 import { Injectable } from '@angular/core';
-import { UserRec } from '@auth/user.model';
 import { DbModule } from '@db/db.module';
-import { decode, encode } from '@db/sb-tools';
+import { decode } from '@db/sb-tools';
 import { supabase_to_post } from '@db/supabase.types';
-import { UserDbService } from '@db/user/user-db.service';
-import { Post, PostInput } from '@post/post.model';
+import { Post, PostInput, PostListRequest, PostRequest } from '@post/post.model';
 import { SupabaseService } from '../supabase.service';
-import { ActionDbService } from './action-db.service';
-import { TagDbService } from './tag-db.service';
 
 
 @Injectable({
@@ -15,31 +11,26 @@ import { TagDbService } from './tag-db.service';
 })
 export class PostDbService {
 
-  constructor(
-    private as: ActionDbService,
-    private ts: TagDbService,
-    private us: UserDbService,
-    private sb: SupabaseService
-  ) { }
+  constructor(private sb: SupabaseService) { }
 
   /**
   * Get a total count for the collection
   * @param col - Collection Path
   * @returns - total count
   */
-  async getTotal(col: string): Promise<{ data: string | null, error: any }> {
+  async getTotal(col: string): Promise<PostRequest> {
     let error = null;
-    let data = null;
+    let data;
     return { error, data };
   }
 
 
-  async getPostById(id: string): Promise<{ data: Post | null, error: any }> {
-    let data: any = null;
-    let error = null;
-    ({ data, error } = await this.sb.supabase.from('posts').select('*, author!inner(*)').eq('id', id).eq('published', true).single());
-    data = supabase_to_post(data);
-    return { data, error };
+  async getPostById(id: string): Promise<PostRequest> {
+    let _data;
+    const pid = decode(id);
+    let { data, error, count } = await this.sb.supabase.from('posts').select('*, author!inner(*)').eq('id', pid);
+    _data = data ? supabase_to_post(count === 2 ? data[0].published ? data[0] : data[1] : data[0]) : _data;
+    return { data: _data, error };
   }
 
 
@@ -48,9 +39,9 @@ export class PostDbService {
  * @param term
  * @returns Observable of search
  */
-  async searchPost(term: string): Promise<{ data: Post[] | null, error: any }> {
-    let data = null;
-    let error = null;
+  async searchPost(term: string): Promise<PostListRequest> {
+    let data;
+    let error;
     return { data, error };
   }
 
@@ -64,21 +55,21 @@ export class PostDbService {
     uid,
     field,
     drafts = false
-  }: PostInput = {}): Promise<{ error: any, data: Post[] | null, count: string | null }> {
+  }: PostInput = {}): Promise<PostListRequest> {
 
     let error = null;
     let posts = null;
     let count = null;
     let data = null;
 
-    ({ data, count } = await this.sb.supabase.from('posts').select('*, author!inner(*)', { count: 'exact' }).eq('published', true));
+    ({ data, count } = await this.sb.supabase.from('posts').select('*, author!inner(*)', { count: 'exact' }).eq('published', drafts));
 
     data = data?.map(_d => supabase_to_post(_d));
 
     return {
       error,
-      data: data || null,
-      count: count?.toString() || null
+      data,
+      count
     };
 
   }

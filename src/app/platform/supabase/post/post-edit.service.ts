@@ -2,7 +2,7 @@ import { DOCUMENT } from '@angular/common';
 import { Inject, Injectable } from '@angular/core';
 import { PostEditModule } from '@db/post-edit.module';
 import { post_to_supabase } from '@db/supabase.types';
-import { Post } from '@post/post.model';
+import { Post, PostRequest } from '@post/post.model';
 import { MarkdownService } from 'ngx-markdown';
 import { SupabaseService } from '../supabase.service';
 
@@ -23,28 +23,25 @@ export class PostEditService {
    * @param data doc data
    * @returns void
    */
-  async setPost(data: Post, id: string | undefined = undefined, publish = false): Promise<{ error: any, data: any | null }> {
+  async setPost(data: Post, id: string | undefined = undefined, published = false): Promise<PostRequest> {
     // todo - figure out how to get rid of getId() and possibly enable images in UI normally
 
-    if (publish && id) {
+    if (published && id) {
       const { error } = await this.deletePost(id);
       if (error) {
         console.error(error);
       }
     }
-
-    // todo - add sb_post type
-
-    let new_data = post_to_supabase({ ...data, id, published: publish });
-
-    const { error, data: _data } = await this.sb.supabase.from('posts').upsert(new_data).select().single();
-    return { error, data: _data };
+    const _data = post_to_supabase({ ...data, published });
+    const { id: _tmp, ...new_data  } = _data;
+    const { error, data: _d } = await this.sb.supabase.from('posts').upsert(new_data).select().single();
+    return { error, data: _d };
   }
   /**
    * Delete Post by ID
    * @param id
    */
-  async deletePost(id: string, published = true): Promise<{ error: any }> {
+  async deletePost(id: string, published = true): Promise<PostRequest> {
     const { error } = await this.sb.supabase.from('posts').delete().eq('id', id).eq('published', published);
     return { error };
   }
@@ -57,7 +54,7 @@ export class PostEditService {
    * @param id
    * @param url
    */
-  async addPostImage(id: string, url: string): Promise<{ error: any }> {
+  async addPostImage(id: string, url: string): Promise<PostRequest> {
     let error = null;
     return { error };
   }
@@ -66,7 +63,7 @@ export class PostEditService {
    * @param id
    * @param url
    */
-  async deletePostImage(id: string, url: string): Promise<{ error: any }> {
+  async deletePostImage(id: string, url: string): Promise<PostRequest> {
     let error = null;
     return { error };
   }
@@ -80,7 +77,7 @@ export class PostEditService {
    * @param id
    * @param data
    */
-  async indexPost(id: string, data: any): Promise<{ error: any }> {
+  async indexPost(id: string, data: any): Promise<PostRequest> {
     let error = null;
     return { error };
   }

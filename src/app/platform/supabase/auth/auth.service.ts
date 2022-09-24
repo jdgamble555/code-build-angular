@@ -1,59 +1,19 @@
 import { Injectable } from '@angular/core';
-import { AuthAction, UserRec } from '@auth/user.model';
+import { AuthAction } from '@auth/user.model';
 import { DbModule } from '@db/db.module';
 import { UserDbService } from '@db/user/user-db.service';
-import { map, Observable, tap } from 'rxjs';
 import { Provider } from '@supabase/supabase-js';
 import { SupabaseService } from '../supabase.service';
-import { auth_to_user_rec } from '@db/supabase.types';
 
 @Injectable({
   providedIn: DbModule
 })
 export class AuthService {
 
-  user$: Observable<UserRec | null>;
-
   constructor(
     private us: UserDbService,
     private sb: SupabaseService
-  ) {
-    this.user$ = this._user();
-  }
-
-  // User
-
-  private _user(): Observable<UserRec | null> {
-    return this.sb.authState().pipe(
-      map(u => u ? auth_to_user_rec(u) : null),
-      tap(async (u: UserRec | null) => {
-        if (u) {
-          // add user info if user DNE
-          await this._userCheck(u);
-        }
-      })
-    )
-  }
-
-  private async _userCheck(u: UserRec): Promise<void> {
-
-    // create user if DNE
-    const { error, data: user } = await this.us.getUser();
-    if (error) {
-      console.error(error);
-    }
-    if (!user && u.uid) {
-      await this.us.createUser(u, u.uid);
-    }
-  }
-
-  async getUser(): Promise<UserRec | null> {
-    const user = (await this.sb.supabase.auth.getSession()).data.session?.user;
-    const _data = user ? auth_to_user_rec(user) : null;
-    return _data;
-  }
-
-  // Login
+  ) {  }
 
   async emailLogin(email: string, password: string): Promise<AuthAction> {
     const { error } = await this.sb.supabase.auth.signInWithPassword({ email, password });
@@ -92,6 +52,4 @@ export class AuthService {
     });
     return { error };
   }
-
-
 }

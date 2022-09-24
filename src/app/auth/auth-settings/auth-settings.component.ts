@@ -405,7 +405,7 @@ export class AuthSettingsComponent implements OnInit {
       const image = blobToFile(file, file?.name);
 
       let { data: user, error } = await this.us.getUser();
-      const uid = user?.uid;
+      const uid = user?.id;
 
       let imageURL;
       try {
