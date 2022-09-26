@@ -105,6 +105,20 @@ export class PostDbService {
           error: p.error
         }));
 
+    } else if (tag) {
+
+      // tag query
+      q = this.sb.supabase.from('tags')
+        .select('*, pid!inner(*, author!inner(*))', { count: 'exact' })
+        .eq('name', tag)
+        //.order('pid.created_at', { ascending: sortDirection === 'asc' })
+        .range(from, to)
+        .then(p => ({
+          data: p.data ? p.data.map(_p => _p.pid) : p,
+          count: p.count,
+          error: p.error
+        }));
+
     } else {
 
       // normal query
