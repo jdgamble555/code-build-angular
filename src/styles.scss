@@ -59,7 +59,7 @@ $app-theme: mat.define-light-theme((color: (primary: $app-primary,
       typography: $custom-typography,
     ));
 
-@include mat.all-component-themes($app-theme);
+//@include mat.all-component-themes($app-theme);
 @include angular-material-theme($app-theme);
 
 // fix background problem
