@@ -34,7 +34,8 @@
               <app-heart [count]="post.heartsCount" [postId]="post.id" [userId]="user.id">
               </app-heart>
             </div>
-            <ng-container *ngIf="post.author.id === user.id || (user.role | lowercase) === 'admin' || (user.role | lowercase) === 'editor'">
+            <ng-container
+              *ngIf="post.author.id === user.id || (user.role | lowercase) === 'admin' || (user.role | lowercase) === 'editor'">
               <button mat-icon-button [routerLink]="['/edit', post.id]">
                 <mat-icon>edit</mat-icon>
               </button>

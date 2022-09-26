@@ -1,33 +1,35 @@
 import { Injectable } from '@angular/core';
+import { ActionRequest } from '@auth/user.model';
 import { DbModule } from '@db/db.module';
+import { decode } from '@db/sb-tools';
+import { SupabaseService } from '@db/supabase.service';
 
 @Injectable({
   providedIn: DbModule
 })
 export class ActionDbService {
 
-  constructor() { }
+  constructor(private sb: SupabaseService) { }
 
-  async getAction(id: string, uid: string, action: string): Promise<{ error: any, data: boolean | null }> {
-    let error = null;
-    let data = null;
-    return { data, error };
+  async getActionExists(postId: string, userId: string, action: string): Promise<ActionRequest> {
+    const { error, count } = await this.sb.supabase.from(action)
+      .select('*', { count: 'exact' })
+      .eq('pid', decode(postId))
+      .eq('uid', decode(userId));
+    return { error, data: !!(count && count > 0) }
   }
 
-  async getActionExists(postId: string, userId: string, action: string): Promise<{ data: boolean | null, error: any }> {
-    let error = null;
-    let data = null;
-    return { data, error };
-  }
-
-  async actionPost(postId: string, userId: string, action: string): Promise<{ error: any }> {
-    let error = null;
+  async actionPost(postId: string, userId: string, action: string): Promise<ActionRequest> {
+    const { error } = await this.sb.supabase.from(action)
+      .insert({ pid: decode(postId), uid: decode(userId) });
     return { error };
   }
 
-  async unActionPost(postId: string, userId: string, action: string): Promise<{ error: any }> {
-    let error = null;
+  async unActionPost(postId: string, userId: string, action: string): Promise<ActionRequest> {
+    const { error } = await this.sb.supabase.from(action)
+      .delete()
+      .eq('uid', decode(userId))
+      .eq('pid', decode(postId));
     return { error };
   }
-
 }

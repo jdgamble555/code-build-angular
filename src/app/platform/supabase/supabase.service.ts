@@ -32,17 +32,28 @@ export class SupabaseService {
     });
   }
 
-  subWhere<T>(table: string, field: string, value: string): Observable<T> {
+  subWhere<T>(table: string, field?: string, value?: string): Observable<T> {
     return new Observable((subscriber: Subscriber<T>) => {
-      this.supabase.from(table).select('*').eq(field, value).single().then(payload => {
-        subscriber.next(payload.data);
+      const hasFilter = field && value;
+      let select = this.supabase.from(table).select('*');
+      select = hasFilter ? select.eq(field, value) : select;
+      select.then(payload => {
+        let data = payload.data
+          ? payload.data.length && payload.data.length > 1
+            ? payload.data
+            : payload.data[0]
+          : undefined;
+        subscriber.next(data);
       });
-      const filter = `${field}=eq.${value}`;
-      return this.supabase.channel('public:' + `${table}:${filter}`).on('postgres_changes', {
-        event: '*', schema: 'public', table, filter
-      }, (payload: { new: T | undefined; }) => {
-        subscriber.next(payload.new)
-      })
+      const filterString = `${field}=eq.${value}`;
+      const filterChannel = hasFilter ? ':' + filterString : '';
+      const filter = hasFilter ? filterString : undefined;
+      const real = { event: '*', schema: 'public', table, filter };
+      return this.supabase.channel('public:' + table + filterChannel)
+        .on('postgres_changes', real,
+          (payload: any) => {
+            subscriber.next(payload.new);
+          }).subscribe();
     });
   }
 

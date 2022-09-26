@@ -9,7 +9,6 @@ export interface Post {
   slug: string;
   minutes: string;
   author: UserRec;
-  published: boolean;
   createdAt: Date | any;
   updatedAt?: Date | any;
   image?: string;
@@ -37,7 +36,7 @@ export interface PostInput {
   field?: string,
   page?: number,
   pageSize?: number,
- drafts?: boolean
+  drafts?: boolean
 };
 
 export interface PostRequest {

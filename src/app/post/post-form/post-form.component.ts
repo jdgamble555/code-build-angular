@@ -93,7 +93,7 @@ export class PostFormComponent implements OnDestroy {
         return;
       }
 
-      this.patchPost = this.ps.getPostById(this.id)
+      this.patchPost = this.ps.getPostById(this.id, false)
         .then(({ error, data }: PostRequest) => {
 
           if (error) {
@@ -256,7 +256,9 @@ export class PostFormComponent implements OnDestroy {
     const uid = user?.id;
 
     let data: any = {
-      authorId: uid,
+      author: {
+        id: uid
+      },
       tags: this.ts.getTags(this.tagsField),
       content: formValue.content,
       title: formValue.title,

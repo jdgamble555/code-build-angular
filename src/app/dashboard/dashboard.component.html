@@ -11,7 +11,7 @@
         <app-post-list></app-post-list>
       </ng-template>
     </mat-tab>
-    <ng-container *ngIf="user?.role == 'admin' || user?.role == 'editor'">
+    <ng-container *ngIf="(user.role | lowercase) === 'admin' || (user.role | lowercase) === 'editor'">
       <mat-tab label="Posts{{ user?.postsCount ? ' (' + user?.postsCount + ')' : '' }}">
         <ng-template matTabContent>
           <br>

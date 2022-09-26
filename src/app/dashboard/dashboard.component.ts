@@ -1,5 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
-import { MatTabGroup } from '@angular/material/tabs';
+import { Component } from '@angular/core';
 import { UserRec } from '@auth/user.model';
 import { UserDbService } from '@db/user/user-db.service';
 import { NavService } from '@nav/nav.service';

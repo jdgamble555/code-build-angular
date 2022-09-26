@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { DbModule } from '@db/db.module';
 import { decode } from '@db/sb-tools';
-import { supabase_to_post } from '@db/supabase.types';
+import { supabase_post, supabase_to_post } from '@db/supabase.types';
 import { Post, PostInput, PostListRequest, PostRequest } from '@post/post.model';
 import { SupabaseService } from '../supabase.service';
 
@@ -19,18 +19,38 @@ export class PostDbService {
   * @returns - total count
   */
   async getTotal(col: string): Promise<PostRequest> {
-    let error = null;
-    let data;
-    return { error, data };
+    const { error, count } = await this.sb.supabase.from(col)
+      .select(undefined, { count: 'exact' });
+    return { error, count };
   }
 
 
-  async getPostById(id: string): Promise<PostRequest> {
-    let _data;
+  async getPostById(id: string, published = true): Promise<PostRequest> {
+    let data: any;
+    let error: any;
     const pid = decode(id);
-    let { data, error, count } = await this.sb.supabase.from('posts').select('*, author!inner(*)').eq('id', pid);
-    _data = data ? supabase_to_post(count === 2 ? data[0].published ? data[0] : data[1] : data[0]) : _data;
-    return { data: _data, error };
+
+    const db = async (pub: boolean) => await this.sb.supabase.from(pub ? 'posts' : 'drafts')
+      .select('*, author!inner(*)').eq('id', pid).limit(1);
+
+    const { count: heartsCount } = await this.sb.supabase.from('hearts').select(undefined, { count: 'exact' }).eq('pid', pid);
+    if (!published) {
+      ({ data, error } = await db(published));
+      if (data.length) {
+        return { data: data[0], error };
+      }
+    }
+    ({ data, error } = await db(true));
+    data = data.length ? { ...data[0], heartsCount } : undefined;
+
+    // get tags
+    const { data: tags, error: _e } = await this.sb.supabase.from('tags').select('name').eq('pid', pid)
+      .then((t: any) => ({ data: t.data.map((s: any) => s.name), error }));
+    if (_e) {
+      console.error(_e);
+    }
+    data = { ...supabase_to_post(data), tags };
+    return { data, error };
   }
 
 
@@ -46,7 +66,7 @@ export class PostDbService {
   }
 
   async getPosts({
-    sortField = 'createdAt',
+    sortField = 'created_at',
     sortDirection = 'desc',
     pageSize = 5,
     authorId,
@@ -57,20 +77,75 @@ export class PostDbService {
     drafts = false
   }: PostInput = {}): Promise<PostListRequest> {
 
+    if (sortField === 'updatedAt') {
+      sortField = 'updated_at';
+    }
     let error = null;
-    let posts = null;
     let count = null;
     let data = null;
 
-    ({ data, count } = await this.sb.supabase.from('posts').select('*, author!inner(*)', { count: 'exact' }).eq('published', drafts));
+    const { from, to } = ((page: number, size: number) => {
+      const limit = size ? +size : 3;
+      const from = page ? page * limit : 0;
+      const to = page ? from + size - 1 : size - 1;
+      return { from, to };
+    })(page - 1, pageSize);
 
-    data = data?.map(_d => supabase_to_post(_d));
+    let q: any;
 
-    return {
-      error,
-      data,
-      count
-    };
+    if (sortField === 'heartsCount') {
 
+      // hearts count view query
+      q = this.sb.supabase.from('hearts_count')
+        .select('*, pid!inner(*, author!inner(*))', { count: 'exact' })
+        .order('count', { ascending: sortDirection === 'asc' })
+        .range(from, to).then(p => ({
+          data: p.data ? p.data.map(_p => _p.pid) : p,
+          count: p.count,
+          error: p.error
+        }));
+
+    } else {
+
+      // normal query
+      q = this.sb.supabase.from(drafts ? 'drafts' : 'posts')
+        .select('*, author!inner(*)', { count: 'exact' })
+        .order(sortField, { ascending: sortDirection === 'asc' })
+        .range(from, to);
+    }
+
+    if (uid) {
+      q = q.eq('author.id', uid);
+    }
+
+    ({ data, count } = await q);
+
+    if (count && count > 0) {
+
+      // get hearts count from View
+      const q2 = (pid: string) => this.sb.supabase.from('hearts_count').select('*').eq('pid', pid).single();
+
+      // get tags
+      const q3 = (pid: string) => this.sb.supabase.from('tags').select('name').eq('pid', pid)
+        .then((t: any) => ({ data: t.data.map((s: any) => s.name) }));
+
+      let hearts: any[] = [];
+      let tags: any[] = [];
+
+      // translate post, add new count query
+      data = data?.map((_d: supabase_post) => {
+        hearts.push(q2(_d.id));
+        tags.push(q3(_d.id));
+        return { ...supabase_to_post(_d) };
+      });
+
+      // get all hearts count and tags
+      hearts = await Promise.all(hearts);
+      tags = await Promise.all(tags);
+
+      // add count to posts
+      data = data?.map((_p: any, i: number) => ({ ..._p, heartsCount: hearts[i].data?.count, tags: tags[i].data }));
+    }
+    return { error, data, count };
   }
 }

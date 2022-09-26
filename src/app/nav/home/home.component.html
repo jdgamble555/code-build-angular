@@ -1,14 +1,12 @@
-<mat-card class="ng-card {{ this.dm.isDarkMode ? '' : 'ng-green-back' }}">
+<mat-card class="ng-card mat-elevation-z0 ng-card-outline {{ this.dm.isDarkMode ? '' : 'ng-green-back' }}">
   <div class="ng-center">
-    <mat-card-title>
-      <h1>
-        <mat-icon color="primary"
-          class="ng-icon-text {{ this.dm.isDarkMode ? this.env.icon_dark_class : this.env.icon_class }}">
-          {{ env.icon }}
-        </mat-icon>
-        {{ env.title }}
-      </h1>
-    </mat-card-title>
+    <h1>
+      <mat-icon color="primary"
+        class="ng-icon-text {{ this.dm.isDarkMode ? this.env.icon_dark_class : this.env.icon_class }}">
+        {{ env.icon }}
+      </mat-icon>
+      {{ env.title }}
+    </h1>
     <h2>{{ env.short_desc }}</h2>
   </div>
 </mat-card>

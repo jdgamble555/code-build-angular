@@ -57,7 +57,6 @@ export const combine_user = (u: User, s: supabase_user): UserRec => {
 
 export interface supabase_post {
     id: string;
-    published: boolean;
     created_at: Date;
     title: string;
     author: supabase_user;
@@ -79,12 +78,10 @@ export const supabase_to_post = (p: supabase_post): Post => ({
     slug: p.slug,
     author: supabase_to_user(p.author),
     createdAt: p.created_at,
-    updatedAt: p.updated_at,
-    published: p.published
+    updatedAt: p.updated_at
 });
 
 export const post_to_supabase = (p: Post): supabase_post => ({
-    published: p.published,
     id: decode(p.id),
     title: p.title,
     content: p.content,

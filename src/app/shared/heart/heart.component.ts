@@ -22,7 +22,7 @@ export class HeartComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     if (this.userId) {
       const data = from(this.actionExists(this.userId));
-      this.actionSub = data.subscribe((state: boolean | null) => {
+      this.actionSub = data.subscribe(state => {
         if (state) {
           this._state = state;
         }

@@ -23,7 +23,7 @@ export class LeftnavService {
   }
 
   private async _getPostCount(): Promise<number | undefined> {
-    const { data, count, error } = await this.ps.getTotal('posts');
+    const { count, error } = await this.ps.getTotal('posts');
     if (error) {
       console.error(error);
     }

@@ -26,7 +26,12 @@ export interface AuthAction {
 }
 
 export interface UserRequest {
-  error: any,
+  error: any;
   data?: UserRec | null;
   exists?: boolean | null;
+}
+
+export interface ActionRequest {
+  error: any;
+  data?: boolean;
 }
