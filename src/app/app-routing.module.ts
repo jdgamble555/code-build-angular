@@ -30,7 +30,7 @@ const routes: Routes = [
   { path: '_login', loadChildren: () => import('./auth/auth.module').then(m => m.AuthModule), canActivate: [NotLoginGuard] },
   { path: 'register', loadChildren: () => import('./auth/auth.module').then(m => m.AuthModule), canActivate: [NotLoginGuard] },
   { path: 'reset', loadChildren: () => import('./auth/auth.module').then(m => m.AuthModule), canActivate: [NotLoginGuard] },
-  { path: 'verify', loadChildren: () => import('./auth/auth.module').then(m => m.AuthModule), canActivate: [LoginGuard] }, // verified guard
+  { path: 'verify', loadChildren: () => import('./auth/auth.module').then(m => m.AuthModule), canActivate: [LoginGuard] }, // todo - verified guard
 
   // logged in
   { path: 'new', loadChildren: () => import('./post/post-form/post-form.module').then(m => m.PostFormModule), canActivate: [UsernameEmailVerifiedGuard] },

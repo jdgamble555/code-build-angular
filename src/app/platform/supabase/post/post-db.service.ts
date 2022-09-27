@@ -111,7 +111,7 @@ export class PostDbService {
       q = this.sb.supabase.from('tags')
         .select('*, pid!inner(*, author!inner(*))', { count: 'exact' })
         .eq('name', tag)
-        //.order('pid.created_at', { ascending: sortDirection === 'asc' })
+        .order('created_at', { foreignTable: 'pid', ascending: sortDirection === 'asc' })
         .range(from, to)
         .then(p => ({
           data: p.data ? p.data.map(_p => _p.pid) : p,
@@ -128,8 +128,8 @@ export class PostDbService {
         .range(from, to);
     }
 
-    if (uid) {
-      q = q.eq('author.id', uid);
+    if (authorId) {
+      q = q.eq('author.id', decode(authorId));
     }
 
     ({ data, count } = await q);
