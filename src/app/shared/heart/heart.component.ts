@@ -45,8 +45,12 @@ export class HeartComponent implements OnInit, OnDestroy {
   ) { }
 
   toggle() {
-    this.changeState();
-    this.toggleDB(this._state);
+    if (this.userId) {
+      this.changeState();
+      this.toggleDB(this._state);
+    } else {
+      this.router.navigate(['login']);
+    }
   }
 
   private changeState() {
@@ -67,8 +71,6 @@ export class HeartComponent implements OnInit, OnDestroy {
         this.changeState();
         console.error(error);
       }
-    } else {
-      this.router.navigate(['login']);
     }
   }
 
