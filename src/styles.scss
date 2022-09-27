@@ -506,9 +506,9 @@ mat-form-field.mat-form-field {
 }
 
 .avatar {
-  width: 2.5em;
-  height: 2.5em;
-  border-radius: 50%;
+  width: 2.5em !important;
+  height: 2.5em !important;
+  border-radius: 50% !important;
   //margin-bottom: 12px;
 }
 
