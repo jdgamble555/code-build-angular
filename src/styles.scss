@@ -2,6 +2,7 @@
 @import "@angular/material/theming";
 @import "https://fonts.googleapis.com/icon?family=Material+Icons";
 @import "https://fonts.cdnfonts.com/css/Open-Sans";
+@import "@angular/material/prebuilt-themes/pink-bluegrey.css";
 
 // color reference - https://material.io/design/color/the-color-system.html#tools-for-picking-colors
 
@@ -60,6 +61,7 @@ $app-theme: mat.define-light-theme((color: (primary: $app-primary,
     ));
 
 //@include mat.all-component-themes($app-theme);
+//@include mat.strong-focus-indicators-theme($app-theme);
 @include angular-material-theme($app-theme);
 
 // fix background problem
@@ -67,8 +69,8 @@ $app-theme: mat.define-light-theme((color: (primary: $app-primary,
   background-color: white;
 }
 
-$dark-primary: mat.define-palette(mat.$deep-purple-palette, A200);
-$dark-accent: mat.define-palette(mat.$blue-palette, 600);
+$dark-primary: mat.define-palette(mat.$deep-purple-palette, 300);
+$dark-accent: mat.define-palette(mat.$blue-palette, 500);
 $dark-theme-background: mat.define-palette(mat.$gray-palette, 600);
 $dark-theme: mat.define-dark-theme((color: (primary: $dark-primary,
         accent: $dark-accent,
@@ -129,6 +131,15 @@ mat-card a:visited {
 }
 
 // end material
+
+.ng-spin {
+  margin: 0 auto;
+  zoom: .8;
+}
+
+.ng-spin circle {
+  stroke: black !important;
+}
 
 .ng-white-background {
   background-color: #fff;
@@ -712,35 +723,6 @@ mat-paginator .mat-form-field {
   border-style: solid;
   border-width: thin;
   border-color: rgba(0, 0, 0, 0.2);
-}
-
-// skeleton loader
-.fb-item {
-  margin: 10px auto;
-  border: 1px solid #eaeaea;
-  padding: 10px;
-}
-
-.gravatar {
-  height: 90px;
-}
-
-.gravatar-title {
-  padding: 10px;
-  height: 80px;
-}
-
-.first-section-wrapper,
-.second-section-wrapper {
-  flex: 1;
-}
-
-.ng-absolute {
-  position: absolute;
-}
-
-.tag-bar {
-  height: 200px;
 }
 
 .heart-count {

@@ -37,7 +37,7 @@
             "styles": [
               "node_modules/prism-themes/themes/prism-atom-dark.min.css",
               "node_modules/prismjs/plugins/line-numbers/prism-line-numbers.css",
-              "./node_modules/@angular/material/prebuilt-themes/pink-bluegrey.css",
+              "node_modules/@angular/material/prebuilt-themes/pink-bluegrey.css",
               "src/styles.scss"
             ],
             "scripts": [
@@ -121,7 +121,7 @@
             "styles": [
               "node_modules/prism-themes/themes/prism-atom-dark.min.css",
               "node_modules/prismjs/plugins/line-numbers/prism-line-numbers.css",
-              "./node_modules/@angular/material/prebuilt-themes/pink-bluegrey.css",
+              "node_modules/@angular/material/prebuilt-themes/pink-bluegrey.css",
               "src/styles.scss"
             ],
             "scripts": [

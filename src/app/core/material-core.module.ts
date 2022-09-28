@@ -11,12 +11,14 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatToolbarModule } from '@angular/material/toolbar';
-
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 const modules = [
+  BrowserAnimationsModule,
   MatAutocompleteModule,
   MatButtonModule,
   MatCardModule,
@@ -27,6 +29,7 @@ const modules = [
   MatInputModule,
   MatMenuModule,
   MatPaginatorModule,
+  MatProgressSpinnerModule,
   MatSnackBarModule,
   MatTabsModule,
   MatToolbarModule
