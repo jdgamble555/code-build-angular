@@ -1,5 +1,5 @@
 export const environment = {
-  production: false,
+  production: true,
   supabase_url: process.env["SUPABASE_URL"] as string,
   supabase_key: process.env["SUPABASE_KEY"] as string,
   title: 'Code.Build',
