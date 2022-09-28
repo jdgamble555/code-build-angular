@@ -65,7 +65,9 @@ export interface supabase_post {
     minutes: string;
     updated_at?: Date;
     image?: string;
-    imageUploads?: string[];
+    image_uploads?: string[];
+    tags: string[];
+    hearts_count: number;
 };
 
 export const supabase_to_post = (p: supabase_post): Post => ({
@@ -73,12 +75,14 @@ export const supabase_to_post = (p: supabase_post): Post => ({
     title: p.title,
     id: encode(p.id),
     image: p.image,
-    imageUploads: p.imageUploads,
+    imageUploads: p.image_uploads,
     minutes: p.minutes,
     slug: p.slug,
     author: supabase_to_user(p.author),
     createdAt: p.created_at,
-    updatedAt: p.updated_at
+    updatedAt: p.updated_at,
+    tags: p.tags,
+    heartsCount: p.hearts_count
 });
 
 export const post_to_supabase = (p: Post): supabase_post => ({
@@ -88,8 +92,10 @@ export const post_to_supabase = (p: Post): supabase_post => ({
     image: p.image,
     slug: p.slug,
     minutes: p.minutes,
-    imageUploads: p.imageUploads,
+    image_uploads: p.imageUploads,
     author: user_to_supabase(p.author),
     created_at: p.createdAt,
-    updated_at: p.updatedAt
+    updated_at: p.updatedAt,
+    tags: p.tags,
+    hearts_count: p.heartsCount
 });

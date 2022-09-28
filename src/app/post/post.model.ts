@@ -15,7 +15,7 @@ export interface Post {
   imageTmp?: string;
   imageUploads?: string[];
   tags?: any;
-  heartsCount?: number;
+  heartsCount: number;
   bookmarksCount?: number;
   draftsCount?: number;
   liked?: boolean;

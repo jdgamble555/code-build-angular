@@ -72,7 +72,7 @@ export class PostListGuard implements CanActivate {
         // otherwise valid username url
       } else if (data) {
         const { data, error, count } = await this.state.loadState('posts',
-          this.ps.getPosts({ uid })
+          this.ps.getPosts({ authorId: uid })
         );
         if (error) {
           console.error(error);
