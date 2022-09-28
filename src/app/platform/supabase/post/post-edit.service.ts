@@ -2,7 +2,6 @@ import { DOCUMENT } from '@angular/common';
 import { Inject, Injectable } from '@angular/core';
 import { PostEditModule } from '@db/post-edit.module';
 import { decode } from '@db/sb-tools';
-import { post_to_supabase } from '@db/supabase.types';
 import { Post, PostRequest } from '@post/post.model';
 import { MarkdownService } from 'ngx-markdown';
 import { SupabaseService } from '../supabase.service';

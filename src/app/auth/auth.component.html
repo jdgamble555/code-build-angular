@@ -13,7 +13,6 @@
       </mat-card-title>
     </mat-card-header>
     <mat-card-content>
-
       <ng-container *ngIf="isVerify">
         Please check your junk mail folder and log back in.
         <div class="margin-spacer"></div>
@@ -21,7 +20,6 @@
           Resend verfication email
         </button>
       </ng-container>
-
       <form [formGroup]="userForm" (ngSubmit)="onSubmit()">
         <mat-form-field [color]="getField('email')?.valid && 'accent'" appearance="outline"
           *ngIf="!isVerify">
@@ -31,7 +29,6 @@
             {{ getError('email') }}
           </mat-error>
         </mat-form-field>
-
         <mat-form-field [color]="getField('email')?.valid && 'accent'" *ngIf="isLogin || isRegister"
           appearance="outline">
           <mat-icon matPrefix color="primary" class="ng-form-icon">lock</mat-icon>
@@ -43,7 +40,6 @@
             {{ getError('password') }}
           </mat-error>
         </mat-form-field>
-
         <mat-form-field [color]="getField('confirmPassword')?.valid && 'accent'" *ngIf="isRegister"
           appearance="outline">
           <mat-icon color="primary" matPrefix class="ng-form-icon">lock</mat-icon>
@@ -56,7 +52,6 @@
             {{ getError('confirmPassword') }}
           </mat-error>
         </mat-form-field>
-
         <button mat-raised-button color="primary" type="submit" [disabled]="userForm.invalid || loading">
           <ng-container *ngIf="isReset">Send Reset Email</ng-container>
           <ng-container *ngIf="isLogin || isReturnLogin">Login</ng-container>
