@@ -14,7 +14,7 @@ export class AuthService {
   constructor(
     private us: UserDbService,
     private sb: SupabaseService
-  ) {  }
+  ) { }
 
   async emailLogin(email: string, password: string): Promise<AuthAction> {
     const { error } = await this.sb.supabase.auth.signInWithPassword({ email, password });
@@ -27,7 +27,12 @@ export class AuthService {
   }
 
   async sendEmailLink(email: string): Promise<AuthAction> {
-    const { error } = await this.sb.supabase.auth.signInWithOtp({ email });
+    const { error } = await this.sb.supabase.auth.signInWithOtp({
+      email,
+      options: {
+        emailRedirectTo: environment['site']
+      }
+    });
     return { error };
   }
 

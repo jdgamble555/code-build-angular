@@ -11,7 +11,7 @@ export const environment = {
   domain: 'code.build',
   description: 'A blog about Databases, Searching, Indexing, Programming, Security, Hosting, and Other Website Technologies!',
   short_desc: 'An easier way to code your web applications !',
-  site: "http://localhost:4200/",
+  site: "http://localhost:4200",
   storage: 'code-build',
   author: 'Jonathan Gamble',
   icon: 'code',
