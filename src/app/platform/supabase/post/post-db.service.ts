@@ -34,7 +34,6 @@ export class PostDbService {
 
     // draft
     if (!published) {
-      console.log('draft');
       ({ data, error } = await x(false));
       if (error) {
         console.error(error);
@@ -43,7 +42,6 @@ export class PostDbService {
 
     // published
     if (!data?.length) {
-      console.log('test');
       ({ data, error } = await x(true));
       if (error) {
         console.error(error);
@@ -58,9 +56,8 @@ export class PostDbService {
  * @param term
  * @returns Observable of search
  */
-  async searchPost(term: string): Promise<PostListRequest> {
-    let data;
-    let error;
+  async searchPost(phrase: string): Promise<PostListRequest> {
+    const { data, error } = await this.sb.supabase.rpc('search_posts', { phrase });
     return { data, error };
   }
 

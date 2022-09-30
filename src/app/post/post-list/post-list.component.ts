@@ -21,6 +21,7 @@ export class PostListComponent implements OnDestroy {
   user$: Observable<UserRec | null> = of(null);
   posts?: Post[];
   total?: number;
+  loading = false;
   input: PostInput = {};
   env: any;
   private routeSub!: Subscription;
@@ -90,7 +91,9 @@ export class PostListComponent implements OnDestroy {
     }
 
     // grab posts
+    this.loading = true;
     ({ count, data } = await this.ps.getPosts(this.input));
+    this.loading = false;
 
     this.meta(type, username);
 
@@ -108,10 +111,12 @@ export class PostListComponent implements OnDestroy {
       pageSize: event.pageSize
     };
 
+    this.loading = true;
     const { data, count, error } = await this.ps.getPosts({
       ...this.input,
       ...paging
     });
+    this.loading = false;
 
     if (error) {
       console.error(error);

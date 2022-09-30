@@ -10,7 +10,8 @@ export const environment = {
   storage: 'code-build',
   author: 'Jonathan Gamble',
   icon: 'code',
-  icon_class: 'ng-dark-blue',
+  icon_class: 'ng-light-blue',
   icon_dark_class: 'ng-blue',
-  back: 'ng-black-back'
+  dark_back: 'ng-black-back',
+  light_back: 'ng-blue-gray-back'
 };

@@ -1,4 +1,4 @@
-<div class="ng-center" *ngIf="!posts">
+<div class="ng-center" *ngIf="loading">
   <mat-progress-spinner class="ng-spin" [mode]="'indeterminate'">
   </mat-progress-spinner>
 </div>
@@ -61,11 +61,11 @@
     </ng-container>
   </mat-card>
 </div>
-<ng-container *ngIf="total as t">
-  <ng-container *ngIf="!t">
-    <mat-card class="ng-card">There are no posts here yet!</mat-card>
-  </ng-container>
-  <mat-paginator class="ng-transparent" [length]="t" [pageSize]="5" [pageSizeOptions]="[5, 10, 20]"
+<ng-container *ngIf="total">
+  <mat-paginator class="ng-transparent" [length]="total" [pageSize]="5" [pageSizeOptions]="[5, 10, 20]"
     aria-label="Select page" (page)="pageChange($event)">
   </mat-paginator>
+</ng-container>
+<ng-container *ngIf="!posts && !loading">
+  <mat-card class="ng-card mat-elevation-z0 ng-card-outline">There are no posts here yet!</mat-card>
 </ng-container>
