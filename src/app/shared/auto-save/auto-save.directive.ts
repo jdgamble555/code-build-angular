@@ -35,6 +35,7 @@ export class AutoSaveDirective implements OnInit, OnDestroy {
       this.getData
         .then((data) => {
           if (data) {
+            console.log(data);
             this.formGroup.patchValue(data);
             this.formGroup.markAsPristine();
             this.state = 'loaded';
@@ -83,5 +84,4 @@ export class AutoSaveDirective implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.formSub.unsubscribe();
   }
-
 }

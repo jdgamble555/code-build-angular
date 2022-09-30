@@ -85,8 +85,7 @@
 </markdown-toolbar>
 
 <div [formGroup]="form">
-  <textarea [id]="controlId" matInput class="text-editor" [formControlName]="controlName" (focus)="focus()" (blur)="blur()" cdkTextareaAutosize
-  [cdkAutosizeMinRows]="20">
+  <textarea [id]="controlId" matInput class="text-editor" [formControlName]="controlName" (focus)="focus()"
+    (blur)="blur()" cdkTextareaAutosize [cdkAutosizeMinRows]="20">
 </textarea>
 </div>
-

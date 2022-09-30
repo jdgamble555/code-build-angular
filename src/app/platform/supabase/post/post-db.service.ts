@@ -29,10 +29,25 @@ export class PostDbService {
     let error: any;
     let data: any;
 
-    ({ data, error } = await this.sb.supabase.from(published ? 'posts_hearts_tags' : 'drafts')
-      .select('*, author!inner(*)').eq('id', pid).limit(1));
-    if (error) {
-      console.error(error);
+    const x = (pub: boolean) => this.sb.supabase.from(pub ? 'posts_hearts_tags' : 'drafts')
+      .select('*, author!inner(*)').eq('id', pid).limit(1);
+
+    // draft
+    if (!published) {
+      console.log('draft');
+      ({ data, error } = await x(false));
+      if (error) {
+        console.error(error);
+      }
+    }
+
+    // published
+    if (!data?.length) {
+      console.log('test');
+      ({ data, error } = await x(true));
+      if (error) {
+        console.error(error);
+      }
     }
     data = data?.length ? supabase_to_post(data[0]) : undefined;
     return { data, error };

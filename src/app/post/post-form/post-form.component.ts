@@ -6,7 +6,7 @@ import { ImageUploadService } from '@db/image/image-upload.service';
 import { TagService } from '@shared/tag/tag.service';
 import { SnackbarService } from '@shared/snack-bar/snack-bar.service';
 import { DialogService } from '@shared/confirm-dialog/dialog.service';
-import { Post, PostRequest } from '@post/post.model';
+import { PostRequest } from '@post/post.model';
 import { NavService } from '@nav/nav.service';
 import { PostDbService } from '@db/post/post-db.service';
 import { PostEditService } from '@db/post/post-edit.service';
@@ -95,7 +95,6 @@ export class PostFormComponent implements OnDestroy {
 
       this.patchPost = this.ps.getPostById(this.id, false)
         .then(({ error, data }: PostRequest) => {
-
           if (error) {
             console.error(error);
           }
@@ -114,12 +113,12 @@ export class PostFormComponent implements OnDestroy {
             // add tags
             this.ts.addTags(post.tags, this.tagsField);
 
-            const { tags, ...rest } = post;
+            const rest = { content: post.content, title: post.title };
             return rest;
 
           } else {
             // error, id does not exist in db
-            this.router.navigate(['home']);
+            this.router.navigate(['/']);
             return;
           }
         });
@@ -326,7 +325,6 @@ export class PostFormComponent implements OnDestroy {
     // delete when confirmed
     this.confirmSub = confirm.afterClosed()
       .subscribe((confirmed: any) => {
-
         // delete files
         if (confirmed) {
 

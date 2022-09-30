@@ -1,5 +1,5 @@
 import { Component, HostBinding, Input, OnInit } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormGroup } from '@angular/forms';
 
 
 @Component({
@@ -28,5 +28,4 @@ export class MarkdownEditorComponent implements OnInit {
   blur() {
     this.isFocus = false;
   }
-
 }

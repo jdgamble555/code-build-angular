@@ -28,17 +28,21 @@ export class PostEditService {
     id = id ? decode(id) : undefined;
 
     // update post
-    const new_data: any = {
+    let new_data: any = {
       title: data.title,
       content: data.content,
       image: data.image,
       slug: data.slug,
       minutes: data.minutes,
       author: decode(data.author.id),
-      imageUploads: data.imageUploads,
+      image_uploads: data.imageUploads,
       created_at: data.createdAt,
       updated_at: data.updatedAt
     };
+
+    if (!published) {
+      new_data = { ...new_data, tags: data.tags };
+    }
 
     // add post
     const { error, data: _d } = await this.sb.supabase

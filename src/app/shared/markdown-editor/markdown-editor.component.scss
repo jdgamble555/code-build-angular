@@ -4,6 +4,7 @@ $blue-border: #4c9aff;
 
 markdown-toolbar {
   padding: 8px;
+  word-wrap: normal;
 
   .btn {
     background: none;
@@ -26,8 +27,10 @@ markdown-toolbar {
 }
 
 :host {
+  margin-left: 10px;
+  margin-right: 10px;
   border: 1px solid $border-color;
-  box-shadow: 0 0 0 1px $border-color;
+  //box-shadow: 0 0 0 1px $border-color;
   border-radius: 3px;
   outline: none;
   background: #fff;
@@ -39,7 +42,7 @@ markdown-toolbar {
     padding-right: 15px;
     resize: none;
     border-color: transparent;
-    width: 95%;
+    width: 90%;
     overflow-y: hidden;
 
     &:focus {

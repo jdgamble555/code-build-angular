@@ -27,12 +27,6 @@
           <button mat-button color="accent"><a href="https://www.markdownguide.org/basic-syntax/" target="_new">Markdown
               Guide</a></button>
           <app-markdown-editor [form]="postForm" controlName="content"></app-markdown-editor>
-          <!--<mat-form-field appearance="outline">
-            <textarea matInput rows="10" formControlName="content" placeholder="Content" required></textarea>
-            <mat-error *ngIf="getField('content')?.invalid">
-              {{ getError('content') }}
-            </mat-error>
-          </mat-form-field>-->
         </mat-tab>
         <mat-tab label="Preview">
           <markdown [data]="postForm.value.content"></markdown>
