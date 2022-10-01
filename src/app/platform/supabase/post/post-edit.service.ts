@@ -1,9 +1,7 @@
-import { DOCUMENT } from '@angular/common';
-import { Inject, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { PostEditModule } from '@db/post-edit.module';
 import { decode } from '@db/sb-tools';
 import { Post, PostRequest } from '@post/post.model';
-import { MarkdownService } from 'ngx-markdown';
 import { SupabaseService } from '../supabase.service';
 
 @Injectable({
@@ -12,8 +10,8 @@ import { SupabaseService } from '../supabase.service';
 export class PostEditService {
 
   constructor(
-    private markdownService: MarkdownService,
-    @Inject(DOCUMENT) private document: Document,
+    //private markdownService: MarkdownService,
+    //@Inject(DOCUMENT) private document: Document,
     private sb: SupabaseService
   ) { }
 
@@ -79,7 +77,24 @@ export class PostEditService {
    * @param id
    */
   async deletePost(id: string, published = true): Promise<PostRequest> {
-    const { error } = await this.sb.supabase.from(published ? 'posts' : 'drafts').delete().eq('id', id);
+    const pid = decode(id);
+    if (published) {
+      // delete all fks...
+      // todo - clean up with cascade deletes
+      const { error: e1 } = await this.sb.supabase.from('hearts').delete().eq('pid', pid);
+      if (e1) {
+        console.error(e1);
+      }
+      const { error: e2 } = await this.sb.supabase.from('bookmarks').delete().eq('pid', pid);
+      if (e1) {
+        console.error(e2);
+      }
+      const { error: e3 } = await this.sb.supabase.from('tags').delete().eq('pid', pid);
+      if (e1) {
+        console.error(e3);
+      }
+    }
+    const { error } = await this.sb.supabase.from(published ? 'posts' : 'drafts').delete().eq('id', pid);
     return { error };
   }
   //

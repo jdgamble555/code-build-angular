@@ -29,7 +29,8 @@
           <app-markdown-editor [form]="postForm" controlName="content"></app-markdown-editor>
         </mat-tab>
         <mat-tab label="Preview">
-          <markdown [data]="postForm.value.content"></markdown>
+          <br />
+          <markdown [data]="postForm.value.content" ngPreserveWhitespaces></markdown>
         </mat-tab>
         <mat-tab label="Images" [disabled]="!this.id || this.state !== 'synced'">
           <button type="button" class="ng-button-space" mat-raised-button (click)="inlineInput.click()">Upload

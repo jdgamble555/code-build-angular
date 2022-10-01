@@ -63,8 +63,9 @@ export class PostListComponent implements OnDestroy {
 
     // handle resolver router or new tab clicks
     if (type === 'new') {
+      this.meta(type, username);
       this.total = count;
-      this.posts = data;
+      this.posts = data?.length ? data : undefined;
       return;
     }
 

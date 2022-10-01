@@ -46,7 +46,6 @@
             Save
           </button>
         </mat-expansion-panel>
-
         <mat-expansion-panel (opened)="onOpen()">
           <mat-expansion-panel-header>
             <mat-panel-title>Username</mat-panel-title>
@@ -69,7 +68,6 @@
             Save
           </button>
         </mat-expansion-panel>
-
         <mat-expansion-panel (opened)="onOpen()">
           <mat-expansion-panel-header>
             <mat-panel-title>Email</mat-panel-title>
@@ -102,39 +100,40 @@
             Save
           </button>
         </mat-expansion-panel>
-
-        <mat-expansion-panel (opened)="onOpen()">
-          <mat-expansion-panel-header>
-            <mat-panel-title>Password</mat-panel-title>
-            <mat-panel-description>{{ isProvider('password') ? 'Change' : 'Create'}} Your Password
-            </mat-panel-description>
-          </mat-expansion-panel-header>
-          <mat-form-field class="login-text" appearance="outline">
-            <mat-icon color="primary" matPrefix class="ng-form-icon">lock</mat-icon>
-            <mat-icon matSuffix color="primary" (click)="passhide = !passhide">
-              {{ passhide ? 'visibility_off' : 'visibility' }}</mat-icon>
-            <input matInput formControlName="password" type="password" placeholder="Password" autocomplete="off"
-              [type]="passhide ? 'password' : 'text'" />
-            <mat-error *ngIf="getField('password')?.invalid">
-              {{ getError('password') }}
-            </mat-error>
-          </mat-form-field>
-          <mat-form-field class="login-text" appearance="outline">
-            <mat-icon color="primary" matPrefix class="ng-form-icon">lock</mat-icon>
-            <mat-icon color="primary" matSuffix (click)="confirmhide = !confirmhide">
-              {{ confirmhide ? 'visibility_off' : 'visibility'}} </mat-icon>
-            <input matInput formControlName="confirmPassword" type="password" placeholder="Confirm password"
-              autocomplete="off" [type]="confirmhide ? 'password' : 'text'" />
-            <mat-error *ngIf="getField('confirmPassword')?.invalid">
-              {{ getError('confirmPassword') }}
-            </mat-error>
-          </mat-form-field>
-          <button class="login-button" type="submit" color="accent" mat-raised-button
-            [disabled]="getField('password').invalid || getField('confirmPassword').invalid" (click)="updatePass()">
-            <mat-icon class="ng-button-icon">save</mat-icon>
-            Save
-          </button>
-        </mat-expansion-panel>
+        <ng-container *ngIf="false">
+          <mat-expansion-panel (opened)="onOpen()">
+            <mat-expansion-panel-header>
+              <mat-panel-title>Password</mat-panel-title>
+              <mat-panel-description>{{ isProvider('password') ? 'Change' : 'Create'}} Your Password
+              </mat-panel-description>
+            </mat-expansion-panel-header>
+            <mat-form-field class="login-text" appearance="outline">
+              <mat-icon color="primary" matPrefix class="ng-form-icon">lock</mat-icon>
+              <mat-icon matSuffix color="primary" (click)="passhide = !passhide">
+                {{ passhide ? 'visibility_off' : 'visibility' }}</mat-icon>
+              <input matInput formControlName="password" type="password" placeholder="Password" autocomplete="off"
+                [type]="passhide ? 'password' : 'text'" />
+              <mat-error *ngIf="getField('password')?.invalid">
+                {{ getError('password') }}
+              </mat-error>
+            </mat-form-field>
+            <mat-form-field class="login-text" appearance="outline">
+              <mat-icon color="primary" matPrefix class="ng-form-icon">lock</mat-icon>
+              <mat-icon color="primary" matSuffix (click)="confirmhide = !confirmhide">
+                {{ confirmhide ? 'visibility_off' : 'visibility'}} </mat-icon>
+              <input matInput formControlName="confirmPassword" type="password" placeholder="Confirm password"
+                autocomplete="off" [type]="confirmhide ? 'password' : 'text'" />
+              <mat-error *ngIf="getField('confirmPassword')?.invalid">
+                {{ getError('confirmPassword') }}
+              </mat-error>
+            </mat-form-field>
+            <button class="login-button" type="submit" color="accent" mat-raised-button
+              [disabled]="getField('password').invalid || getField('confirmPassword').invalid" (click)="updatePass()">
+              <mat-icon class="ng-button-icon">save</mat-icon>
+              Save
+            </button>
+          </mat-expansion-panel>
+        </ng-container>
         <mat-expansion-panel (opened)="onOpen()">
           <mat-expansion-panel-header>
             <mat-panel-title>Links</mat-panel-title>
@@ -156,10 +155,13 @@
             <mat-panel-title>Delete</mat-panel-title>
             <mat-panel-description>Delete Your Account</mat-panel-description>
           </mat-expansion-panel-header>
-          <button class="login-button" color="warn" mat-raised-button (click)="deleteAccount()">
+          <button class="login-button" color="warn" mat-raised-button (click)="deleteAccount()" disabled>
             <mat-icon class="ng-button-icon">delete_forever</mat-icon>
             Delete Account
           </button>
+          <br />
+          <br />
+          <p>We have not yet build this feature. Stay Tuned!</p>
         </mat-expansion-panel>
       </mat-accordion>
       <br />

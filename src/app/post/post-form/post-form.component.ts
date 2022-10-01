@@ -20,7 +20,8 @@ import { UserDbService } from '@db/user/user-db.service';
 @Component({
   selector: 'app-post-form',
   templateUrl: './post-form.component.html',
-  styleUrls: ['./post-form.component.scss']
+  styleUrls: ['./post-form.component.scss'],
+  preserveWhitespaces: true
 })
 export class PostFormComponent implements OnDestroy {
 
@@ -324,7 +325,7 @@ export class PostFormComponent implements OnDestroy {
     const confirm = this.dialog.confirmDialog(this.messages.deleteConfirm);
     // delete when confirmed
     this.confirmSub = confirm.afterClosed()
-      .subscribe((confirmed: any) => {
+      .subscribe(async (confirmed: any) => {
         // delete files
         if (confirmed) {
 
@@ -341,8 +342,11 @@ export class PostFormComponent implements OnDestroy {
             }
           }
           // delete post
-          this.pes.deletePost(this.id);
-          this.sb.showMsg(this.messages.deleted)
+          const { error } = await this.pes.deletePost(this.id);
+          if (error) {
+            console.error(error);
+          }
+          this.sb.showMsg(this.messages.deleted);
           this.ns.home();
         }
       });

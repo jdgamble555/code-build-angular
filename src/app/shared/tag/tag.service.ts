@@ -137,8 +137,8 @@ export class TagService {
    * @returns
    */
   tagFormat(tag: string): string {
-    // can't begin with number or contain only number, no dashes
-    return this.slugify(tag).replace(/-*/g, '').replace(/^\d+/, '');
+    // can't begin with number or contain only number
+    return this.slugify(tag).replace(/^\d+/, '');
   }
 
   /**
