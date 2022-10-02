@@ -7,7 +7,7 @@ import { join } from 'path';
 import { AppServerModule } from './src/main.server';
 //import { APP_BASE_HREF } from '@angular/common';
 import { existsSync } from 'fs';
-import { sitemap } from './sitemap';
+import { sitemap } from './sitemap/sitemap';
 import { ISRHandler } from 'ngx-isr';
 import { isDevMode } from '@angular/core';
 
