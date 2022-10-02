@@ -7,7 +7,7 @@ import { environment } from '@env/environment';
 import { NavService } from '@nav/nav.service';
 import { Post } from '@post/post.model';
 import { DarkModeService } from '@shared/dark-mode/dark-mode.service';
-import { Observable, of } from 'rxjs';
+import { debounceTime, from, Observable, of, take } from 'rxjs';
 
 
 @Component({
@@ -24,7 +24,7 @@ export class HeaderComponent {
   env: any;
 
   isActiveSearch = false;
-  terms!: Post[] | undefined;
+  terms!: Observable<Post[] | null>;
   user$: Observable<UserRec | null>;
 
   constructor(
@@ -62,14 +62,23 @@ export class HeaderComponent {
 
   async search(event: Event): Promise<void> {
     const term = (<HTMLInputElement>event.target).value;
+    if (term) {
+      this.terms = term
+        ? from(this.getPostData(term)).pipe(
+          debounceTime(500),
+          take(1)
+        )
+        : of(null);
+    }
+  }
+
+  async getPostData(term: string) {
     let data;
     let error = null;
-    if (term) {
-      ({ data, error } = await this.ps.searchPost(term));
-      if (error) {
-        console.error(error);
-      }
+    ({ data, error } = await this.ps.searchPost(term));
+    if (error) {
+      console.error(error);
     }
-    this.terms = data ?? undefined;
+    return data || null;
   }
 }
