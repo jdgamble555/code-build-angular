@@ -37,13 +37,14 @@ markdown-toolbar {
   display: flex;
   flex-direction: column;
 
+
   .text-editor {
-    padding-left: 15px;
+    //padding-left: 15px;
     padding-right: 15px;
     resize: none;
     border-color: transparent;
-    width: 90%;
-    overflow-y: hidden;
+    width: 94.6%;
+    overflow-y: scroll;
 
     &:focus {
       outline: none;
@@ -52,7 +53,28 @@ markdown-toolbar {
   }
 
   &.focus {
-   // border: 1px solid $hover-color;
+    // border: 1px solid $hover-color;
     box-shadow: 0 0 0 1px $hover-color;
   }
+}
+
+#top-div {
+  position: relative;
+  overflow: hidden;
+}
+
+.lined-textarea {
+  background: url(http://i.imgur.com/2cOaJ.png);
+  background-attachment: local;
+  background-repeat: no-repeat;
+  padding-left: 35px;
+  padding-top: 10px;
+  border-color: #ccc;
+  font-size: 13px;
+  line-height: 16px;
+  resize: none;
+}
+
+.toolbar-mark {
+  background-color: rgb(236, 235, 235);
 }

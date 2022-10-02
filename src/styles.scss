@@ -596,8 +596,26 @@ code {
   font-size: 0.75rem !important;
 }
 
+markdown h1,
+h2,
+h3,
+h4,
+h5 {
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+markdown ul, markdown ol {
+  margin: 0 !important;
+}
+
+markdown ul, markdown ol {
+  white-space: normal !important;
+}
+
 markdown {
-  line-height: 2;
+  white-space: pre-line;
+  line-height: 1.5;
 }
 
 markdown a {

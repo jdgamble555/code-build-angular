@@ -22,7 +22,7 @@ export class MarkdownEditorComponent implements OnInit {
   }
 
   focus() {
-    this.isFocus = true;
+    this.isFocus = false;
   }
 
   blur() {

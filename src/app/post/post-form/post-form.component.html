@@ -26,11 +26,11 @@
           <br />
           <button mat-button color="accent"><a href="https://www.markdownguide.org/basic-syntax/" target="_new">Markdown
               Guide</a></button>
-          <app-markdown-editor [form]="postForm" controlName="content"></app-markdown-editor>
+          <app-markdown-editor [form]="postForm" controlName="content" ngPreserveWhitespaces></app-markdown-editor>
         </mat-tab>
         <mat-tab label="Preview">
           <br />
-          <markdown [data]="postForm.value.content" ngPreserveWhitespaces></markdown>
+          <markdown style="width:90%" clipboard lineNumbers [data]="postForm.value.content" ngPreserveWhitespaces></markdown>
         </mat-tab>
         <mat-tab label="Images" [disabled]="!this.id || this.state !== 'synced'">
           <button type="button" class="ng-button-space" mat-raised-button (click)="inlineInput.click()">Upload

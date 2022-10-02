@@ -1,4 +1,4 @@
-<markdown-toolbar [attr.for]="controlId">
+<markdown-toolbar [attr.for]="controlId" class="toolbar-mark">
   <md-bold title="Bold" aria-label="Bold"><button class="btn">
       <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-type-bold" fill="currentColor"
         xmlns="http://www.w3.org/2000/svg">
@@ -83,9 +83,8 @@
       </svg>
     </button></md-ref>
 </markdown-toolbar>
-
 <div [formGroup]="form">
-  <textarea [id]="controlId" matInput class="text-editor" [formControlName]="controlName" (focus)="focus()"
-    (blur)="blur()" cdkTextareaAutosize [cdkAutosizeMinRows]="20">
-</textarea>
+  <textarea [id]="controlId" rows="50" matInput class="text-editor lined-textarea" [formControlName]="controlName" (focus)="focus()"
+    (blur)="blur()" ngPreserveWhitespaces>
+  </textarea>
 </div>
