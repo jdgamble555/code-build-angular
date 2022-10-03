@@ -79,7 +79,7 @@ export class NavService {
       }, 0);
     }
   }
-  
+
   closeLeftNav(): void {
     // wait for view to render
     if (this.isBrowser) {

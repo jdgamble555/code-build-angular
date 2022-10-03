@@ -146,8 +146,10 @@ export class PostListComponent implements OnDestroy {
         this.ns.addBC('Bookmarks');
         break;
       case 'tag':
-        const tag = this.input.tag;
-        const uTag = tag!.charAt(0).toUpperCase() + tag!.slice(1);
+        const tag = this.input.tag as string;
+        const uTag = tag.split("-").join(" ").replace(/\w\S*/g, txt =>
+          txt.charAt(0).toUpperCase() + txt.substring(1).toLowerCase()
+        );
         this.ns.setBC(uTag);
         this.seo.generateTags({
           title: uTag + ' - ' + this.env.title
