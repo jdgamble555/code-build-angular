@@ -137,8 +137,12 @@ mat-card a:visited {
   zoom: .8;
 }
 
-.ng-spin circle {
-  stroke: black !important;
+.ng-spin-light circle {
+  stroke: #000 !important;
+}
+
+.ng-spin-dark circle {
+  stroke: #fff !important;
 }
 
 .ng-white-background {

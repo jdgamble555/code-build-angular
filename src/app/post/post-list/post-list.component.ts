@@ -10,6 +10,7 @@ import { SeoService } from '@shared/seo/seo.service';
 import { NavService } from '@nav/nav.service';
 import { PostDbService } from '@db/post/post-db.service';
 import { UserDbService } from '@db/user/user-db.service';
+import { DarkModeService } from '@shared/dark-mode/dark-mode.service';
 
 @Component({
   selector: 'app-post-list',
@@ -33,6 +34,7 @@ export class PostListComponent implements OnDestroy {
     private route: ActivatedRoute,
     private router: Router,
     public ns: NavService,
+    public dm: DarkModeService,
     private seo: SeoService,
     @Inject(DOCUMENT) private doc: Document
   ) {

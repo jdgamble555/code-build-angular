@@ -1,5 +1,5 @@
 <div class="ng-center" *ngIf="loading">
-  <mat-progress-spinner class="ng-spin" [mode]="'indeterminate'">
+  <mat-progress-spinner class="ng-spin {{ this.dm.isDarkMode ? 'ng-spin-dark' : 'ng-spin-light' }}" [mode]="'indeterminate'">
   </mat-progress-spinner>
 </div>
 <div *ngIf="posts" class="ng-border">
