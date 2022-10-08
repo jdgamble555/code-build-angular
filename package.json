@@ -32,6 +32,7 @@
     "@nguniversal/express-engine": "^14.2.0",
     "@supabase/supabase-js": "^2.0.0-rc.10",
     "express": "^4.15.2",
+    "feed": "^4.2.2",
     "ngx-isr": "^0.3.1",
     "ngx-markdown": "^14.0.1",
     "prism-themes": "^1.9.0",

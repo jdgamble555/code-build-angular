@@ -7,7 +7,8 @@ import { join } from 'path';
 import { AppServerModule } from './src/main.server';
 //import { APP_BASE_HREF } from '@angular/common';
 import { existsSync } from 'fs';
-import { sitemap } from './sitemap/sitemap';
+import { sitemap } from './seo/sitemap';
+import { feed } from './seo/feed';
 import { ISRHandler } from 'ngx-isr';
 import { isDevMode } from '@angular/core';
 
@@ -32,8 +33,9 @@ export function app(): express.Express {
   server.set('view engine', 'html');
   server.set('views', distFolder);
 
-  // Example Express Rest API endpoints
+  // seo
   server.get('/sitemap.xml', sitemap);
+  server.get('/feed', feed);
   // Serve static files from /browser
 
   server.get(
