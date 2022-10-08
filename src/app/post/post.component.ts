@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { UserRec } from '@auth/user.model';
 import { UserDbService } from '@db/user/user-db.service';
 import { environment } from '@env/environment';
@@ -29,6 +29,7 @@ export class PostComponent {
 
   constructor(
     private route: ActivatedRoute,
+    private router: Router,
     private us: UserDbService,
     private seo: SeoService,
     public ns: NavService,
@@ -43,37 +44,43 @@ export class PostComponent {
   }
 
   meta(r: Post) {
+    const did = this.router.url.startsWith('/d');
 
     // add bread crumbs
     this.ns.setBC(r?.title as string);
     let description = this.ms.parse(r?.content as string);
     description = description.substring(0, 125).replace(/(\r\n|\n|\r)/gm, "");
 
-    // generate seo tags
-    this.seo.generateTags({
-      title: r?.title + ' - ' + this.env.title,
-      domain: this.env.title,
-      image: r?.image || undefined,
-      description,
-      user: r?.author.username
-    });
+    if (did) {
+      // don't index drafts page
+      this.seo.generateTags({ noIndex: true });
+    } else {
+      // generate seo tags
+      this.seo.generateTags({
+        title: r?.title + ' - ' + this.env.title,
+        domain: this.env.title,
+        image: r?.image || undefined,
+        description,
+        user: r?.author.username
+      });
 
-    // generate schema
-    // todo - create schema service, add full content, use new type within types
-    this.seo.setBlogSchema({
-      title: r?.title,
-      author: r?.author.displayName,
-      username: r?.author.username,
-      authorId: r?.author.id,
-      authorURL: `${environment.site}/u/${r?.author.id}/${r?.author.username}`,
-      image: r?.image || undefined,
-      description,
-      keywords: r?.tags?.join(', '),
-      createdAt: new Date(r?.createdAt || null).toISOString(),
-      updatedAt: new Date(r?.updatedAt || null).toISOString(),
-      time: r?.minutes,
-      id: r?.id,
-      url: `${environment.site}/p/${r?.id}/${r?.slug}`
-    });
+      // generate schema
+      // todo - create schema service, add full content, use new type within types
+      this.seo.setBlogSchema({
+        title: r?.title,
+        author: r?.author.displayName,
+        username: r?.author.username,
+        authorId: r?.author.id,
+        authorURL: `${environment.site}/u/${r?.author.id}/${r?.author.username}`,
+        image: r?.image || undefined,
+        description,
+        keywords: r?.tags?.join(', '),
+        createdAt: new Date(r?.createdAt || null).toISOString(),
+        updatedAt: new Date(r?.updatedAt || null).toISOString(),
+        time: r?.minutes,
+        id: r?.id,
+        url: `${environment.site}/p/${r?.id}/${r?.slug}`
+      });
+    }
   }
 }

@@ -34,6 +34,7 @@ const routes: Routes = [
   { path: 'verify', loadChildren: () => import('./auth/auth.module').then(m => m.AuthModule), canActivate: [LoginGuard] }, // todo - verified guard
 
   // logged in
+  { path: 'd/:did/:slug', component: PostComponent, canActivate: [PostGuard] },
   { path: 'new', loadChildren: () => import('./post/post-form/post-form.module').then(m => m.PostFormModule), canActivate: [UsernameEmailVerifiedGuard] },
   { path: 'edit/:id', loadChildren: () => import('./post/post-form/post-form.module').then(m => m.PostFormModule), canActivate: [UsernameEmailVerifiedGuard] },
   { path: 'settings', loadChildren: () => import('./auth/auth-settings/auth-settings.module').then(m => m.AuthSettingsModule), canActivate: [LoginGuard] },

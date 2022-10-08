@@ -19,8 +19,6 @@ export class DashboardComponent {
     public ns: NavService
   ) {
 
-    this.ns.type = 'bookmarks';
-
     // see if logged in
     this.user$ = this.us.user$;
   }

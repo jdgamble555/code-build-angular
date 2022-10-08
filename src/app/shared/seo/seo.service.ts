@@ -27,7 +27,8 @@ export class SeoService {
     user = '',
     imageW = '',
     imageH = '',
-    locale = ''
+    locale = '',
+    noIndex = false
   }): void {
     // do nothing if same page
     if (title === this.cachetitle) {
@@ -35,35 +36,44 @@ export class SeoService {
     }
     this.cachetitle = title;
     this.title.setTitle(title);
-    this.setTags([
-      // Open Graph
-      { name: 'og:url', content: 'https://' + domain + this.router.url },
-      { name: 'og:title', content: title },
-      { name: 'og:description', content: description },
-      { name: 'og:image', content: image },
-      { name: 'og:type', content: 'article' },
-      // Twitter Card - must use 'summary_large_image' here
-      { name: 'twitter:card', content: 'summary_large_image' },
-      { name: 'twitter:creator', content: user },
-      { name: 'twitter:site', content: '@' + domain },
-      { name: 'twitter:image:alt', content: title },
-      { name: 'twitter:image', content: image },
-      { name: 'twitter:description', content: description },
+    if (noIndex) {
+      this.meta.addTags([
+        { name: 'robots', content: 'noindex' },
+        { name: 'robots', content: 'nofollow' }
+      ]);
+    } else {
+      if (this.meta.getTags("name='robots'")) {
+        this.meta.removeTag("name='robots'");
+        this.meta.removeTag("name='robots'");
+      }
+      this.setTags([
+        // Open Graph
+        { name: 'og:url', content: 'https://' + domain + this.router.url },
+        { name: 'og:title', content: title },
+        { name: 'og:description', content: description },
+        { name: 'og:image', content: image },
+        { name: 'og:type', content: 'article' },
+        // Twitter Card - must use 'summary_large_image' here
+        { name: 'twitter:card', content: 'summary_large_image' },
+        { name: 'twitter:creator', content: user },
+        { name: 'twitter:site', content: '@' + domain },
+        { name: 'twitter:image:alt', content: title },
+        { name: 'twitter:image', content: image },
+        { name: 'twitter:description', content: description },
 
-      // regular meta description
-      { name: 'description', content: description }
-    ]);
-
-    if (imageW) {
-      this.setTags([{ name: 'og:image:width', content: imageW }]);
+        // regular meta description
+        { name: 'description', content: description }
+      ]);
+      if (imageW) {
+        this.setTags([{ name: 'og:image:width', content: imageW }]);
+      }
+      if (imageH) {
+        this.setTags([{ name: 'og:image:height', content: imageH }]);
+      }
+      if (locale) {
+        this.setTags([{ name: 'og:locale', content: locale }]);
+      }
     }
-    if (imageH) {
-      this.setTags([{ name: 'og:image:height', content: imageH }]);
-    }
-    if (locale) {
-      this.setTags([{ name: 'og:locale', content: locale }]);
-    }
-
   }
   private setTags(tags: any): void {
     tags.forEach((tag: any) => {
