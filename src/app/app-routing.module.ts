@@ -12,6 +12,7 @@ import { PostComponent } from '@post/post.component';
 import { PostGuard } from '@post/post.guard';
 import { HomeComponent } from './nav/home/home.component';
 
+
 const routes: Routes = [
   { path: '', component: HomeComponent, canActivate: [PostListGuard], data: { revalidate: 0 } },
 

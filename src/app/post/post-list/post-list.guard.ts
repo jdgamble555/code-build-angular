@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivate, Router } from '@angular/router';
 import { PostDbService } from '@db/post/post-db.service';
 import { UserDbService } from '@db/user/user-db.service';
+import { NavService } from '@nav/nav.service';
 import { StateService } from '@shared/state/state.service';
-
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +14,8 @@ export class PostListGuard implements CanActivate {
     private us: UserDbService,
     private router: Router,
     private state: StateService,
-    private ps: PostDbService
+    private ps: PostDbService,
+    private ns: NavService
   ) { }
   async canActivate(next: ActivatedRouteSnapshot): Promise<boolean> {
 
@@ -22,8 +23,6 @@ export class PostListGuard implements CanActivate {
     const uid = next.paramMap.get('uid');
     const username = next.paramMap.get('username');
     const tag = next.paramMap.get('tag');
-
-    const x = 'me';
 
     // home
     if (!uid && !username && !tag) {
@@ -34,6 +33,7 @@ export class PostListGuard implements CanActivate {
       }
 
       // resolve data
+      this.ns.type = 'new';
       next.data = { ...next.data, posts: data, count };
       return true;
     }
@@ -48,6 +48,7 @@ export class PostListGuard implements CanActivate {
         console.error(error);
       }
       if (data && data.length > 0) {
+        this.ns.type = 'tag';
         next.data = { ...next.data, posts: data, count };
         return true;
       }
@@ -72,12 +73,13 @@ export class PostListGuard implements CanActivate {
         // otherwise valid username url
       } else if (data) {
         const { data, error, count } = await this.state.loadState('posts',
-          this.ps.getPosts({ authorId: uid })
+          this.ps.getPosts({ uid })
         );
         if (error) {
           console.error(error);
         }
         if (data && data.length > 0) {
+          this.ns.type = 'user';
           next.data = { ...next.data, posts: data, count };
           return true;
         }
