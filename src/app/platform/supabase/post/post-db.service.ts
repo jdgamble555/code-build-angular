@@ -58,8 +58,8 @@ export class PostDbService {
  */
   async searchPost(phrase: string): Promise<PostListRequest> {
     //const { data, error } = await this.sb.supabase.rpc('search_posts', { phrase });
-    const { data, error } = await this.sb.supabase.from('search_posts').select('*')
-      .or(`title.phfts.${phrase},content.phfts.${phrase},tags.phfts.${phrase}`);
+    const { data, error } = await this.sb.supabase.from('search_posts').select('*') //.textSearch('title', phrase, { type: 'phrase' });
+    .or(`title.phfts.${phrase},content.phfts.${phrase},tags.phfts.${phrase}`);
     return { data: data as any, error };
   }
 

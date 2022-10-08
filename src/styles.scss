@@ -1000,7 +1000,6 @@ mat-paginator .mat-form-field {
 
 .content {
   grid-area: content;
-  width: fit-content !important;
 }
 
 .leftnav {
@@ -1044,6 +1043,10 @@ mat-paginator .mat-form-field {
     "header"
     "content"
     "footer";
+
+  .content {
+    max-width: 100vw;
+  }
 }
 
 .simple-wrapper .leftnav {

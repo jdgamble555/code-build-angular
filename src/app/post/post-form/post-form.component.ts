@@ -204,7 +204,7 @@ export class PostFormComponent implements OnDestroy {
       let image = null;
       // upload image with spinner
       this.imageLoading = true;
-      ({ data: image, error } = await this.is.uploadImage(`post_images/${uid}`, file));
+      ({ data: image, error } = await this.is.uploadImage(`post-images/${uid}`, file));
       if (error) {
         console.error(error);
       }
