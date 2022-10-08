@@ -29,13 +29,13 @@ export const sitemap = async ({ }, res: Response) => {
     // todo - put supabase code into separate file
 
     // post pages
-    const { data, error } = await supabase.from('posts').select('*');
+    const { data, error } = await supabase.from('posts').select('*').lte('published_at', new Date().toISOString());
     if (error) {
       console.error(error);
     }
     data?.forEach((doc) => {
 
-      const date = new Date(doc['updated_at'] ?? doc['created_at']);
+      const date = new Date(doc['updated_at'] ?? doc['published_at']);
       const pid = encode(doc.id);
 
       // set date for site last updated

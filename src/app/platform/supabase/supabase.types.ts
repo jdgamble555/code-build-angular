@@ -67,6 +67,7 @@ export interface supabase_post {
     image?: string;
     image_uploads?: string[];
     tags: string[];
+    published_at: Date;
     hearts_count: number;
 };
 
@@ -82,7 +83,8 @@ export const supabase_to_post = (p: supabase_post): Post => ({
     createdAt: p.created_at,
     updatedAt: p.updated_at,
     tags: p.tags,
-    heartsCount: p.hearts_count
+    heartsCount: p.hearts_count,
+    publishedAt: p.published_at
 });
 
 export const post_to_supabase = (p: Post): supabase_post => ({
@@ -97,5 +99,6 @@ export const post_to_supabase = (p: Post): supabase_post => ({
     created_at: p.createdAt,
     updated_at: p.updatedAt,
     tags: p.tags,
-    hearts_count: p.heartsCount
+    hearts_count: p.heartsCount,
+    published_at: p.publishedAt
 });

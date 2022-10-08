@@ -11,6 +11,7 @@ export interface Post {
   author: UserRec;
   createdAt: Date | any;
   updatedAt?: Date | any;
+  publishedAt: Date | any;
   image?: string;
   imageTmp?: string;
   imageUploads?: string[];

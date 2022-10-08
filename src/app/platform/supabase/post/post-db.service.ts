@@ -19,8 +19,12 @@ export class PostDbService {
   * @returns - total count
   */
   async getTotal(col: string): Promise<PostRequest> {
-    const { error, count } = await this.sb.supabase.from(col)
+    let q = this.sb.supabase.from(col)
       .select(undefined, { count: 'exact' });
+    if (col === 'posts') {
+      q = q.lte('published_at', new Date().toISOString())
+    }
+    const { error, count } = await q;
     return { error, count };
   }
 
@@ -94,6 +98,10 @@ export class PostDbService {
 
     let q = this.sb.supabase.from(drafts ? 'drafts' : 'posts_hearts_tags')
       .select('*, author!inner(*)', { count: 'exact' });
+
+    if (!drafts) {
+      q = q.lt('published_at', new Date().toISOString());
+    }
 
     if (tag) {
 

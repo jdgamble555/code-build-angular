@@ -75,7 +75,7 @@ export class PostComponent {
         image: r?.image || undefined,
         description,
         keywords: r?.tags?.join(', '),
-        createdAt: new Date(r?.createdAt || null).toISOString(),
+        createdAt: new Date(r?.publishedAt || null).toISOString(),
         updatedAt: new Date(r?.updatedAt || null).toISOString(),
         time: r?.minutes,
         id: r?.id,

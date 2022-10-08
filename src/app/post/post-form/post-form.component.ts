@@ -67,7 +67,8 @@ export class PostFormComponent implements OnDestroy {
     this.postForm = this.fb.group({
       title: ['', [Validators.required, Validators.minLength(2)]],
       content: ['', [Validators.required, Validators.minLength(3)]],
-      tags: this.fb.array([], [ts.tagValidatorMin(5), ts.tagValidatorRequired])
+      tags: this.fb.array([], [ts.tagValidatorMin(5), ts.tagValidatorRequired]),
+      publishedAt: [new Date(), [Validators.required]]
     });
 
     const r = this.router.url;
@@ -114,7 +115,9 @@ export class PostFormComponent implements OnDestroy {
             // add tags
             this.ts.addTags(post.tags, this.tagsField);
 
-            const rest = { content: post.content, title: post.title };
+            console.log(post)
+
+            const rest = { content: post.content, title: post.title, publishedAt: post.publishedAt };
             return rest;
 
           } else {
@@ -255,6 +258,8 @@ export class PostFormComponent implements OnDestroy {
     }
     const uid = user?.id;
 
+    const publishedAt = new Date(new Date(formValue.publishedAt).setHours(5)).toISOString();
+
     let data: any = {
       author: {
         id: uid
@@ -264,6 +269,7 @@ export class PostFormComponent implements OnDestroy {
       title: formValue.title,
       minutes: this.minutesToRead(formValue.content),
       imageUploads: this.imageUploads,
+      publishedAt,
       slug
     };
 

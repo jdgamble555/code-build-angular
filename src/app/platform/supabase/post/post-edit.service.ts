@@ -35,7 +35,8 @@ export class PostEditService {
       author: decode(data.author.id),
       image_uploads: data.imageUploads,
       created_at: data.createdAt,
-      updated_at: data.updatedAt
+      updated_at: data.updatedAt,
+      published_at: data.publishedAt
     };
 
     if (!published) {

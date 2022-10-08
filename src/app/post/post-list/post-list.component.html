@@ -19,8 +19,8 @@
           <mat-icon *ngIf="!post.author?.photoURL" class="ng-photo-icon">account_circle</mat-icon>
         </div>
         <p><small><b>{{ post.author.username }}</b>
-            <ng-container *ngIf="post.createdAt"> on
-              {{ post.createdAt | date: 'EEEE, MMMM d, yyyy' }}</ng-container>
+            <ng-container *ngIf="post.publishedAt"> on
+              {{ post.publishedAt | date: 'EEEE, MMMM d, yyyy' }}</ng-container>
             <ng-container *ngIf="post.updatedAt"> (last modified on
               {{ post.updatedAt | date: 'EEEE, MMMM d, yyyy' }})</ng-container>
           </small></p>

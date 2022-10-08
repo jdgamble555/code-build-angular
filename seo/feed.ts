@@ -17,7 +17,7 @@ export const feed = async ({ }, res: Response) => {
         link: "http://code.build/",
         language: "en",
         favicon: "https://code.build/favicon.ico",
-        copyright: "© 2022 Code.Build",
+        copyright: "©2022 Code.Build",
         feedLinks: {
             atom: "https://code.build/feed"
         },
@@ -29,7 +29,7 @@ export const feed = async ({ }, res: Response) => {
 
 
     // post pages
-    const { data: posts, error } = await supabase.from('posts_hearts_tags').select('*, author(*)');
+    const { data: posts, error } = await supabase.from('posts_hearts_tags').select('*, author(*)').lte('published_at', new Date().toISOString());;
     if (error) {
         console.error(error);
     }
@@ -42,7 +42,7 @@ export const feed = async ({ }, res: Response) => {
             link: `https://code.build/p/${encode(post.id)}/${post.slug}`,
             // description: post.description,
             content: post.content,
-            date: new Date(post['created_at']),
+            date: new Date(post['published_at']),
             image: post.image,
             category: tags.map((t) => ({ name: t })) as any,
             author: [{

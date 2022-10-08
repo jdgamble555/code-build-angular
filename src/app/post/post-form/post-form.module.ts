@@ -9,6 +9,8 @@ import { AutoSaveDirective } from '@shared/auto-save/auto-save.directive';
 import { MaterialModule } from '@core/material.module';
 import { AuthEditModule } from '@db/auth-edit.module';
 import { ConfirmDialogModule } from '@shared/confirm-dialog/confirm-dialog.module';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 
 // only import if browser
 if (typeof window !== 'undefined') {
@@ -22,7 +24,9 @@ const modules = [
   MaterialModule,
   ConfirmDialogModule,
   AuthEditModule,
-  MaterialModule
+  MaterialModule,
+  MatDatepickerModule,
+  MatNativeDateModule
 ];
 @NgModule({
   declarations: [
