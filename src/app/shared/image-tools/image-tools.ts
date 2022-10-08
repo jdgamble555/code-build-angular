@@ -30,7 +30,7 @@ export const blobToData = async (blob: Blob): Promise<string> => {
   });
 };
 
-export const blobToFile = (blob: Blob, fileName: string, type = 'image/jpeg'): File => {
+export const blobToFile = (blob: Blob, fileName: string, type = 'image/png'): File => {
   return new File([blob], fileName, { type });
 };
 
@@ -46,7 +46,7 @@ export const drawImageScaled = (img: HTMLImageElement, ctx: CanvasRenderingConte
     centerShift_x, centerShift_y, img.width * ratio, img.height * ratio);
 };
 
-export const scaleImage = async (doc: any, src: any, type = 'image/jpeg', newX?: number, newY?: number): Promise<Blob> => {
+export const scaleImage = async (doc: any, src: any, type = 'image/png', newX?: number, newY?: number): Promise<Blob> => {
   return new Promise((res: any, rej: any) => {
     const img = new Image();
     img.src = src;
@@ -86,7 +86,7 @@ export const previewImage = async (doc: any, event: Event,): Promise<Preview | u
     const image = await blobToData(file);
 
     // return resized version
-    const blob = await scaleImage(doc, image, undefined, 800, 418);
+    const blob = await scaleImage(doc, image, undefined, 1250, 650);
     return { filename, blob };
   }
   return;

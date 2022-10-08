@@ -53,7 +53,8 @@ export class ImageUploadService {
   async uploadImage(folder: string, file: File | null, name = randomID()): Promise<{ data: any | null, error: any }> {
 
     folder = folder.replace('_', '-');
-    const ext = file!.name.split('.').pop();
+    //const ext = file!.name.split('.').pop();
+    const ext = 'png';
     const path = `${folder}/${name}.${ext}`;
     let error = null;
     let data = null;

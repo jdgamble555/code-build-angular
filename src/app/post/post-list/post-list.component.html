@@ -7,7 +7,7 @@
   <mat-card class="ng-card mat-elevation-z0 ng-card-outline" *ngFor="let post of posts">
     <ng-container *ngIf="post.id">
       <img *ngIf="post.image" mat-card-image src="{{ post.image }}" alt="{{ post.title }}"
-        [routerLink]="['/p', post.id, post.slug]" class="ng-link" />
+        [routerLink]="['/p', post.id, post.slug]" class="ng-link ng-image" width="1250" height="650" />
       <h1 [routerLink]="[(this.ns.type === 'drafts' ? '/d' : '/p'), post.id, post.slug]" class="ng-post-title">
         <mat-icon color="primary" class="ng-icon-text">library_books</mat-icon>{{ post.title }}
       </h1>
