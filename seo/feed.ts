@@ -52,5 +52,10 @@ export const feed = async ({ }, res: Response) => {
         });
     });
 
-    res.status(200).send(feed.atom1());
+    try {
+        res.status(200).send(feed.atom1());
+    } catch (e: any) {
+        console.error(e);
+        res.status(500).end();
+    }
 };

@@ -104,7 +104,6 @@ export const sitemap = async ({ }, res: Response) => {
     console.error(e);
     res.status(500).end();
   }
-
 };
 
 // https://www.kgajera.com/blog/dynamic-sitemap-for-angular-universal-and-contentful/
