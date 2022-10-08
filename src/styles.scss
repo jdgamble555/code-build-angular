@@ -302,28 +302,10 @@ mat-card a:visited {
   margin-bottom: 15px;
 }
 
-.ng-cat {
-  max-width: 200px;
-}
 
 .ng-message {
   text-align: center;
   margin: 0 auto;
-}
-
-.ng-cat-area {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  flex-wrap: wrap;
-}
-
-.ng-cat-area>* {
-  flex: 1 50%;
-}
-
-.category-folder:hover {
-  font-weight: bold;
 }
 
 .ng-small {
@@ -333,11 +315,6 @@ mat-card a:visited {
 .ng-icon-small {
   vertical-align: middle;
   padding-bottom: 5px;
-}
-
-.ng-sidenav {
-  text-align: left;
-  //position: fixed !important;
 }
 
 .ng-transparent {
@@ -609,11 +586,13 @@ h5 {
   margin: 0 !important;
 }
 
-markdown ul, markdown ol {
+markdown ul,
+markdown ol {
   margin: 0 !important;
 }
 
-markdown ul, markdown ol {
+markdown ul,
+markdown ol {
   white-space: normal !important;
 }
 
@@ -1021,11 +1000,12 @@ mat-paginator .mat-form-field {
 
 .content {
   grid-area: content;
+  width: fit-content !important;
 }
 
 .leftnav {
   grid-area: leftnav;
-  min-width: 200px;
+  min-width: 180px;
 }
 
 .footer {
@@ -1079,6 +1059,10 @@ mat-paginator .mat-form-field {
       "header header"
       "leftnav content"
       "footer footer";
+  }
+
+  .content {
+    max-width: 73vw;
   }
 
   nav ul {
