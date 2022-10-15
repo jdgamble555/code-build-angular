@@ -9,6 +9,7 @@ import { environment } from '@env/environment';
 import { NavModule } from '@nav/nav.module';
 import { PostModule } from '@post/post.module';
 import { MarkdownModule, MarkedOptions } from 'ngx-markdown';
+import { NgxGoogleAnalyticsModule, NgxGoogleAnalyticsRouterModule } from 'ngx-google-analytics';
 
 
 @NgModule({
@@ -30,7 +31,9 @@ import { MarkdownModule, MarkedOptions } from 'ngx-markdown';
     BrowserAnimationsModule,
     MarkdownModule.forRoot({
       sanitize: SecurityContext.NONE
-    })
+    }),
+    NgxGoogleAnalyticsModule.forRoot('G-VXHF3QQQ2S'),
+    NgxGoogleAnalyticsRouterModule
   ],
   bootstrap: [AppComponent]
 })
