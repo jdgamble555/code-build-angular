@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { DbModule } from '@db/db.module';
-import { decode } from '@db/sb-tools';
+import { decode, encode } from '@db/sb-tools';
 import { supabase_to_post } from '@db/supabase.types';
 import { PostInput, PostListRequest, PostRequest } from '@post/post.model';
 import { SupabaseService } from '../supabase.service';
@@ -63,8 +63,8 @@ export class PostDbService {
   async searchPost(phrase: string): Promise<PostListRequest> {
     //const { data, error } = await this.sb.supabase.rpc('search_posts', { phrase });
     const { data, error } = await this.sb.supabase.from('search_posts').select('*') //.textSearch('title', phrase, { type: 'phrase' });
-    .or(`title.phfts.${phrase},content.phfts.${phrase},tags.phfts.${phrase}`);
-    return { data: data as any, error };
+      .or(`title.phfts.${phrase},content.phfts.${phrase},tags.phfts.${phrase}`);
+    return { data: data?.map((p) => ({ ...p, id: encode(p.id) })) as any, error };
   }
 
   async getPosts({

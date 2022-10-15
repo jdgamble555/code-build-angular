@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserRec } from '@auth/user.model';
 import { UserDbService } from '@db/user/user-db.service';
@@ -15,11 +15,9 @@ import { Post } from './post.model';
   styleUrls: ['./post.component.scss'],
   preserveWhitespaces: true
 })
-export class PostComponent {
+export class PostComponent implements OnDestroy {
 
-  paramSub!: Subscription;
-  postSub!: Subscription;
-  userSub!: Subscription;
+  routeSub!: Subscription;
   post!: Post | null;
   user$: Observable<UserRec | null> = of(null);
   postId!: string;
@@ -37,9 +35,11 @@ export class PostComponent {
   ) {
     this.env = environment;
     this.ns.openLeftNav();
-    const post = this.route.snapshot.data['post'];
-    this.meta(post);
-    this.post = post;
+    this.routeSub = this.route.data.subscribe(data => {
+      const post = data['post'];
+      this.post = post;
+      this.meta(post);
+    });
     this.user$ = this.ns.isBrowser ? this.us.user$ : of(null);
   }
 
@@ -82,5 +82,9 @@ export class PostComponent {
         url: `${environment.site}/p/${r?.id}/${r?.slug}`
       });
     }
+  }
+
+  ngOnDestroy(): void {
+    if (this.routeSub) this.routeSub.unsubscribe();
   }
 }
