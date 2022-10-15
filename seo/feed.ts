@@ -13,8 +13,8 @@ export const feed = async ({ }, res: Response) => {
     const feed = new Feed({
         title: environment.title,
         description: environment.description,
-        id: "http://code.build/",
-        link: "http://code.build/",
+        id: "https://code.build/",
+        link: "https://code.build/",
         language: "en",
         favicon: "https://code.build/favicon.ico",
         copyright: "©2022 Code.Build",
@@ -23,7 +23,7 @@ export const feed = async ({ }, res: Response) => {
         },
         author: {
             name: "Jonathan Gamble",
-            link: "http://code.build/u/86qJ3nXSvhBPUbmdaMwUeb/jdgamble555"
+            link: "https://code.build/u/86qJ3nXSvhBPUbmdaMwUeb/jdgamble555"
         }
     });
 

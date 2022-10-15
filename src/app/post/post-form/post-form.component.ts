@@ -115,8 +115,6 @@ export class PostFormComponent implements OnDestroy {
             // add tags
             this.ts.addTags(post.tags, this.tagsField);
 
-            console.log(post)
-
             const rest = { content: post.content, title: post.title, publishedAt: post.publishedAt };
             return rest;
 
