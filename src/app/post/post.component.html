@@ -1,6 +1,7 @@
 <div *ngIf="post && post.id" class="ng-border">
   <mat-card class="ng-card mat-elevation-z0 ng-card-outline">
-    <img *ngIf="post.image" class="ng-image" mat-card-image src="{{ post.image }}" alt="{{ post.title }}" width="1250" height="650" />
+    <img *ngIf="post.image" class="ng-image" mat-card-image src="{{ post.image }}" alt="{{ post.title }}" width="1250"
+      height="650" />
     <h1>
       <mat-icon color="primary" class="ng-icon-text">library_books</mat-icon>
       {{ post.title }}
