@@ -32,7 +32,8 @@ export class HomeComponent {
       title: this.env.title,
       description: this.env.description,
       domain: this.env.domain,
-      user: this.env.author
+      user: this.env.author,
+      image: 'https://code.build/assets/code.build.jpg'
     });
   }
 
