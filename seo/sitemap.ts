@@ -19,7 +19,7 @@ export const sitemap = async ({ }, res: Response) => {
         image: true,
         video: false
       },
-      xslUrl: '/sitemap.xsl'
+      xslUrl: 'sitemap.xsl'
     });
     const pipeline = sitemapStream.pipe(createGzip());
 

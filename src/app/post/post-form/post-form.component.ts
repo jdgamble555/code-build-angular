@@ -32,6 +32,8 @@ export class PostFormComponent implements OnDestroy {
 
   confirmSub!: Subscription;
 
+  published = true;
+
   postForm: FormGroup;
   isNewPage = true;
   id!: string;
@@ -114,6 +116,8 @@ export class PostFormComponent implements OnDestroy {
 
             // add tags
             this.ts.addTags(post.tags, this.tagsField);
+
+            
 
             const rest = { content: post.content, title: post.title, publishedAt: post.publishedAt };
             return rest;
