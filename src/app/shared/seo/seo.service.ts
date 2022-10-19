@@ -1,4 +1,5 @@
-import { Injectable } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
+import { Inject, Injectable } from '@angular/core';
 import { Title, Meta } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 
@@ -12,10 +13,33 @@ export class SeoService {
   constructor(
     private title: Title,
     private meta: Meta,
-    private router: Router
+    private router: Router,
+    @Inject(DOCUMENT) private doc: Document
   ) { }
 
+
+  showFeed(show: boolean) {
+    const type = 'application/rss+xml';
+    const link = this.doc.querySelector(`link[type="${type}"]`) as HTMLLinkElement;
+    if (link) {
+      if (!show) {
+        link.remove();
+      }
+    } else {
+      if (show) {
+        const element = this.doc.createElement('link') as HTMLLinkElement;
+        element.type = type;
+        element.rel = "alternate";
+        element.title = "Code.Build 💻 RSS Feed";
+        element.href = "https://code.build/feed";
+        const head = this.doc.getElementsByTagName('head')[0];
+        head.appendChild(element);
+      }
+    }
+  }
+
   generateTags({
+    feed = false,
     title = '',
     description = '',
     image = '',
@@ -26,6 +50,9 @@ export class SeoService {
     locale = '',
     noIndex = false
   }): void {
+    // show feed
+    this.showFeed(feed);
+
     // do nothing if same page
     if (title === this.cachetitle) {
       return;
