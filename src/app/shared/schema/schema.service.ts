@@ -28,6 +28,7 @@ export class SchemaService {
     username = '',
     authorId = '',
     articleBody = '',
+    publisher = ''
   }): void {
 
     const s = {
@@ -51,10 +52,10 @@ export class SchemaService {
       "timeRequired": timeRequired,
       "identifier": id,
       "url": url,
-      /*"publisher": {
+      "publisher": {
         "@type": "Organization",
-        "name": "environment.title"
-      }*/
+        "name": publisher
+      }
     };
 
     this.json.push(s);

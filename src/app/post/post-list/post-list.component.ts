@@ -28,7 +28,7 @@ export class PostListComponent implements OnDestroy {
   input: PostInput = {};
   username!: string;
   loading = false;
-  env: any;
+
   private routeSub!: Subscription;
 
   constructor(
@@ -43,7 +43,6 @@ export class PostListComponent implements OnDestroy {
     private schema: SchemaService,
     @Inject(DOCUMENT) private doc: Document
   ) {
-    this.env = environment;
     this.user$ = this.ns.isBrowser ? this.us.user$ : of(null);
     this.routeSub = this.route.data
       .subscribe(async (p) => this.loadPage(p));
@@ -161,11 +160,11 @@ export class PostListComponent implements OnDestroy {
         const uTag = tag?.charAt(0).toUpperCase() + tag!.slice(1);
         this.ns.setBC(uTag);
         this.seo.generateTags({
-          title: uTag + ' - ' + this.env.title + ' ' + this.env.emoji,
-          description: uTag + ' content at ' + this.env.title,
-          domain: this.env.domain,
-          user: this.env.author,
-          image: this.env.image
+          title: uTag + ' - ' + environment.title + ' ' + environment.emoji,
+          description: uTag + ' content at ' + environment.title,
+          domain: environment.domain,
+          user: environment.author,
+          image: environment.image
         });
         break;
       case 'user':
@@ -173,11 +172,11 @@ export class PostListComponent implements OnDestroy {
           ? this.ns.addBC('Posts')
           : (username && this.ns.addTitle(username));
         this.seo.generateTags({
-          title: username + ' - ' + this.env.title + ' ' + this.env.emoji,
-          description: username + ' content at ' + this.env.title,
-          domain: this.env.domain,
-          user: this.env.author,
-          image: this.env.image
+          title: username + ' - ' + environment.title + ' ' + environment.emoji,
+          description: username + ' content at ' + environment.title,
+          domain: environment.domain,
+          user: environment.author,
+          image: environment.image
         });
         break;
       case 'liked':
@@ -189,7 +188,7 @@ export class PostListComponent implements OnDestroy {
         break;
       default:
         this.seo.generateTags({
-          title: this.env.title + ' ' + this.env.emoji
+          title: environment.title + ' ' + environment.emoji
         });
         this.ns.resetBC();
         break;
@@ -202,7 +201,7 @@ export class PostListComponent implements OnDestroy {
         
         return {
           url: `${environment.site}/p/${r?.id}/${r?.slug}`,
-          name: r.title + ' - ' + this.env.title + ' ' + this.env.emoji,
+          name: r.title + ' - ' + environment.title + ' ' + environment.emoji,
           image: r.image,
           description,
           id: r.id

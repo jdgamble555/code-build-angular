@@ -25,8 +25,6 @@ export class PostComponent implements OnDestroy {
   postId!: string;
   slug!: string;
 
-  env: any;
-
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -36,7 +34,6 @@ export class PostComponent implements OnDestroy {
     private ms: MarkdownService,
     private schema: SchemaService
   ) {
-    this.env = environment;
     this.ns.openLeftNav();
     this.routeSub = this.route.data.subscribe(data => {
       const post = data['post'];
@@ -60,8 +57,8 @@ export class PostComponent implements OnDestroy {
     } else {
       // generate seo tags
       this.seo.generateTags({
-        title: r?.title + ' - ' + this.env.title + ' ' + this.env.emoji,
-        domain: this.env.title,
+        title: r?.title + ' - ' + environment.title + ' ' + environment.emoji,
+        domain: environment.title,
         image: r?.image || undefined,
         description,
         user: r?.author.username
@@ -71,7 +68,7 @@ export class PostComponent implements OnDestroy {
       // todo - create schema service, add full content, use new type within types
 
       this.schema.setBlogSchema({
-        name: r?.title + ' - ' + this.env.title + ' ' + this.env.emoji,
+        name: r?.title + ' - ' + environment.title + ' ' + environment.emoji,
         headline: r?.title,
         author: r?.author.displayName,
         username: r?.author.username,
@@ -85,17 +82,12 @@ export class PostComponent implements OnDestroy {
         dateModified: new Date(!!r.updatedAt ? r.updatedAt : r.createdAt).toISOString(),
         timeRequired: r?.minutes + 'M',
         id: r?.id,
-        url: `${environment.site}/p/${r?.id}/${r?.slug}`
+        url: `${environment.site}/p/${r?.id}/${r?.slug}`,
+        publisher: environment.title + ' - ' + environment.emoji
       });
 
       // breadcrumbs
       this.schema.setListSchema([{
-        name: "Home",
-        url: environment.site,
-        image: environment.image,
-        id: environment.site,
-        description: environment.description
-      }, {
         name: r.title,
         url: `${environment.site}/p/${r?.id}/${r?.slug}`,
         image: r.image,

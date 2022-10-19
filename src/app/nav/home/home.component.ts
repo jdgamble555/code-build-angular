@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 import { environment } from '@env/environment';
 import { NavService } from '@nav/nav.service';
 import { DarkModeService } from '@shared/dark-mode/dark-mode.service';
-import { SchemaService } from '@shared/schema/schema.service';
 import { SeoService } from '@shared/seo/seo.service';
 
 @Component({
@@ -19,8 +18,7 @@ export class HomeComponent {
   constructor(
     public ns: NavService,
     private seo: SeoService,
-    public dm: DarkModeService,
-    private schema: SchemaService
+    public dm: DarkModeService
   ) {
 
     this.env = environment;
@@ -38,15 +36,6 @@ export class HomeComponent {
       user: this.env.author,
       image: this.env.image
     });
-
-    this.schema.setListSchema([{
-      name: "Home",
-      url: this.env.site,
-      image: this.env.image,
-      id: this.env.site,
-      description: this.env.description
-    }], true);
-    this.schema.generateSchema();
   }
 
   tabChange(index: number) {
