@@ -13,5 +13,6 @@ export const environment = {
   icon_class: 'ng-light-blue',
   icon_dark_class: 'ng-blue',
   dark_back: 'ng-black-back',
-  light_back: 'ng-blue-gray-back'
+  light_back: 'ng-blue-gray-back',
+  image: 'https://code.build/assets/code.build.jpg'
 };

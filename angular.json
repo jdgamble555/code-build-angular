@@ -52,7 +52,7 @@
             ],
             "serviceWorker": true,
             "ngswConfigPath": "ngsw-config.json",
-            "allowedCommonJsDependencies": ["cross-fetch", "websocket"]
+            "allowedCommonJsDependencies": ["cross-fetch", "websocket", "remove-markdown"]
           },
           "configurations": {
             "production": {

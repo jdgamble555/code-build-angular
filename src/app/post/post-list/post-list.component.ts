@@ -11,6 +11,9 @@ import { NavService } from '@nav/nav.service';
 import { PostDbService } from '@db/post/post-db.service';
 import { UserDbService } from '@db/user/user-db.service';
 import { DarkModeService } from '@shared/dark-mode/dark-mode.service';
+import { SchemaService } from '@shared/schema/schema.service';
+import { MarkdownService } from 'ngx-markdown';
+import removeMd from 'remove-markdown';
 
 @Component({
   selector: 'app-post-list',
@@ -33,9 +36,11 @@ export class PostListComponent implements OnDestroy {
     private us: UserDbService,
     private route: ActivatedRoute,
     private router: Router,
+    private ms: MarkdownService,
     public ns: NavService,
     public dm: DarkModeService,
     private seo: SeoService,
+    private schema: SchemaService,
     @Inject(DOCUMENT) private doc: Document
   ) {
     this.env = environment;
@@ -62,25 +67,26 @@ export class PostListComponent implements OnDestroy {
     // set dynamic types
     const type = this.ns.type;
 
-    this.meta(type);
-
     // handle input types
     switch (type) {
       case 'new':
         this.total = count;
         this.posts = data;
+        this.meta(type);
         return;
       //break;
       case 'tag':
         this.input.tag = tag;
         this.total = count;
         this.posts = data;
+        this.meta(type);
         return;
       //break;
       case 'user':
         this.input.authorId = authorId;
         this.total = count;
         this.posts = data;
+        this.meta(type);
         return;
       //break;
       case 'bookmarks':
@@ -106,6 +112,7 @@ export class PostListComponent implements OnDestroy {
       this.total = count;
       this.posts = data;
     }
+    this.meta(type);
   }
 
   async pageChange(event: PageEvent): Promise<void> {
@@ -154,13 +161,24 @@ export class PostListComponent implements OnDestroy {
         const uTag = tag?.charAt(0).toUpperCase() + tag!.slice(1);
         this.ns.setBC(uTag);
         this.seo.generateTags({
-          title: uTag + ' - ' + this.env.title
+          title: uTag + ' - ' + this.env.title,
+          description: uTag + ' content at ' + this.env.title,
+          domain: this.env.domain,
+          user: this.env.author,
+          image: this.env.image
         });
         break;
       case 'user':
         isDash
           ? this.ns.addBC('Posts')
           : (username && this.ns.addTitle(username));
+        this.seo.generateTags({
+          title: username + ' - ' + this.env.title,
+          description: username + ' content at ' + this.env.title,
+          domain: this.env.domain,
+          user: this.env.author,
+          image: this.env.image
+        });
         break;
       case 'liked':
         break;
@@ -170,13 +188,28 @@ export class PostListComponent implements OnDestroy {
         this.ns.addBC('Drafts');
         break;
       default:
-        this.seo.generateTags({ title: this.env.title });
+        this.seo.generateTags({
+          title: this.env.title
+        });
         this.ns.resetBC();
         break;
     }
 
     if (posts && posts.length > 0) {
-      this.seo.setSummarySchema(posts);
+      const items = posts.map((r) => {
+        let description = this.ms.parse(r?.content as string);
+        description = removeMd(description.substring(0, 125));
+        
+        return {
+          url: `${environment.site}/p/${r?.id}/${r?.slug}`,
+          name: r.title,
+          image: r.image,
+          description,
+          id: r.id
+        };
+      });
+      this.schema.setListSchema(items);
+      this.schema.generateSchema();
     }
   }
 

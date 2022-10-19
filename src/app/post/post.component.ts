@@ -4,10 +4,12 @@ import { UserRec } from '@auth/user.model';
 import { UserDbService } from '@db/user/user-db.service';
 import { environment } from '@env/environment';
 import { NavService } from '@nav/nav.service';
+import { SchemaService } from '@shared/schema/schema.service';
 import { SeoService } from '@shared/seo/seo.service';
 import { MarkdownService } from 'ngx-markdown';
 import { Observable, of, Subscription } from 'rxjs';
 import { Post } from './post.model';
+import removeMd from 'remove-markdown';
 
 @Component({
   selector: 'app-post',
@@ -31,7 +33,8 @@ export class PostComponent implements OnDestroy {
     private us: UserDbService,
     private seo: SeoService,
     public ns: NavService,
-    private ms: MarkdownService
+    private ms: MarkdownService,
+    private schema: SchemaService
   ) {
     this.env = environment;
     this.ns.openLeftNav();
@@ -49,7 +52,7 @@ export class PostComponent implements OnDestroy {
     // add bread crumbs
     this.ns.setBC(r?.title as string);
     let description = this.ms.parse(r?.content as string);
-    description = description.substring(0, 125).replace(/(\r\n|\n|\r)/gm, "");
+    description = removeMd(description.substring(0, 125));
 
     if (did) {
       // don't index drafts page
@@ -66,21 +69,40 @@ export class PostComponent implements OnDestroy {
 
       // generate schema
       // todo - create schema service, add full content, use new type within types
-      this.seo.setBlogSchema({
-        title: r?.title,
+
+      this.schema.setBlogSchema({
+        headline: r?.title,
         author: r?.author.displayName,
         username: r?.author.username,
         authorId: r?.author.id,
         authorURL: `${environment.site}/u/${r?.author.id}/${r?.author.username}`,
         image: r?.image || undefined,
         description,
+        articleBody: removeMd(r.content),
         keywords: r?.tags?.join(', '),
-        createdAt: new Date(r?.publishedAt || null).toISOString(),
-        updatedAt: new Date(r?.updatedAt || null).toISOString(),
-        time: r?.minutes,
+        datePublished: new Date(r?.publishedAt).toISOString(),
+        dateModified: new Date(!!r.updatedAt ? r.updatedAt : r.createdAt).toISOString(),
+        timeRequired: r?.minutes + 'M',
         id: r?.id,
         url: `${environment.site}/p/${r?.id}/${r?.slug}`
       });
+
+      // breadcrumbs
+      this.schema.setListSchema([{
+        name: "Home",
+        url: environment.site,
+        image: environment.image,
+        id: environment.site,
+        description: environment.description
+      }, {
+        name: r.title,
+        url: `${environment.site}/p/${r?.id}/${r?.slug}`,
+        image: r.image,
+        id: r.id,
+        description
+      }], true);
+
+      this.schema.generateSchema();
     }
   }
 
