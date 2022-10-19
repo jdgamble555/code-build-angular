@@ -189,7 +189,7 @@ export class PostListComponent implements OnDestroy {
         break;
       default:
         this.seo.generateTags({
-          title: this.env.title
+          title: this.env.title + ' ' + this.env.emoji
         });
         this.ns.resetBC();
         break;
@@ -202,7 +202,7 @@ export class PostListComponent implements OnDestroy {
         
         return {
           url: `${environment.site}/p/${r?.id}/${r?.slug}`,
-          name: r.title,
+          name: r.title + ' - ' + this.env.title + ' ' + this.env.emoji,
           image: r.image,
           description,
           id: r.id

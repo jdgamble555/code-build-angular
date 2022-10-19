@@ -71,6 +71,7 @@ export class PostComponent implements OnDestroy {
       // todo - create schema service, add full content, use new type within types
 
       this.schema.setBlogSchema({
+        name: r?.title + ' - ' + this.env.title + ' ' + this.env.emoji,
         headline: r?.title,
         author: r?.author.displayName,
         username: r?.author.username,

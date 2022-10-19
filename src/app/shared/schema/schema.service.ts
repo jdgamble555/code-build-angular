@@ -13,6 +13,7 @@ export class SchemaService {
   ) { }
 
   setBlogSchema({
+    name = '',
     headline = '',
     author = '',
     description = '',
@@ -33,6 +34,7 @@ export class SchemaService {
       "@context": "https://schema.org/",
       "@type": "BlogPosting",
       "headline": headline,
+      "name": name,
       "author": {
         "@type": "Person",
         "name": author,

@@ -31,7 +31,7 @@ export class HomeComponent {
     this.ns.openLeftNav();
 
     this.seo.generateTags({
-      title: this.env.title,
+      title: this.env.title + ' ' + this.env.emoji,
       description: this.env.description,
       domain: this.env.domain,
       user: this.env.author,
