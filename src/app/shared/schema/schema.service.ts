@@ -51,7 +51,7 @@ export class SchemaService {
       "url": url,
       /*"publisher": {
         "@type": "Organization",
-        "name": "Code.Build"
+        "name": "environment.title"
       }*/
     };
 
