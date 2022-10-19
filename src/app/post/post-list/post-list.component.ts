@@ -161,7 +161,7 @@ export class PostListComponent implements OnDestroy {
         const uTag = tag?.charAt(0).toUpperCase() + tag!.slice(1);
         this.ns.setBC(uTag);
         this.seo.generateTags({
-          title: uTag + ' - ' + this.env.title,
+          title: uTag + ' - ' + this.env.title + ' ' + this.env.emoji,
           description: uTag + ' content at ' + this.env.title,
           domain: this.env.domain,
           user: this.env.author,
@@ -173,7 +173,7 @@ export class PostListComponent implements OnDestroy {
           ? this.ns.addBC('Posts')
           : (username && this.ns.addTitle(username));
         this.seo.generateTags({
-          title: username + ' - ' + this.env.title,
+          title: username + ' - ' + this.env.title + ' ' + this.env.emoji,
           description: username + ' content at ' + this.env.title,
           domain: this.env.domain,
           user: this.env.author,

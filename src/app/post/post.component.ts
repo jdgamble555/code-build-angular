@@ -60,7 +60,7 @@ export class PostComponent implements OnDestroy {
     } else {
       // generate seo tags
       this.seo.generateTags({
-        title: r?.title + ' - ' + this.env.title,
+        title: r?.title + ' - ' + this.env.title + ' ' + this.env.emoji,
         domain: this.env.title,
         image: r?.image || undefined,
         description,
