@@ -13,8 +13,8 @@ export const feed = async ({ }, res: Response) => {
     const feed = new Feed({
         title: environment.title,
         description: environment.description,
-        id: "https://code.build/",
-        link: "https://code.build/",
+        id: "https://code.build",
+        link: "https://code.build",
         language: "en",
         favicon: "https://code.build/favicon.ico",
         copyright: "©2022 Code.Build",

@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { UserRec, UserRequest } from '@auth/user.model';
 import { DbModule } from '@db/db.module';
-import { decode } from '@db/sb-tools';
-import { combine_user, supabase_user, user_to_supabase } from '@db/supabase.types';
+import { combine_user, supabase_user } from '@db/supabase.types';
 import { User } from '@supabase/supabase-js';
+import { decode } from 'j-supabase';
 import { map, Observable, of, switchMap } from 'rxjs';
 import { SupabaseService } from '../supabase.service';
 

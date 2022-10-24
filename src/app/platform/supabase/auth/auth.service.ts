@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AuthAction } from '@auth/user.model';
 import { DbModule } from '@db/db.module';
-import { UserDbService } from '@db/user/user-db.service';
 import { environment } from '@env/environment';
 import { Provider } from '@supabase/supabase-js';
 import { SupabaseService } from '../supabase.service';
@@ -12,7 +11,6 @@ import { SupabaseService } from '../supabase.service';
 export class AuthService {
 
   constructor(
-    private us: UserDbService,
     private sb: SupabaseService
   ) { }
 

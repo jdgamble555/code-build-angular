@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { DbModule } from '@db/db.module';
 import { environment } from '@env/environment';
 import { createClient, SupabaseClient, User } from '@supabase/supabase-js';
+import { authUser, realtime } from 'j-supabase';
 import { Observable, Subscriber } from 'rxjs';
 
 @Injectable({
@@ -21,40 +22,20 @@ export class SupabaseService {
   }
 
   authState(): Observable<User | null> {
-    return new Observable((subscriber: Subscriber<User | null>) => {
-      this.supabase.auth.getSession().then(session =>
-        subscriber.next(session.data.session?.user)
-      );
-      const auth = this.supabase.auth.onAuthStateChange(async ({ }, session) => {
-        subscriber.next(session?.user);
-      });
-      return auth.data.subscription.unsubscribe;
-    });
+    return new Observable((subscriber: Subscriber<User | null>) =>
+      authUser(this.supabase).subscribe(user => {
+        subscriber.next(user);
+      })
+    );
   }
 
-  subWhere<T>(table: string, field?: string, value?: string): Observable<T> {
-    return new Observable((subscriber: Subscriber<T>) => {
-      const hasFilter = field && value;
-      let select = this.supabase.from(table).select('*');
-      select = hasFilter ? select.eq(field, value) : select;
-      select.then(payload => {
-        let data = payload.data
-          ? payload.data.length && payload.data.length > 1
-            ? payload.data
-            : payload.data[0]
-          : undefined;
-        subscriber.next(data);
-      });
-      const filterString = `${field}=eq.${value}`;
-      const filterChannel = hasFilter ? ':' + filterString : '';
-      const filter = hasFilter ? filterString : undefined;
-      const real = { event: '*', schema: 'public', table, filter };
-      return this.supabase.channel('public:' + table + filterChannel)
-        .on('postgres_changes', real,
-          (payload: any) => {
-            subscriber.next(payload.new);
-          }).subscribe();
-    });
+  subWhere<T>(table: string, field: string, value: string): Observable<T> {
+    return new Observable((subscriber: Subscriber<T>) =>
+      realtime<T>(this.supabase).from(table).eq(field, value)
+        .subscribe(snap => {
+          subscriber.next(snap.data[0]);
+        })
+    );
   }
 
   /*async upload(folder: string, path: string, file: File | null) {

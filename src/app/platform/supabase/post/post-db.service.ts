@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { DbModule } from '@db/db.module';
-import { decode, encode } from '@db/sb-tools';
 import { supabase_to_post } from '@db/supabase.types';
 import { PostInput, PostListRequest, PostRequest } from '@post/post.model';
+import { decode, encode } from 'j-supabase';
 import { SupabaseService } from '../supabase.service';
 
 

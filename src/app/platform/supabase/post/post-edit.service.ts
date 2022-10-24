@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { PostEditModule } from '@db/post-edit.module';
-import { decode } from '@db/sb-tools';
 import { Post, PostRequest } from '@post/post.model';
+import { decode } from 'j-supabase';
 import { SupabaseService } from '../supabase.service';
 
 @Injectable({

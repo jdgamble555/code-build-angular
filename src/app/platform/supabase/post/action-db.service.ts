@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { ActionRequest } from '@auth/user.model';
 import { DbModule } from '@db/db.module';
-import { decode } from '@db/sb-tools';
 import { SupabaseService } from '@db/supabase.service';
+import { decode } from 'j-supabase';
 
 @Injectable({
   providedIn: DbModule
