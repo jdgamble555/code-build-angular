@@ -1,8 +1,8 @@
-import { encode } from '@db/sb-tools';
 import { supabase } from '@db/supabase.sitemap';
 import { environment } from '@env/environment';
 import type { Response } from 'express';
 import { Feed } from "feed";
+import { encode } from 'j-supabase';
 
 // todo - put everything in environment file and seo supabase file
 

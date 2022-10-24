@@ -1,7 +1,7 @@
-import { encode } from '@db/sb-tools';
 import { supabase } from '@db/supabase.sitemap';
 import { environment } from '@env/environment';
 import type { Response } from 'express';
+import { encode } from 'j-supabase';
 import { SitemapStream } from 'sitemap';
 import { createGzip } from 'zlib';
 
