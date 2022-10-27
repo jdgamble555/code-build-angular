@@ -84,8 +84,9 @@ export class SeoService {
         { name: 'twitter:image', content: image },
         { name: 'twitter:description', content: description },
 
-        // regular meta description
-        { name: 'description', content: description }
+        // regular meta description and image
+        { name: 'description', content: description },
+        { name: 'image', content: image }
       ]);
       if (imageW) {
         this.setTags([{ name: 'og:image:width', content: imageW }]);

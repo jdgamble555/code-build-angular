@@ -27,6 +27,6 @@ export class LeftnavService {
     if (error) {
       console.error(error);
     }
-    return count;
+    return count || undefined;
   }
 }

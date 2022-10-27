@@ -1,7 +1,7 @@
 import { Role, UserRec } from "@auth/user.model";
 import { Post } from "@post/post.model";
 import { User } from "@supabase/supabase-js";
-import { decode, encode } from "./sb-tools";
+import { decode, encode } from "j-supabase";
 
 // USER
 

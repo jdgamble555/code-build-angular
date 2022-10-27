@@ -44,14 +44,14 @@ export interface PostRequest {
   error: any,
   data?: Post,
   exists?: boolean,
-  count?: number
+  count?: number | null
 };
 
 export interface PostListRequest {
   error: any,
-  data?: Post[],
+  data?: Post[] | null,
   exists?: boolean,
-  count?: number
+  count?: number | null
 };
 
 

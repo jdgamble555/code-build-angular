@@ -25,7 +25,7 @@ export class PostDbService {
       q = q.lte('published_at', new Date().toISOString())
     }
     const { error, count } = await q;
-    return { error, count };
+    return { error, count: count };
   }
 
   async getPostById(id: string, published = true): Promise<PostRequest> {

@@ -30,7 +30,7 @@
     "@angular/service-worker": "^14.2.6",
     "@github/markdown-toolbar-element": "^2.1.1",
     "@nguniversal/express-engine": "^14.2.0",
-    "@supabase/supabase-js": "^2.0.0-rc.10",
+    "@supabase/supabase-js": "^2.0.4",
     "express": "^4.15.2",
     "feed": "^4.2.2",
     "j-supabase": "^1.0.6",

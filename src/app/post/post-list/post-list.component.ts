@@ -23,8 +23,8 @@ import removeMd from 'remove-markdown';
 export class PostListComponent implements OnDestroy {
 
   user$: Observable<UserRec | null> = of(null);
-  posts?: Post[];
-  total?: number;
+  posts: any;
+  total: any;
   input: PostInput = {};
   username!: string;
   loading = false;
@@ -53,8 +53,8 @@ export class PostListComponent implements OnDestroy {
     this.ns.openLeftNav();
     this.ns.resetBC();
 
-    let count: number | undefined = p.count;
-    let data: Post[] | undefined = p.posts;
+    let count: any = p.count;
+    let data: any = p.posts;
 
     // dynamic routes not ssr
     const tag = this.route.snapshot.params['tag'];
@@ -195,7 +195,7 @@ export class PostListComponent implements OnDestroy {
     }
 
     if (posts && posts.length > 0) {
-      const items = posts.map((r) => {
+      const items = posts.map((r: any) => {
         let description = this.ms.parse(r?.content as string);
         description = removeMd(description.substring(0, 125));
         
