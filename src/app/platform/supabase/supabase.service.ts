@@ -24,7 +24,7 @@ export class SupabaseService {
   authState(): Observable<User | null> {
     return new Observable((subscriber: Subscriber<User | null>) =>
       authSession(this.supabase).subscribe(session => {
-        subscriber.next(session?.user);
+        subscriber.next(session?.user ?? null);
       })
     );
   }
@@ -33,7 +33,8 @@ export class SupabaseService {
     return new Observable((subscriber: Subscriber<T>) =>
       realtime<T>(this.supabase).from(table).eq(field, value)
         .subscribe(snap => {
-          subscriber.next(snap.data[0]);
+          if (snap)
+            subscriber.next(snap.data[0]);
         })
     );
   }

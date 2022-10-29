@@ -75,7 +75,7 @@ export class SaveComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     if (this.actionSub) {
-      this.actionSub.unsubscribe();
+      if (this.actionSub) this.actionSub.unsubscribe();
     }
   }
 }

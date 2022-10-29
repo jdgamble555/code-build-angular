@@ -33,6 +33,6 @@ export class UserHook implements OnDestroy {
     }
 
     ngOnDestroy(): void {
-        this._userSub.unsubscribe();
+        if (this._userSub) this._userSub.unsubscribe();
     }
 }
