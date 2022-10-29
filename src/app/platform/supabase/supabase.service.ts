@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { DbModule } from '@db/db.module';
 import { environment } from '@env/environment';
 import { createClient, SupabaseClient, User } from '@supabase/supabase-js';
-import { authUser, realtime } from 'j-supabase';
+import { authSession, authUser, realtime } from 'j-supabase';
 import { Observable, Subscriber } from 'rxjs';
 
 @Injectable({
@@ -23,8 +23,8 @@ export class SupabaseService {
 
   authState(): Observable<User | null> {
     return new Observable((subscriber: Subscriber<User | null>) =>
-      authUser(this.supabase).subscribe(user => {
-        subscriber.next(user);
+      authSession(this.supabase).subscribe(session => {
+        subscriber.next(session?.user);
       })
     );
   }

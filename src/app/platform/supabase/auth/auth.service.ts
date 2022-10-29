@@ -3,7 +3,7 @@ import { AuthAction } from '@auth/user.model';
 import { DbModule } from '@db/db.module';
 import { environment } from '@env/environment';
 import { Provider } from '@supabase/supabase-js';
-import { SupabaseService } from '../supabase.service';
+import { SupabaseService } from '@db/supabase.service';
 
 @Injectable({
   providedIn: DbModule
