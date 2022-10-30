@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { DbModule } from '@db/db.module';
 import { supabase_to_post } from '@db/supabase.types';
 import { PostInput, PostListRequest, PostRequest } from '@post/post.model';
-import { decode, encode } from 'j-supabase';
+import { decode, encode, range } from 'j-supabase';
 import { SupabaseService } from '../supabase.service';
 
 
@@ -63,7 +63,7 @@ export class PostDbService {
   async searchPost(phrase: string): Promise<PostListRequest> {
     //const { data, error } = await this.sb.supabase.rpc('search_posts', { phrase });
     const { data, error } = await this.sb.supabase.from('search_posts').select('*')//.textSearch('content', phrase, { type: 'phrase', config: 'english' });
-    .or(`title.phfts.${phrase},content.phfts.${phrase},tags.phfts.${phrase}`);
+      .or(`title.phfts.${phrase},content.phfts.${phrase},tags.phfts.${phrase}`);
     return { data: data?.map((p) => ({ ...p, id: encode(p.id) })) as any, error };
   }
 
@@ -89,13 +89,6 @@ export class PostDbService {
     let count = null;
     let data = null;
 
-    const { from, to } = ((page: number, size: number) => {
-      const limit = size ? +size : 3;
-      const from = page ? page * limit : 0;
-      const to = page ? from + size - 1 : size - 1;
-      return { from, to };
-    })(page - 1, pageSize);
-
     let q = this.sb.supabase.from(drafts ? 'drafts' : 'posts_hearts_tags')
       .select('*, author!inner(*)', { count: 'exact' });
 
@@ -114,9 +107,10 @@ export class PostDbService {
       q = q.eq('author.id', decode(authorId));
     }
 
+    const { to, from } = range({ page, size: pageSize });
+
     // get results
-    ({ data, count } = await q.order(sortField, { ascending: sortDirection === 'asc' })
-      .range(from, to));
+    ({ data, count } = await q.order(sortField, { ascending: sortDirection === 'asc' }).range(from, to));
 
     if (count && count > 0) {
 
@@ -126,3 +120,5 @@ export class PostDbService {
     return { error, data, count };
   }
 }
+
+
