@@ -80,6 +80,7 @@ export class PostComponent implements OnDestroy {
         keywords: r?.tags?.join(', '),
         datePublished: new Date(r?.publishedAt).toISOString(),
         dateModified: new Date(!!r.updatedAt ? r.updatedAt : r.createdAt).toISOString(),
+        dateCreated: new Date(r?.createdAt).toISOString(),
         timeRequired: r?.minutes + 'M',
         id: r?.id,
         url: `${environment.site}/p/${r?.id}/${r?.slug}`,
