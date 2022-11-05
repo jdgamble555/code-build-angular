@@ -22,21 +22,23 @@ export class SupabaseService {
   }
 
   authState(): Observable<User | null> {
-    return new Observable((subscriber: Subscriber<User | null>) =>
-      authUser(this.supabase).subscribe(user => {
+    return new Observable((subscriber: Subscriber<User | null>) => {
+      const unsubscribe = authUser(this.supabase).subscribe(user => {
         subscriber.next(user ?? null);
-      })
-    );
+      });
+      return { unsubscribe };
+    });
   }
 
   subWhere<T>(table: string, field: string, value: string): Observable<T> {
-    return new Observable((subscriber: Subscriber<T>) =>
-      realtime<T>(this.supabase).from(table).eq(field, value)
+    return new Observable((subscriber: Subscriber<T>) => {
+      const unsubscribe = realtime<T>(this.supabase).from(table).eq(field, value)
         .subscribe(snap => {
           if (snap)
             subscriber.next(snap.data[0]);
-        })
-    );
+        });
+      return { unsubscribe };
+    });
   }
 
   /*async upload(folder: string, path: string, file: File | null) {

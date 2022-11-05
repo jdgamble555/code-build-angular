@@ -4,7 +4,7 @@ import { DbModule } from '@db/db.module';
 import { combine_user, supabase_user } from '@db/supabase.types';
 import { User } from '@supabase/supabase-js';
 import { decode } from 'j-supabase';
-import { map, Observable, of, switchMap } from 'rxjs';
+import { map, Observable, of, shareReplay, switchMap, tap } from 'rxjs';
 import { SupabaseService } from '../supabase.service';
 
 @Injectable({
@@ -19,17 +19,16 @@ export class UserDbService {
   ) {
 
     // get user rec if logged in
-    this.user$ = this.userSub();
+    this.user$ = this.userSub().pipe(shareReplay({ bufferSize: 1, refCount: true }));
   }
 
   // todo - merge auth and user
 
   private userSub(): Observable<UserRec | null> {
     return this.sb.authState().pipe(
-      switchMap(user =>
-        user
-          ? this._subUserRec(user)
-          : of(null)
+      switchMap(user => user
+        ? this._subUserRec(user)
+        : of(null)
       )
     );
   }
